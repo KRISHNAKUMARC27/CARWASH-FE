@@ -74,6 +74,71 @@ const fetchBlobRequest = async (url, method, payload = null) => {
   return response.blob();
 };
 
+const fetchMultiPartFileRequest = async (url, method, payload = null) => {
+  const token = localStorage.getItem('token'); // Retrieve token from localStorage
+
+  // Headers
+  const headers = {
+    ...(token && { Authorization: `Bearer ${token}` }) // Add Bearer token if available
+  };
+
+  // Ensure payload is FormData for multipart requests
+  const isMultipart = payload instanceof FormData;
+
+  // Use 'Content-Type' only for non-multipart requests
+  if (!isMultipart) {
+    headers['Content-Type'] = 'application/json; charset=UTF-8';
+  }
+
+  const response = await fetch(url, {
+    method,
+    body: payload, // Pass FormData or JSON
+    headers
+  });
+
+  // Check for 403 and redirect to login
+  if (response.status === 403) {
+    redirectToLogin();
+  }
+
+  // Handle non-OK responses
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || response.statusText);
+  }
+
+  // Return response data
+  return response.json(); // Use response.json() or response.blob() as needed
+};
+
+const fetchZipFileRequest = async (url, method = 'GET') => {
+  const token = localStorage.getItem('token'); // Retrieve token from localStorage
+
+  // Headers
+  const headers = {
+    ...(token && { Authorization: `Bearer ${token}` }) // Add Bearer token if available
+  };
+
+  const response = await fetch(url, {
+    method,
+    headers
+  });
+
+  // Check for 403 and redirect to login
+  if (response.status === 403) {
+    redirectToLogin();
+  }
+
+  // Handle non-OK responses
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || response.statusText);
+  }
+
+  // Return the zip file as a blob
+  return response.blob(); // Important: Use .blob() to handle binary data
+};
+
 // Exported functions for API requests
 export const postRequest = (url, payload) => fetchRequest(url, 'POST', payload);
 export const postRequestNotStringify = (url, payload) => fetchRequestNotStringify(url, 'POST', payload);
@@ -82,3 +147,5 @@ export const putRequestNotStringify = (url, payload) => fetchRequestNotStringify
 export const getRequest = (url) => fetchRequest(url, 'GET');
 export const deleteRequest = (url) => fetchRequest(url, 'DELETE');
 export const getBlobRequest = (url) => fetchBlobRequest(url, 'GET');
+export const postRequestMultiPart = (url, payload) => fetchMultiPartFileRequest(url, 'POST', payload);
+export const getRequestMultiPart = (url) => fetchZipFileRequest(url, 'GET');

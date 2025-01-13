@@ -11,7 +11,9 @@ import Person4Icon from '@mui/icons-material/Person4';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import { postRequest } from 'utils/fetchRequest';
+import JSZip from 'jszip';
+
+import { postRequest, postRequestMultiPart } from 'utils/fetchRequest';
 
 const JobUserDetails = Loadable(lazy(() => import('views/job/JobUserDetails')));
 const JobCarDetails = Loadable(lazy(() => import('views/job/JobCarDetails')));
@@ -43,6 +45,8 @@ function JobCardCreate({ data }) {
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
+  const [photos, setPhotos] = React.useState([]);
+  // const [zipFile, setZipFile] = useState();
 
   useEffect(() => {
     return () => {
@@ -86,6 +90,33 @@ function JobCardCreate({ data }) {
       setShowAlert(true);
       setUserDetails({});
       setCarDetails({});
+      if (photos.length === 0) {
+        console.log('No photos to upload.');
+        return;
+      }
+      const zip = new JSZip();
+      photos.forEach((photo, index) => {
+        console.log(index);
+        zip.file(photo.name, photo);
+      });
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+      const formData = new FormData();
+      formData.append('file', new File([zipBlob], 'photos.zip', { type: 'application/zip' }));
+
+      try {
+        await postRequestMultiPart(process.env.REACT_APP_API_URL + '/jobCard/uploadPhotos/' + data.id, formData);
+        setAlertMess('Photos uploaded for ' + data.vehicleRegNo + ' successfully');
+        setAlertColor('success');
+        setShowAlert(true);
+        setPhotos([]);
+      } catch (err) {
+        console.log(err.message);
+        setAlertMess(err.message);
+        setAlertColor('info');
+        setShowAlert(true);
+      }
     } catch (err) {
       console.log(err.message);
       setAlertMess(err.message);
@@ -132,7 +163,9 @@ function JobCardCreate({ data }) {
       </Breadcrumbs>
 
       <div className="content">
-        {activeComponent === 'CarDetails' && <JobCarDetails data={carDetails} updateData={setCarDetails} />}
+        {activeComponent === 'CarDetails' && (
+          <JobCarDetails data={carDetails} updateData={setCarDetails} photos={photos} updatePhotos={setPhotos} />
+        )}
         {activeComponent === 'UserDetails' && <JobUserDetails data={userDetails} updateData={setUserDetails} />}
       </div>
       <br></br>

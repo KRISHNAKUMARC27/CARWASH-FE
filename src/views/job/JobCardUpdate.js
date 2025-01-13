@@ -23,6 +23,7 @@ import { gridSpacing } from 'store/constant';
 //import Alert from 'views/utilities/Alert';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import JSZip from 'jszip';
 
 const JobUserDetails = Loadable(lazy(() => import('views/job/JobUserDetails')));
 const JobCarDetails = Loadable(lazy(() => import('views/job/JobCarDetails')));
@@ -30,7 +31,7 @@ const JobCarDetails = Loadable(lazy(() => import('views/job/JobCarDetails')));
 const JobSparesUpdate = Loadable(lazy(() => import('views/job/JobSparesUpdate')));
 
 const JobServiceUpdate = Loadable(lazy(() => import('views/job/JobServiceUpdate')));
-import { getRequest, putRequest, postRequest } from 'utils/fetchRequest';
+import { getRequest, putRequest, postRequest, getRequestMultiPart, postRequestMultiPart } from 'utils/fetchRequest';
 
 const JobCardUpdate = () => {
   const [data, setData] = useState([]);
@@ -40,6 +41,8 @@ const JobCardUpdate = () => {
 
   // const [userDetails, setUserDetails] = useState({});
   // const [carDetails, setCarDetails] = useState({});
+  const [photos, setPhotos] = useState([]);
+  const [zipFile, setZipFile] = useState();
   const [jobInfoUpdateOpen, setJobInfoUpdateOpen] = useState(false);
 
   const [jobSparesCost, setJobSparesCost] = useState({});
@@ -60,6 +63,12 @@ const JobCardUpdate = () => {
       setData([]);
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (photos.length > 0 || selectedRow.jobId) {
+  //     setJobInfoUpdateOpen(true); // Open dialog only after photos are set
+  //   }
+  // }, [photos, selectedRow]);
 
   const findAllByJobStatusOpen = async () => {
     try {
@@ -87,22 +96,32 @@ const JobCardUpdate = () => {
     }
   };
 
-  const updateJobInfo = (row) => {
-    // let carInfo = {
-    //   vehicleRegNo: row.vehicleRegNo,
-    //   vehicleName: row.vehicleName,
-    //   vehicleModel: row.vehicleModel,
-    //   kiloMeters: row.kiloMeters
-    // };
-    // let userInfo = {
-    //   ownerName: row.ownerName,
-    //   ownerAddress: row.ownerAddress,
-    //   ownerPhoneNumber: row.ownerPhoneNumber
-    // };
-    setSelectedRow(row);
+  const updateJobInfo = async (row) => {
+    try {
+      const zipBlob = await getRequestMultiPart(process.env.REACT_APP_API_URL + '/jobCard/getPhotos/' + row.id);
+      console.log('Got zipblob');
+      // if (zipBlob) {
+      //   const jszip = new JSZip();
+      //   const zip = await jszip.loadAsync(zipBlob);
+      //   const files = [];
+      //   zip.forEach(async (relativePath, file) => {
+      //     const fileBlob = await file.async('blob');
+      //     files.push(new File([fileBlob], relativePath, { type: 'image/jpeg' }));
+      //   });
+      //   setPhotos(files); // Initialize photos with unzipped files
+      //   console.log('photos are set');
+      //   setSelectedRow(row);
+      // }
+      setZipFile(zipBlob);
+      setSelectedRow(row);
+      setJobInfoUpdateOpen(true);
+    } catch (err) {
+      setPhotos([]);
+      setSelectedRow(row);
+    }
+
     // setUserDetails(row);
     // setCarDetails(row);
-    setJobInfoUpdateOpen(true);
   };
 
   function isUserDetailsComplete() {
@@ -128,25 +147,35 @@ const JobCardUpdate = () => {
   }
 
   const submitJobCard = () => {
-    // const jobCard = {
-    //   id: selectedRow.id,
-    //   jobId: selectedRow.jobId,
-    //   jobStatus: selectedRow.jobStatus,
-    //   jobCreationDate: selectedRow.jobCreationDate,
-    //   ownerName: userDetails.ownerName,
-    //   ownerAddress: userDetails.ownerAddress,
-    //   ownerPhoneNumber: userDetails.ownerPhoneNumber,
-    //   vehicleRegNo: carDetails.vehicleRegNo,
-    //   vehicleName: carDetails.vehicleName,
-    //   kiloMeters: carDetails.kiloMeters,
-    // };
-
     updateJobCard(selectedRow);
   };
 
   const updateJobCard = async (payload) => {
     try {
-      await putRequest(process.env.REACT_APP_API_URL + '/jobCard', payload);
+      const data = await putRequest(process.env.REACT_APP_API_URL + '/jobCard', payload);
+
+      if (photos.length === 0) {
+        console.log('No photos to upload.');
+        return;
+      }
+      const zip = new JSZip();
+      photos.forEach((photo, index) => {
+        console.log(index);
+        zip.file(photo.name, photo);
+      });
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+      const formData = new FormData();
+      formData.append('file', new File([zipBlob], 'photos.zip', { type: 'application/zip' }));
+
+      try {
+        await postRequestMultiPart(process.env.REACT_APP_API_URL + '/jobCard/uploadPhotos/' + data.id, formData);
+        setPhotos([]);
+      } catch (err) {
+        console.log(err.message);
+      }
+
       handleClose();
     } catch (err) {
       console.log(err.message);
@@ -223,6 +252,7 @@ const JobCardUpdate = () => {
 
   const handleClose = () => {
     findAllByJobStatusOpen();
+    setPhotos([]);
     setJobInfoUpdateOpen(false);
     setSelectedRow({});
     setJobSparesUpdateOpen(false);
@@ -390,7 +420,13 @@ const JobCardUpdate = () => {
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <JobCarDetails data={selectedRow} updateData={setSelectedRow} />
+                  <JobCarDetails
+                    data={selectedRow}
+                    updateData={setSelectedRow}
+                    photos={photos}
+                    updatePhotos={setPhotos}
+                    zipFile={zipFile}
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <JobUserDetails data={selectedRow} updateData={setSelectedRow} />

@@ -61,6 +61,8 @@
     "import/no-named-as-default": "off",
     "import/no-extraneous-dependencies": "off",
     "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/media-has-caption": "off",  // Disable <track> requirement for <video>
+    "jsx-a11y/img-redundant-alt": "off",  // Disable redundant alt rule for <img>
     "no-restricted-imports": [
       "error",
       {
