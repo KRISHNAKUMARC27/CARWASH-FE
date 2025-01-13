@@ -27,7 +27,7 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD']}>
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
           <JobCardUpdate />
         </PrivateRoute>
       )
@@ -35,7 +35,7 @@ const MainRoutes = {
     {
       path: 'dashboard/default',
       element: (
-        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN']}>
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'INVOICE', 'ESTIMATE']}>
           <DashboardDefault />
         </PrivateRoute>
       )
@@ -43,7 +43,7 @@ const MainRoutes = {
     {
       path: 'card/table',
       element: (
-        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD']}>
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
           <AllJobs />
         </PrivateRoute>
       )
@@ -51,7 +51,7 @@ const MainRoutes = {
     {
       path: 'card/createCard',
       element: (
-        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD']}>
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
           <CreateCard />
         </PrivateRoute>
       )
@@ -59,7 +59,7 @@ const MainRoutes = {
     {
       path: 'card/updateCard',
       element: (
-        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD']}>
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
           <JobCardUpdate />
         </PrivateRoute>
       )

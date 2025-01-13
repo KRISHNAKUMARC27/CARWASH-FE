@@ -47,10 +47,10 @@ const JobCardUpdate = () => {
 
   const [jobSparesCost, setJobSparesCost] = useState({});
   const [jobSparesInfo, setJobSparesInfo] = useState(
-    [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '', action: '' }))
+    [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '', discount: '', action: '' }))
   );
   const [jobServiceInfo, setJobServiceInfo] = useState(
-    [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '0', rate: '0', amount: '0' }))
+    [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '0', rate: '0', amount: '0', discount: '0' }))
   );
   const [jobSparesUpdateOpen, setJobSparesUpdateOpen] = useState(false);
   const [showAlert, setShowAlert] = React.useState(false);
@@ -118,6 +118,7 @@ const JobCardUpdate = () => {
     } catch (err) {
       setPhotos([]);
       setSelectedRow(row);
+      setJobInfoUpdateOpen(true);
     }
 
     // setUserDetails(row);
@@ -257,8 +258,12 @@ const JobCardUpdate = () => {
     setSelectedRow({});
     setJobSparesUpdateOpen(false);
     setSelectedRowSpares({});
-    setJobSparesInfo([...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '' })));
-    setJobServiceInfo([...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '0', rate: '0', amount: '0' })));
+    setJobSparesInfo(
+      [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', discount: '', amount: '' }))
+    );
+    setJobServiceInfo(
+      [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '0', rate: '0', discount: '', amount: '0' }))
+    );
     setJobSparesCost({});
   };
 
@@ -452,7 +457,7 @@ const JobCardUpdate = () => {
         </DialogActions>
       </Dialog>
       <br></br>
-      <Dialog open={jobSparesUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
+      <Dialog open={jobSparesUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="xl">
         <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
           {' '}
           <Grid container spacing={gridSpacing}>

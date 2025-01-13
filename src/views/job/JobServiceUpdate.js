@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Grid } from '@mui/material';
 import {
   Table,
+  TableContainer,
   TableBody,
   TableCell,
   TableHead,
@@ -18,11 +19,22 @@ import {
   FormControl
 } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-
-import { gridSpacing } from 'store/constant';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+//import { gridSpacing } from 'store/constant';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 
 const JobServiceUpdate = ({ data, updateData }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check for small screens
+  const discountRole = ['ADMIN'];
+
+  // Get logged-in user's roles
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
+
+  // Check if user is authorized to see the "DISCOUNT" column
+  const isAuthorizedForDiscount = roles.some((role) => discountRole.includes(role));
+
   const [serviceCategoryList, setServiceCategoryList] = React.useState([]);
   const [options, setOptions] = React.useState([]);
   const [allService, setAllService] = React.useState([]);
@@ -71,7 +83,15 @@ const JobServiceUpdate = ({ data, updateData }) => {
   };
 
   const addAdditionalRows = () => {
-    const newRows = [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '' }));
+    const newRows = [...Array(1)].map(() => ({
+      sparesId: '',
+      category: '',
+      sparesAndLabour: '',
+      qty: '',
+      rate: '',
+      discount: '',
+      amount: ''
+    }));
     updateData((prevRows) => [...prevRows, ...newRows]);
   };
 
@@ -81,7 +101,9 @@ const JobServiceUpdate = ({ data, updateData }) => {
     if (newRows.length > 0) {
       updateData(newRows);
     } else {
-      updateData([...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '' })));
+      updateData(
+        [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', discount: '', amount: '' }))
+      );
     }
   };
 
@@ -96,110 +118,131 @@ const JobServiceUpdate = ({ data, updateData }) => {
   return (
     <>
       <MainCard title="Job Service Information">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={12}>
-            <div style={{ overflowX: 'auto' }}>
-              <Table style={{ minWidth: 1000 }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Service Category</TableCell>
-                    <TableCell>Service</TableCell>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Rate</TableCell>
-                    <TableCell>Amount</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                          <InputLabel id="demo-simple-select-standard-label"></InputLabel>
-                          <Select
-                            fullWidth
-                            labelId="demo-simple-select-standard-label"
-                            id="demo-simple-select-standard-label"
-                            value={row?.category || ''}
-                            label="Category Type"
-                            sx={{
-                              '& .MuiSelect-select': {
-                                color: 'black' // Change to your desired color
-                              }
-                            }}
-                            onChange={(e) => {
-                              handleCategoryTypeChange(e.target.value);
-                              handleInputChange(index, 'category', e.target.value);
-                            }}
-                          >
-                            {serviceCategoryList.map((option) => (
-                              <MenuItem key={option.id} value={option.category}>
-                                {option.category}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </TableCell>
-                      <TableCell>
-                        <Autocomplete
-                          options={options.filter((option) => !data.some((row) => row.sparesId === option.id))} // Filter out already added spares
-                          getOptionLabel={(option) => option.desc}
-                          style={{ width: 300 }}
-                          //inputValue={row?.sparesAndLabour || ''}
-                          //onInputChange={handleInputChangeFilter}
-                          //value={row || ''}
-                          value={allService.find((option) => option.desc === row.sparesAndLabour) || null}
-                          isOptionEqualToValue={(option, value) => option.id === value.id}
-                          onChange={(event, newValue) => {
-                            console.log('new value is ' + JSON.stringify(newValue));
-                            //setChoosenService(newValue);
-                            handleInputChange(index, 'sparesAndLabour', newValue.desc);
-                            handleInputChange(index, 'rate', newValue.amount);
-                            handleInputChange(index, 'amount', newValue.amount * row?.qty || 0);
-                            handleInputChange(index, 'sparesId', newValue.id);
-                          }}
-                          renderInput={(params) => <TextField {...params} label="Search Service" disabled={!!row.sparesId} />}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
+        {/* <Grid container direction="row" spacing={gridSpacing}>
+          <Grid item xs={12}> */}
+        <div style={{ overflowX: 'auto' }}>
+          <TableContainer>
+            <Table style={{ minWidth: isMobile ? '600px' : '1000px' }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: '20%' }}>Category</TableCell>
+                  <TableCell sx={{ width: '30%' }}>Spares</TableCell>
+                  <TableCell sx={{ width: '10%' }}>Qty</TableCell>
+                  <TableCell sx={{ width: '10%' }}>Rate</TableCell>
+                  {isAuthorizedForDiscount && <TableCell sx={{ width: '10%' }}>Discount</TableCell>}
+                  <TableCell sx={{ width: '10%' }}>Amount</TableCell>
+                  <TableCell sx={{ width: '10%' }}>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell sx={{ width: '20%' }}>
+                      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                        <InputLabel id="demo-simple-select-standard-label"></InputLabel>
+                        <Select
                           fullWidth
-                          value={row?.qty || ''}
+                          labelId="demo-simple-select-standard-label"
+                          id="demo-simple-select-standard-label"
+                          value={row?.category || ''}
+                          label="Category Type"
+                          sx={{
+                            '& .MuiSelect-select': {
+                              color: 'black' // Change to your desired color
+                            }
+                          }}
                           onChange={(e) => {
-                            const val = e.target.value;
-                            handleInputChange(index, 'qty', val);
-                            handleInputChange(index, 'amount', val * row?.rate || 0);
+                            handleCategoryTypeChange(e.target.value);
+                            handleInputChange(index, 'category', e.target.value);
+                          }}
+                        >
+                          {serviceCategoryList.map((option) => (
+                            <MenuItem key={option.id} value={option.category}>
+                              {option.category}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell sx={{ width: '30%' }}>
+                      <Autocomplete
+                        options={options.filter((option) => !data.some((row) => row.sparesId === option.id))} // Filter out already added spares
+                        getOptionLabel={(option) => option.desc}
+                        style={{ width: 300 }}
+                        value={allService.find((option) => option.desc === row.sparesAndLabour) || null}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        onChange={(event, newValue) => {
+                          console.log('new value is ' + JSON.stringify(newValue));
+                          console.log('row is ' + JSON.stringify(row));
+                          //setChoosenService(newValue);
+                          handleInputChange(index, 'sparesAndLabour', newValue.desc);
+                          handleInputChange(index, 'rate', newValue.amount);
+                          handleInputChange(index, 'amount', newValue.amount * row?.qty - row?.discount || 0);
+                          handleInputChange(index, 'sparesId', newValue.id);
+                        }}
+                        renderInput={(params) => <TextField {...params} label="Search Service" disabled={!!row.sparesId} />}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ width: '10%' }}>
+                      <TextField
+                        fullWidth
+                        value={row?.qty || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          handleInputChange(index, 'qty', val);
+                          handleInputChange(index, 'amount', val * row?.rate - row?.discount || 0);
+                        }}
+                      />
+                    </TableCell>
+
+                    <TableCell sx={{ width: '10%' }}>
+                      <TextField
+                        fullWidth
+                        value={row?.rate || ''}
+                        disabled
+                        onChange={(e) => handleInputChange(index, 'rate', e.target.value)}
+                      />
+                    </TableCell>
+                    {isAuthorizedForDiscount && (
+                      <TableCell sx={{ width: '10%' }}>
+                        <TextField
+                          fullWidth
+                          value={row?.discount || ''}
+                          onChange={(e) => {
+                            const val = Number(e.target.value) || 0;
+                            handleInputChange(index, 'discount', val);
+                            handleInputChange(index, 'amount', Number(row?.rate * row?.qty) - val || 0);
                           }}
                         />
                       </TableCell>
-                      <TableCell>
-                        <TextField fullWidth value={row?.rate || ''} onChange={(e) => handleInputChange(index, 'rate', e.target.value)} />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          fullWidth
-                          value={row?.amount || ''}
-                          onChange={(e) => handleInputChange(index, 'amount', e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="contained" color="error" onClick={() => handleRowDelete(index)}>
-                          Delete
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-            <Grid item xs={12}>
-              <br></br>
-              <Button variant="contained" color="error" onClick={addAdditionalRows}>
-                Add Row
-              </Button>
-            </Grid>
-          </Grid>
+                    )}
+                    <TableCell sx={{ width: '10%' }}>
+                      <TextField
+                        fullWidth
+                        value={row?.amount || ''}
+                        disabled
+                        onChange={(e) => handleInputChange(index, 'amount', e.target.value)}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ width: '10%' }}>
+                      <Button variant="contained" color="error" onClick={() => handleRowDelete(index)}>
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+        <Grid item xs={12}>
+          <br></br>
+          <Button variant="contained" color="error" onClick={addAdditionalRows}>
+            Add Row
+          </Button>
         </Grid>
+        {/* </Grid>
+        </Grid> */}
       </MainCard>
     </>
   );

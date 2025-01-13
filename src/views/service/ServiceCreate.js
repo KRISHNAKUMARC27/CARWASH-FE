@@ -88,8 +88,8 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
     const updatedData = { ...serviceDetails, sgst: event.target.value };
     setServiceDetails(updatedData);
   };
-  const handleMisc1Change = (event) => {
-    const updatedData = { ...serviceDetails, misc1: event.target.value };
+  const handleHsnCodeChange = (event) => {
+    const updatedData = { ...serviceDetails, hsnCode: event.target.value };
     setServiceDetails(updatedData);
   };
   const handleMisc2Change = (event) => {
@@ -144,7 +144,7 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
             <TextField label="SGST" required variant="outlined" value={serviceDetails.sgst || ''} onChange={handleSGSTChange} />
           </Grid>
           <Grid item xs={4}>
-            <TextField label="Misc1" variant="outlined" value={serviceDetails.misc1 || ''} onChange={handleMisc1Change} />
+            <TextField label="HSN Code" variant="outlined" value={serviceDetails.hsnCode || ''} onChange={handleHsnCodeChange} />
           </Grid>
           <Grid item xs={4}>
             <TextField label="Misc2" variant="outlined" value={serviceDetails.misc2 || ''} onChange={handleMisc2Change} />

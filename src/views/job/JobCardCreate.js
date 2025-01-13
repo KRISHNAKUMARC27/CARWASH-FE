@@ -41,7 +41,7 @@ function JobCardCreate({ data }) {
 
   const [activeComponent, setActiveComponent] = useState('UserDetails');
   const [userDetails, setUserDetails] = useState(job || {});
-  const [carDetails, setCarDetails] = useState(job || {});
+  //const [carDetails, setCarDetails] = useState(job || {});
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
@@ -51,7 +51,7 @@ function JobCardCreate({ data }) {
   useEffect(() => {
     return () => {
       setUserDetails({});
-      setCarDetails({});
+      //setCarDetails({});
     };
   }, []);
 
@@ -60,7 +60,7 @@ function JobCardCreate({ data }) {
   }
 
   function isCarDetailsComplete() {
-    return carDetails.vehicleRegNo && carDetails.vehicleName && carDetails.kiloMeters;
+    return userDetails.vehicleRegNo && userDetails.vehicleName && userDetails.kiloMeters;
   }
 
   function isJobComplete() {
@@ -74,9 +74,9 @@ function JobCardCreate({ data }) {
       ownerAddress: userDetails.ownerAddress,
       ownerPhoneNumber: userDetails.ownerPhoneNumber,
       ownerEmailId: userDetails.ownerEmailId,
-      vehicleRegNo: carDetails.vehicleRegNo,
-      vehicleName: carDetails.vehicleName,
-      kiloMeters: carDetails.kiloMeters
+      vehicleRegNo: userDetails.vehicleRegNo,
+      vehicleName: userDetails.vehicleName,
+      kiloMeters: userDetails.kiloMeters
     };
 
     saveJobCard(jobCard);
@@ -164,7 +164,7 @@ function JobCardCreate({ data }) {
 
       <div className="content">
         {activeComponent === 'CarDetails' && (
-          <JobCarDetails data={carDetails} updateData={setCarDetails} photos={photos} updatePhotos={setPhotos} />
+          <JobCarDetails data={userDetails} updateData={setUserDetails} photos={photos} updatePhotos={setPhotos} />
         )}
         {activeComponent === 'UserDetails' && <JobUserDetails data={userDetails} updateData={setUserDetails} />}
       </div>

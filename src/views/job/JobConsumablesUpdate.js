@@ -16,7 +16,7 @@ const JobConsumablesUpdate = ({ data, updateData }) => {
   };
 
   const addAdditionalRows = () => {
-    const newRows = [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '' }));
+    const newRows = [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', discount:'', amount: '' }));
     updateData((prevRows) => [...prevRows, ...newRows]);
   };
 
@@ -26,7 +26,7 @@ const JobConsumablesUpdate = ({ data, updateData }) => {
     if (newRows.length > 0) {
       updateData(newRows);
     } else {
-      updateData([...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', amount: '' })));
+      updateData([...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', discount:'', amount: '' })));
     }
   };
 

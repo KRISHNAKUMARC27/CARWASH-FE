@@ -11,7 +11,7 @@ import JSZip from 'jszip';
 const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [stream, setStream] = useState(null);
-
+  const [loadPhotos, setLoadPhotos] = useState(false);
   useEffect(() => {
     const unzipPhotos = async () => {
       if (zipFile) {
@@ -98,6 +98,29 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
     updatePhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index));
   };
 
+  const sendViaWhatsApp = () => {
+    // Trim and validate inputs
+
+    const ownerPhoneNumber = data.ownerPhoneNumber?.trim();
+    const vehicleRegNo = data.vehicleRegNo?.trim();
+
+    if (!ownerPhoneNumber) {
+      alert('Please fill in the Owner Phone number.');
+      return;
+    }
+    if (!vehicleRegNo) {
+      alert('Please fill in the Vehicle Registration Number.');
+      return;
+    }
+
+    // Prepare the message
+    const fullMessage = `Greetings from CarSquare. Please find attached your car ${vehicleRegNo} images`;
+    const url = `https://api.whatsapp.com/send?phone=91${ownerPhoneNumber}&text=${encodeURIComponent(fullMessage)}`;
+
+    // Redirect to WhatsApp
+    window.open(url, '_blank');
+  };
+
   const handleVehicleRegNoChange = (event) => {
     const updatedData = { ...data, vehicleRegNo: event.target.value.toUpperCase() };
     updateData(updatedData);
@@ -136,9 +159,25 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
 
           <Grid item xs={12}>
             {!isCapturing ? (
-              <Button variant="contained" color="primary" onClick={startCamera}>
-                Start Camera
-              </Button>
+              <Grid container direction="row" spacing={gridSpacing}>
+                <Grid item xs={6}>
+                  <Button variant="contained" color="primary" onClick={startCamera}>
+                    Start Camera
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      setLoadPhotos(true);
+                      console.log(loadPhotos);
+                    }}
+                  >
+                    Load photos
+                  </Button>
+                </Grid>
+              </Grid>
             ) : (
               <>
                 <video
@@ -194,9 +233,14 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
             )}
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <Button variant="contained" color="primary" onClick={savePhotos} disabled={photos.length === 0}>
               Save Photos Locally
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button variant="contained" color="primary" onClick={sendViaWhatsApp} disabled={photos.length === 0}>
+              Send via WhatsApp
             </Button>
           </Grid>
         </Grid>

@@ -104,13 +104,13 @@ const AllJobs = () => {
     () => [
       {
         accessorKey: 'jobId', //access nested data with dot notation
-        header: 'Job Card No.',
-        size: 150
+        header: 'JobCard No.',
+        size: 50
       },
       {
         accessorKey: 'jobStatus', //access nested data with dot notation
         header: 'Status',
-        size: 150,
+        size: 50,
         filterVariant: 'select',
         filterSelectOptions: ['OPEN', 'CLOSED', 'CANCELLED'],
         Header: <i style={{ color: 'blue' }}>Status</i>,
@@ -126,28 +126,28 @@ const AllJobs = () => {
       },
       {
         accessorKey: 'ownerName', //access nested data with dot notation
-        header: 'Owner Name',
-        size: 150
+        header: 'Owner',
+        size: 100
       },
       {
         accessorKey: 'ownerPhoneNumber', //normal accessorKey
         header: 'Phone',
-        size: 200
+        size: 100
       },
       {
         accessorKey: 'vehicleRegNo',
         header: 'Reg. No.',
-        size: 150
+        size: 100
       },
       {
         accessorKey: 'vehicleName',
-        header: 'Vehicle Name',
-        size: 150
+        header: 'Vehicle',
+        size: 50
       },
       {
         accessorKey: 'kiloMeters',
         header: 'kiloMeters',
-        size: 150
+        size: 50
       },
       {
         accessorKey: 'jobCreationDate',
@@ -167,12 +167,12 @@ const AllJobs = () => {
       {
         accessorKey: 'nextFreeCheckKms',
         header: 'Next FreeCheck KMs',
-        size: 150
+        size: 50
       },
       {
         accessorKey: 'nextServiceKms',
         header: 'Next Service KMs',
-        size: 150
+        size: 50
       }
     ],
     []
