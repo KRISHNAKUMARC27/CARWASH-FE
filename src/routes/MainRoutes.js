@@ -20,6 +20,8 @@ const AllService = Loadable(lazy(() => import('views/service/AllService')));
 const CreateService = Loadable(lazy(() => import('views/service/ServiceCreate')));
 const ServiceCategory = Loadable(lazy(() => import('views/service/ServiceCategory')));
 
+const AllInvoice = Loadable(lazy(() => import('views/invoice/AllInvoice')));
+
 const MainRoutes = {
   path: '/',
   element: <MainLayout />,
@@ -109,6 +111,14 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'INVOICE', 'ESTIMATE']}>
           <ServiceCategory />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'invoice/table',
+      element: (
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'INVOICE']}>
+          <AllInvoice />
         </PrivateRoute>
       )
     }

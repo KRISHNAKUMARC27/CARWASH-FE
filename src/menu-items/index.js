@@ -4,13 +4,14 @@ import getUtilities from './utilities';
 // import labor from './labor';
 // import externalWork from './externalwork';
 import service from './service';
+import getInvoice from './invoice';
 //import other from './other';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 // The below menu items is NOT USED.
 const menuItems = {
-  items: [dashboard, pages, service, getUtilities()]
+  items: [dashboard, pages, getInvoice(), service, getUtilities()]
 };
 
 export default menuItems;

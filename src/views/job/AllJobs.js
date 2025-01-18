@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { DialogTitle, Button, FormControl, InputLabel, Select, MenuItem, IconButton, Tooltip, Grid, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
 //import DataRowDialog from 'utils/DataRowDialog';
-import { OpenInNew, AddCircle, RemoveCircle } from '@mui/icons-material';
+import { OpenInNew, AddCircle, RemoveCircle, CurrencyRupee } from '@mui/icons-material';
 //import Alert from 'views/utilities/Alert';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -49,7 +49,7 @@ const AllJobs = () => {
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
   const isAuthorizedForInvoice = roles.some((role) => invoiceRole.includes(role));
   const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
-  const [jobSpares, setJobSpares] = React.useState({});
+  //const [jobSpares, setJobSpares] = React.useState({});
   const [paymentModes, setPaymentModes] = React.useState([]);
   const [invoice, setInvoice] = useState();
   // State to manage confirmation dialog
@@ -89,7 +89,7 @@ const AllJobs = () => {
     setJobInfoOpen(false);
     setJobCardCreateOpen(false);
     setInvoiceCreateOpen(false);
-    setJobSpares({});
+    //setJobSpares({});
     setInvoice({});
     fetchAllJobsData();
   };
@@ -117,25 +117,33 @@ const AllJobs = () => {
 
   const getSelectedRowJobSpares = async (payload) => {
     try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
-      console.log(data);
+      const invoiceData = await getRequest(process.env.REACT_APP_API_URL + '/invoice/jobObjId/' + payload.id);
 
-      // Combine updates into one `setInvoice` call
-      setInvoice((prevState) => ({
-        ...prevState,
-        ownerName: payload.ownerName,
-        ownerPhoneNumber: payload.ownerPhoneNumber,
-        vehicleRegNo: payload.vehicleRegNo,
-        vehicleName: payload.vehicleName,
-        grandTotal: data.grandTotalWithGST,
-        jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }]
-      }));
-
-      setJobSpares(data);
+      setInvoice(invoiceData);
       setInvoiceCreateOpen(true);
     } catch (err) {
       console.log(err.message);
+      try {
+        const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
+
+        // Combine updates into one `setInvoice` call
+        setInvoice((prevState) => ({
+          ...prevState,
+          jobId: payload.jobId,
+          ownerName: payload.ownerName,
+          ownerPhoneNumber: payload.ownerPhoneNumber,
+          vehicleRegNo: payload.vehicleRegNo,
+          vehicleName: payload.vehicleName,
+          grandTotal: data.grandTotalWithGST,
+          jobObjId: data.id,
+          paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }]
+        }));
+
+        //setJobSpares(data);
+        setInvoiceCreateOpen(true);
+      } catch (err) {
+        console.log(err.message);
+      }
     }
   };
 
@@ -143,7 +151,6 @@ const AllJobs = () => {
     try {
       const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
       setPaymentModes(data);
-      console.log(JSON.stringify(paymentModes));
     } catch (err) {
       console.log(err.message);
     }
@@ -461,7 +468,7 @@ const AllJobs = () => {
                 </IconButton>
               </Tooltip>
               {isAuthorizedForInvoice && (
-                <Tooltip arrow placement="right" title="Generate Invoice">
+                <Tooltip arrow placement="right" title="Invoice">
                   <IconButton
                     onClick={() => {
                       setSelectedRow(row.original);
@@ -469,7 +476,7 @@ const AllJobs = () => {
                       getPaymentModes();
                     }}
                   >
-                    <AddCircle />
+                    <CurrencyRupee />
                   </IconButton>
                 </Tooltip>
               )}
@@ -563,24 +570,15 @@ const AllJobs = () => {
           fullWidth
           maxWidth="lg"
         >
-          <Box
-            sx={{
-              bgcolor: '#f44336',
-              color: '#FFFFFF',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0.75rem 1.25rem'
-            }}
-          >
-            <DialogTitle id="scroll-dialog-title" sx={{ flexGrow: 1, fontSize: '1.5rem', color: 'white' }}>
-              Invoice Generation for {selectedRow.vehicleRegNo}
-            </DialogTitle>
-          </Box>
+          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1.0rem' }}>
+            Invoice Generation for {selectedRow.vehicleRegNo}
+          </DialogTitle>
+
           <DialogContent dividers={scroll === 'paper'}>
+            <br></br>
             <Grid container direction="row" spacing={gridSpacing}>
               <Grid item xs={6}>
-                <TextField label="Grand Total" required variant="outlined" value={jobSpares?.grandTotalWithGST || 0} />
+                <TextField label="Grand Total" required variant="outlined" value={invoice?.grandTotal || 0} />
               </Grid>
               {invoice.paymentSplitList.map((split, index) => (
                 <Grid container item spacing={gridSpacing} key={index} alignItems="center">

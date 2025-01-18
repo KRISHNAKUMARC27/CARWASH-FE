@@ -9,6 +9,8 @@ import getUtilities from 'menu-items/utilities';
 // import labor from 'menu-items/labor';
 // import externalWork from 'menu-items/externalwork';
 import service from 'menu-items/service';
+import getInvoice from 'menu-items/invoice';
+
 import { useState, useEffect } from 'react';
 
 const allowedRoles = ['MANAGER'];
@@ -44,7 +46,7 @@ const MenuList = () => {
   }, []);
 
   // Combine all menu items dynamically
-  const menuItems = [dashboard, pages, service];
+  const menuItems = [dashboard, pages, getInvoice(), service];
   if (utilitiesMenu) {
     menuItems.push(utilitiesMenu);
   }
