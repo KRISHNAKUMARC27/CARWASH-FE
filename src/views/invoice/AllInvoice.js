@@ -1,11 +1,37 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box } from '@mui/material';
-import { Edit } from '@mui/icons-material';
-import { getRequest } from 'utils/fetchRequest';
+import {
+  createTheme,
+  ThemeProvider,
+  useTheme,
+  Tooltip,
+  IconButton,
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  Button,
+  MenuItem,
+  Stack,
+  Alert
+} from '@mui/material';
+import { Edit, AddCircle, RemoveCircle } from '@mui/icons-material';
+import { getRequest, postRequest } from 'utils/fetchRequest';
+import { gridSpacing } from 'store/constant';
 
 const AllInvoice = () => {
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [alertMess, setAlertMess] = React.useState('');
   const [data, setData] = useState([]);
+  const [paymentModes, setPaymentModes] = React.useState([]);
+  const [invoice, setInvoice] = useState();
+  const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
+  // State to manage confirmation dialog
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [remainingAmount, setRemainingAmount] = useState(0); // To store remaining amount dynamically
 
   useEffect(() => {
     fetchAllInvoiceData();
@@ -20,6 +46,138 @@ const AllInvoice = () => {
       setData(data);
     } catch (err) {
       console.error(err.message);
+    }
+  };
+
+  const getPaymentModes = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
+      setPaymentModes(data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  const handleClose = () => {
+    setInvoiceCreateOpen(false);
+    setInvoice({});
+    setConfirmDialogOpen(false);
+    setRemainingAmount(0);
+    fetchAllInvoiceData();
+  };
+
+  const handlePaymentSplitChange = (index, field, value) => {
+    const updatedPaymentSplitList = [...invoice.paymentSplitList];
+
+    // Update the specific field in the payment split list
+    updatedPaymentSplitList[index] = {
+      ...updatedPaymentSplitList[index],
+      [field]: value
+    };
+
+    // Calculate the pending amount and credit flag
+    const totalPaidExcludingCredit = updatedPaymentSplitList
+      .filter((split) => split.paymentMode !== 'CREDIT') // Exclude CREDIT payments
+      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0); // Sum up payment amounts
+
+    const grandTotal = invoice.grandTotal || 0;
+    const pendingAmount = grandTotal - totalPaidExcludingCredit;
+
+    setInvoice((prevState) => ({
+      ...prevState,
+      paymentSplitList: updatedPaymentSplitList,
+      pendingAmount: pendingAmount > 0 ? pendingAmount : 0, // Ensure non-negative pending amount
+      creditFlag: updatedPaymentSplitList.some((split) => split.paymentMode === 'CREDIT') // Set creditFlag if CREDIT is used
+    }));
+  };
+
+  const addPaymentSplitRow = () => {
+    const grandTotal = invoice.grandTotal || 0;
+    const totalPaid = invoice.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const remainingAmount = grandTotal - totalPaid;
+
+    if (remainingAmount <= 0) {
+      alert('No remaining amount to allocate. Please adjust the existing payment splits.');
+      return;
+    }
+
+    // Add a new row with the remaining amount prefilled
+    setInvoice((prevState) => ({
+      ...prevState,
+      paymentSplitList: [
+        ...prevState.paymentSplitList,
+        { paymentAmount: remainingAmount, paymentMode: '' } // Prefill paymentAmount with remaining value
+      ]
+    }));
+  };
+
+  const removePaymentSplitRow = (index) => {
+    const updatedPaymentSplitList = invoice.paymentSplitList.filter((_, i) => i !== index);
+    setInvoice((prevState) => ({ ...prevState, paymentSplitList: updatedPaymentSplitList }));
+  };
+
+  const handleOpenConfirmDialog = (remaining) => {
+    setRemainingAmount(remaining); // Store remaining amount for context
+    setConfirmDialogOpen(true);
+  };
+
+  // Close the confirmation dialog
+  const handleCloseConfirmDialog = () => {
+    setConfirmDialogOpen(false);
+  };
+
+  // Handle user confirmation (Yes to add CREDIT, No to cancel)
+  const handleConfirmAddCredit = () => {
+    setConfirmDialogOpen(false); // Close confirmation dialog
+    // Add remaining amount as CREDIT
+    setInvoice((prevState) => ({
+      ...prevState,
+      paymentSplitList: [...prevState.paymentSplitList, { paymentAmount: remainingAmount, paymentMode: 'CREDIT' }],
+      pendingAmount: remainingAmount,
+      creditFlag: true
+    }));
+    // handleClose();
+    // handleInvoiceSave(); // Proceed with saving the invoice
+  };
+
+  const handleInvoiceSave = async () => {
+    //console.log(invoice);
+    if (invoice.grandTotal <= 0) {
+      alert('Grant total is 0. Cannot generate bill');
+      return;
+    }
+    const grandTotal = invoice.grandTotal || 0;
+    const totalPaid = invoice.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const remaining = grandTotal - totalPaid;
+
+    const hasEmptyPaymentMode = invoice.paymentSplitList.some((split) => !split.paymentMode);
+
+    if (hasEmptyPaymentMode) {
+      alert('Please select a payment mode for all entries.');
+      return;
+    }
+
+    if (remaining > 0) {
+      // Automatically add CREDIT for the remaining amount
+      console.log("I'm still open");
+      console.log(invoice);
+      handleOpenConfirmDialog(remaining);
+      return;
+    } else if (remaining < 0) {
+      // Show alert if overpayment occurs
+      alert('Payment exceeds the grand total. Please adjust the amounts.');
+      return;
+    }
+
+    try {
+      const data = await postRequest(process.env.REACT_APP_API_URL + '/invoice', invoice);
+      setAlertMess('Invoice id ' + data.invoiceId + ' saved successfully');
+      setShowAlert(true);
+      handleClose();
+    } catch (err) {
+      setAlertMess(err.message);
+      setShowAlert(true);
+      handleClose();
     }
   };
 
@@ -39,12 +197,12 @@ const AllInvoice = () => {
       },
       {
         accessorKey: 'grandTotal',
-        header: 'Paid Amt',
+        header: 'Bill Amt',
         size: 50
       },
       {
         accessorKey: 'pendingAmount',
-        header: 'Pending Amt',
+        header: 'Pending',
         size: 50
       },
       {
@@ -71,6 +229,13 @@ const AllInvoice = () => {
         accessorKey: 'billCloseDate',
         header: 'Bill Close Date',
         size: 100
+      },
+      {
+        accessorKey: 'creditFlag',
+        header: 'Credit ?',
+        size: 100,
+        filterVariant: 'multi-select',
+        Cell: ({ cell }) => (cell.getValue() ? 'Yes' : 'No')
       }
     ],
     []
@@ -126,6 +291,13 @@ const AllInvoice = () => {
 
   return (
     <>
+      {showAlert && (
+        <Stack sx={{ width: '100%' }} spacing={2}>
+          <Alert variant="filled" severity="info" onClose={() => setShowAlert(false)}>
+            {alertMess}
+          </Alert>
+        </Stack>
+      )}
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}
@@ -143,13 +315,12 @@ const AllInvoice = () => {
           }}
           renderRowActions={({ row }) => (
             <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="left" title="Update Labor Info">
+              <Tooltip arrow placement="right" title="Invoice">
                 <IconButton
                   onClick={() => {
-                    // setLaborUpdateOpen(false);
-                    // setLaborDetails(row.original);
-                    // setLaborUpdateOpen(true);
-                    console.log(row.original);
+                    setInvoice(row.original);
+                    getPaymentModes();
+                    setInvoiceCreateOpen(true);
                   }}
                 >
                   <Edit />
@@ -159,6 +330,99 @@ const AllInvoice = () => {
           )}
         />{' '}
       </ThemeProvider>
+      {invoiceCreateOpen && (
+        <Dialog
+          open={invoiceCreateOpen}
+          onClose={handleClose}
+          scroll={'paper'}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+          fullWidth
+          maxWidth="lg"
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1.0rem' }}>
+            Invoice Generation for {invoice.vehicleRegNo}
+          </DialogTitle>
+
+          <DialogContent dividers={scroll === 'paper'}>
+            <br></br>
+            <Grid container direction="row" spacing={gridSpacing}>
+              <Grid item xs={6}>
+                <TextField label="Grand Total" required variant="outlined" value={invoice?.grandTotal || 0} />
+              </Grid>
+              {invoice.paymentSplitList.map((split, index) => (
+                <Grid container item spacing={gridSpacing} key={index} alignItems="center">
+                  <Grid item xs={5}>
+                    <TextField
+                      label="Payment Amount"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      value={split.paymentAmount}
+                      onChange={(e) => handlePaymentSplitChange(index, 'paymentAmount', parseFloat(e.target.value) || 0)}
+                      type="number"
+                    />
+                  </Grid>
+                  <Grid item xs={5}>
+                    <TextField
+                      select
+                      label="Payment Mode"
+                      variant="outlined"
+                      fullWidth
+                      required
+                      value={split.paymentMode}
+                      onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
+                    >
+                      {paymentModes.map((mode) => (
+                        <MenuItem key={mode} value={mode}>
+                          {mode}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={2}>
+                    {index === 0 ? (
+                      <IconButton onClick={addPaymentSplitRow} color="primary">
+                        <AddCircle />
+                      </IconButton>
+                    ) : (
+                      <IconButton onClick={() => removePaymentSplitRow(index)} color="secondary">
+                        <RemoveCircle />
+                      </IconButton>
+                    )}
+                  </Grid>
+                </Grid>
+              ))}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleInvoiceSave} color="secondary">
+              Save
+            </Button>
+            <Button onClick={handleClose} color="secondary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {confirmDialogOpen && (
+        <Dialog open={confirmDialogOpen} onClose={handleCloseConfirmDialog}>
+          <DialogTitle>Confirm Remaining Amount</DialogTitle>
+          <DialogContent>
+            <p>
+              The remaining amount of <b>{remainingAmount}</b> will be added as CREDIT. Do you want to proceed?
+            </p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleConfirmAddCredit} color="primary">
+              Yes
+            </Button>
+            <Button onClick={handleCloseConfirmDialog} color="secondary">
+              No
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   );
 };

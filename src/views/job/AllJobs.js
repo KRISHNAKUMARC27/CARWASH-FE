@@ -85,6 +85,7 @@ const AllJobs = () => {
   const handleClose = () => {
     setSelectedRow({});
     setConfirmDialogOpen(false);
+    setRemainingAmount(0);
     setJobStatusOpen(false);
     setJobInfoOpen(false);
     setJobCardCreateOpen(false);
@@ -115,35 +116,43 @@ const AllJobs = () => {
     }
   };
 
-  const getSelectedRowJobSpares = async (payload) => {
-    try {
-      const invoiceData = await getRequest(process.env.REACT_APP_API_URL + '/invoice/jobObjId/' + payload.id);
-
-      setInvoice(invoiceData);
-      setInvoiceCreateOpen(true);
-    } catch (err) {
-      console.log(err.message);
+  const prepareInitialInvoiceObject = async (payload) => {
+    if (payload.invoiceObjId != null) {
       try {
-        const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
+        const invoiceData = await getRequest(process.env.REACT_APP_API_URL + '/invoice/' + payload.invoiceObjId);
 
-        // Combine updates into one `setInvoice` call
-        setInvoice((prevState) => ({
-          ...prevState,
-          jobId: payload.jobId,
-          ownerName: payload.ownerName,
-          ownerPhoneNumber: payload.ownerPhoneNumber,
-          vehicleRegNo: payload.vehicleRegNo,
-          vehicleName: payload.vehicleName,
-          grandTotal: data.grandTotalWithGST,
-          jobObjId: data.id,
-          paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }]
-        }));
-
-        //setJobSpares(data);
+        setInvoice(invoiceData);
         setInvoiceCreateOpen(true);
       } catch (err) {
         console.log(err.message);
+        getSelectedRowJobSpares(payload);
       }
+    } else {
+      getSelectedRowJobSpares(payload);
+    }
+  };
+
+  const getSelectedRowJobSpares = async (payload) => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
+
+      // Combine updates into one `setInvoice` call
+      setInvoice((prevState) => ({
+        ...prevState,
+        jobId: payload.jobId,
+        ownerName: payload.ownerName,
+        ownerPhoneNumber: payload.ownerPhoneNumber,
+        vehicleRegNo: payload.vehicleRegNo,
+        vehicleName: payload.vehicleName,
+        grandTotal: data.grandTotalWithGST,
+        jobObjId: data.id,
+        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }]
+      }));
+
+      //setJobSpares(data);
+      setInvoiceCreateOpen(true);
+    } catch (err) {
+      console.log(err.message);
     }
   };
 
@@ -472,7 +481,7 @@ const AllJobs = () => {
                   <IconButton
                     onClick={() => {
                       setSelectedRow(row.original);
-                      getSelectedRowJobSpares(row.original);
+                      prepareInitialInvoiceObject(row.original);
                       getPaymentModes();
                     }}
                   >
