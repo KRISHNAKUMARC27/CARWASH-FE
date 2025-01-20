@@ -494,11 +494,13 @@ const AllInvoice = () => {
                         value={credit.paymentMode}
                         onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
                       >
-                        {paymentModes.map((mode) => (
-                          <MenuItem key={mode} value={mode}>
-                            {mode}
-                          </MenuItem>
-                        ))}
+                        {paymentModes
+                          .filter((mode) => mode !== 'CREDIT') // Exclude "CREDIT"
+                          .map((mode) => (
+                            <MenuItem key={mode} value={mode}>
+                              {mode}
+                            </MenuItem>
+                          ))}
                       </TextField>
                     </Grid>
                     <Grid item xs={4}>
