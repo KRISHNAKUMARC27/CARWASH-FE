@@ -140,6 +140,51 @@ const AllInvoice = () => {
     // handleInvoiceSave(); // Proceed with saving the invoice
   };
 
+  // Handle changes in credit payments
+  const handleCreditPaymentChange = (index, field, value) => {
+    const updatedCreditPaymentList = [...invoice.creditPaymentList];
+
+    // Update the specific field in the credit payment list
+    updatedCreditPaymentList[index] = {
+      ...updatedCreditPaymentList[index],
+      [field]: value
+    };
+
+    // Calculate new pending amount
+
+    setInvoice((prevState) => ({
+      ...prevState,
+      creditPaymentList: updatedCreditPaymentList
+    }));
+  };
+
+  // Add a new credit payment row
+  const addCreditPaymentRow = () => {
+    setInvoice((prevState) => ({
+      ...prevState,
+      creditPaymentList: [
+        ...(prevState.creditPaymentList || []), // Safely fallback to an empty array
+        { amount: 0, paymentMode: '', comment: '' } // New credit payment row
+      ]
+    }));
+  };
+
+  // Remove a credit payment row
+  const removeCreditPaymentRow = (index) => {
+    const updatedCreditPaymentList = invoice.creditPaymentList.filter((_, i) => i !== index);
+
+    // Recalculate pendingAmount after removing a row
+    const totalCreditPayments = updatedCreditPaymentList.reduce((sum, credit) => sum + (credit.amount || 0), 0);
+    const newPendingAmount = (invoice.grandTotal || 0) - totalCreditPayments;
+
+    setInvoice((prevState) => ({
+      ...prevState,
+      creditPaymentList: updatedCreditPaymentList,
+      pendingAmount: newPendingAmount > 0 ? newPendingAmount : 0,
+      creditSettledFlag: newPendingAmount === 0
+    }));
+  };
+
   const handleInvoiceSave = async () => {
     //console.log(invoice);
     if (invoice.grandTotal <= 0) {
@@ -169,8 +214,37 @@ const AllInvoice = () => {
       return;
     }
 
+    const updatedCreditPaymentList = [...invoice.creditPaymentList];
+    const hasEmptyPaymentModeCredit = updatedCreditPaymentList.some((split) => !split.paymentMode);
+
+    if (hasEmptyPaymentModeCredit) {
+      alert('Please select a payment mode for all entries.');
+      return;
+    }
+
+    const totalCreditPayments = updatedCreditPaymentList.reduce((sum, credit) => sum + (credit.amount || 0), 0);
+
+    const updatedPaymentSplitList = [...invoice.paymentSplitList];
+
+    const totalPaidExcludingCredit = updatedPaymentSplitList
+      .filter((split) => split.paymentMode !== 'CREDIT') // Exclude CREDIT payments
+      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0); // Sum up payment amounts
+
+    const newPendingAmount = grandTotal - totalPaidExcludingCredit - totalCreditPayments;
+
+    console.log('GrandTotal ' + grandTotal);
+    console.log('totalPaidExcludingCredit ' + totalPaidExcludingCredit);
+    console.log('totalCreditPayments' + totalCreditPayments);
+    console.log('newPendingAmount ' + newPendingAmount);
+
+    const updatedInvoice = {
+      ...invoice,
+      pendingAmount: newPendingAmount > 0 ? newPendingAmount : 0,
+      creditSettledFlag: newPendingAmount === 0
+    };
+
     try {
-      const data = await postRequest(process.env.REACT_APP_API_URL + '/invoice', invoice);
+      const data = await postRequest(process.env.REACT_APP_API_URL + '/invoice', updatedInvoice);
       setAlertMess('Invoice id ' + data.invoiceId + ' saved successfully');
       setShowAlert(true);
       handleClose();
@@ -394,6 +468,62 @@ const AllInvoice = () => {
                 </Grid>
               ))}
             </Grid>
+            <br></br>
+            {invoice.creditFlag && (
+              <Grid container direction="row" spacing={gridSpacing}>
+                {(invoice.creditPaymentList || []).map((credit, index) => (
+                  <Grid container item spacing={gridSpacing} key={index} alignItems="center">
+                    <Grid item xs={4}>
+                      <TextField
+                        label="Credit Amount"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={credit.amount}
+                        onChange={(e) => handleCreditPaymentChange(index, 'amount', parseFloat(e.target.value) || 0)}
+                        type="number"
+                      />
+                    </Grid>
+                    <Grid item xs={3}>
+                      <TextField
+                        select
+                        label="Payment Mode"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={credit.paymentMode}
+                        onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
+                      >
+                        {paymentModes.map((mode) => (
+                          <MenuItem key={mode} value={mode}>
+                            {mode}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <TextField
+                        label="Comment"
+                        variant="outlined"
+                        fullWidth
+                        value={credit.comment}
+                        onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <IconButton onClick={() => removeCreditPaymentRow(index)} color="secondary">
+                        <RemoveCircle />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                ))}
+                <Grid item xs={12}>
+                  <Button onClick={addCreditPaymentRow} color="primary" startIcon={<AddCircle />}>
+                    Add Credit Payment
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleInvoiceSave} color="secondary">

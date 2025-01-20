@@ -146,7 +146,8 @@ const AllJobs = () => {
         vehicleName: payload.vehicleName,
         grandTotal: data.grandTotalWithGST,
         jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }]
+        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }],
+        creditPaymentList: []
       }));
 
       //setJobSpares(data);
