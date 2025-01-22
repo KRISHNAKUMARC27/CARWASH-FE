@@ -54,9 +54,11 @@ const AllJobs = () => {
   const isAuthorizedForInvoice = roles.some((role) => invoiceRole.includes(role));
   const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
   const [invoice, setInvoice] = useState();
+  const [paymentModes, setPaymentModes] = useState([]);
 
   useEffect(() => {
     fetchAllJobsData();
+    getPaymentModes();
 
     return () => {
       setData([]);
@@ -64,6 +66,7 @@ const AllJobs = () => {
       setSelectedRow({});
       setJobInfoOpen(false);
       setJobCardCreateOpen(false);
+      setPaymentModes([]);
     };
   }, []);
 
@@ -73,6 +76,15 @@ const AllJobs = () => {
       setData(data);
     } catch (err) {
       console.error(err.message);
+    }
+  };
+
+  const getPaymentModes = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
+      setPaymentModes(data);
+    } catch (err) {
+      console.log(err.message);
     }
   };
 
@@ -433,6 +445,7 @@ const AllJobs = () => {
         <BillPayment
           invoice={invoice}
           setInvoice={setInvoice}
+          paymentModes={paymentModes}
           invoiceCreateOpen={invoiceCreateOpen}
           handleClose={handleClose}
           setAlertMess={setAlertMess}

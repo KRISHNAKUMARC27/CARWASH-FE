@@ -17,30 +17,18 @@ import {
 import {} from '@mui/material';
 
 import { gridSpacing } from 'store/constant';
-import { getRequest, postRequest } from 'utils/fetchRequest';
+import { postRequest } from 'utils/fetchRequest';
 import { AddCircle, RemoveCircle } from '@mui/icons-material';
 
-const BillPayment = ({ invoice, setInvoice, invoiceCreateOpen, handleClose, setAlertMess, setShowAlert }) => {
-  const [paymentModes, setPaymentModes] = useState([]);
+const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, handleClose, setAlertMess, setShowAlert }) => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [remainingAmount, setRemainingAmount] = useState(0); // To store remaining amount dynamically
 
   useEffect(() => {
-    getPaymentModes();
     return () => {
-      setPaymentModes([]);
       setRemainingAmount(0);
     };
   }, []);
-
-  const getPaymentModes = async () => {
-    try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
-      setPaymentModes(data);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
 
   const handlePaymentSplitChange = (index, field, value) => {
     const updatedPaymentSplitList = [...invoice.paymentSplitList];
@@ -340,7 +328,7 @@ const BillPayment = ({ invoice, setInvoice, invoiceCreateOpen, handleClose, setA
                         label="Comment"
                         variant="outlined"
                         fullWidth
-                        value={credit.comment}
+                        value={credit.comment || ''}
                         onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
                       />
                     </Grid>
@@ -394,6 +382,7 @@ const BillPayment = ({ invoice, setInvoice, invoiceCreateOpen, handleClose, setA
 BillPayment.propTypes = {
   invoice: PropTypes.object.isRequired,
   setInvoice: PropTypes.func.isRequired,
+  paymentModes: PropTypes.array.isRequired,
   invoiceCreateOpen: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   setAlertMess: PropTypes.func.isRequired,
