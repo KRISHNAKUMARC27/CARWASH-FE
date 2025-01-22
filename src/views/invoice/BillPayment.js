@@ -2,7 +2,18 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Button, MenuItem, IconButton } from '@mui/material';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  Button,
+  MenuItem,
+  IconButton,
+  Typography
+} from '@mui/material';
 import {} from '@mui/material';
 
 import { gridSpacing } from 'store/constant';
@@ -289,6 +300,9 @@ const BillPayment = ({ invoice, setInvoice, invoiceCreateOpen, handleClose, setA
             <br></br>
             {invoice.creditFlag && (
               <Grid container direction="row" spacing={gridSpacing}>
+                <Grid item xs={4}>
+                  <Typography variant="h4">Credit Payment</Typography>
+                </Grid>
                 {(invoice.creditPaymentList || []).map((credit, index) => (
                   <Grid container item spacing={gridSpacing} key={index} alignItems="center">
                     <Grid item xs={4}>
