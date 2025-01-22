@@ -1,26 +1,53 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box, Stack, Alert } from '@mui/material';
-import { Edit } from '@mui/icons-material';
-import { getRequest } from 'utils/fetchRequest';
+import {
+  createTheme,
+  ThemeProvider,
+  useTheme,
+  Tooltip,
+  IconButton,
+  Box,
+  Stack,
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  TextField,
+  Button,
+  MenuItem
+} from '@mui/material';
+import { Edit, FactCheck } from '@mui/icons-material';
 import { lazy } from 'react';
 
 // project imports
 import Loadable from 'ui-component/Loadable';
+import { getRequest, postRequest } from 'utils/fetchRequest';
+import { gridSpacing } from 'store/constant';
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
 
 const AllInvoice = () => {
-  const [showAlert, setShowAlert] = React.useState(false);
-  const [alertMess, setAlertMess] = React.useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMess, setAlertMess] = useState('');
   const [data, setData] = useState([]);
   const [invoice, setInvoice] = useState();
   const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
-  // State to manage confirmation dialog
+
+  const [rowSelection, setRowSelection] = useState({});
+  const selectedRows = useMemo(() => Object.keys(rowSelection).map((key) => data[key]), [rowSelection, data]);
+
+  const [settleBillDialogOpen, setSettleBillDialogOpen] = useState(false);
+  const [multicredit, setMultiCredit] = useState({});
+  const [paymentModes, setPaymentModes] = useState([]);
 
   useEffect(() => {
     fetchAllInvoiceData();
+    getPaymentModes();
+
     return () => {
       setData([]);
+      setPaymentModes([]);
     };
   }, []);
 
@@ -33,19 +60,56 @@ const AllInvoice = () => {
     }
   };
 
-  // const getPaymentModes = async () => {
-  //   try {
-  //     const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
-  //     setPaymentModes(data);
-  //   } catch (err) {
-  //     console.log(err.message);
-  //   }
-  // };
-
+  const getPaymentModes = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
+      setPaymentModes(data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
   const handleClose = () => {
     setInvoiceCreateOpen(false);
     setInvoice({});
+    setMultiCredit({});
+    setSettleBillDialogOpen(false);
     fetchAllInvoiceData();
+  };
+
+  const handleCreditPaymentChange = (field, value) => {
+    const updatedData = { ...multicredit, [field]: value };
+    setMultiCredit(updatedData);
+  };
+
+  const handleMultiPaymentSubmit = async () => {
+    if (multicredit.paymentMode == null) {
+      alert('Please select a payment mode.');
+      return;
+    }
+
+    if (multicredit.amount == null || multicredit.amount <= 0) {
+      alert('Enter valid amount');
+      return;
+    }
+
+    const updatedMultiSettleObj = {
+      ...multicredit,
+      invoiceIds: selectedRows.map((row) => row.id)
+    };
+
+    console.log(JSON.stringify(updatedMultiSettleObj));
+
+    try {
+      const data = await postRequest(process.env.REACT_APP_API_URL + '/invoice/multiCreditSettlement', updatedMultiSettleObj);
+      console.log(data);
+      setAlertMess(data.result);
+      setShowAlert(true);
+      handleClose();
+    } catch (err) {
+      setAlertMess(err.message);
+      setShowAlert(true);
+      handleClose();
+    }
   };
 
   //should be memoized or stable
@@ -179,11 +243,13 @@ const AllInvoice = () => {
           enableFacetedValues
           //editingMode="modal"
           enableEditing
+          enableRowSelection
+          onRowSelectionChange={setRowSelection}
+          state={{ rowSelection }}
           muiTablePaperProps={{
             elevation: 0,
             sx: {
               borderRadius: '0',
-              //backgroundColor: "#344767",
               background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
             }
           }}
@@ -193,7 +259,6 @@ const AllInvoice = () => {
                 <IconButton
                   onClick={() => {
                     setInvoice(row.original);
-                    // getPaymentModes();
                     setInvoiceCreateOpen(true);
                   }}
                 >
@@ -202,7 +267,28 @@ const AllInvoice = () => {
               </Tooltip>
             </Box>
           )}
-        />{' '}
+          renderTopToolbarCustomActions={() =>
+            Object.keys(rowSelection).length > 0 && (
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Tooltip title="Settle Bill">
+                  <IconButton
+                    onClick={() => {
+                      const hasZeroPendingAmount = selectedRows.some((row) => row.pendingAmount === 0);
+
+                      if (hasZeroPendingAmount) {
+                        alert('One or more rows have a pending amount of 0.');
+                        return;
+                      }
+                      setSettleBillDialogOpen(true);
+                    }}
+                  >
+                    <FactCheck />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )
+          }
+        />
       </ThemeProvider>
       {invoiceCreateOpen && (
         <BillPayment
@@ -213,6 +299,74 @@ const AllInvoice = () => {
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
         />
+      )}
+      {settleBillDialogOpen && (
+        <Dialog
+          open={settleBillDialogOpen}
+          onClose={handleClose}
+          scroll={'paper'}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1.0rem' }}>
+            Multiple Credit Settlement
+          </DialogTitle>
+
+          <DialogContent dividers={scroll === 'paper'}>
+            <br></br>
+            <Grid container item spacing={gridSpacing} alignItems="center">
+              <Grid item xs={4}>
+                <TextField
+                  label="Credit Amount"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={multicredit.amount || 0}
+                  onChange={(e) => handleCreditPaymentChange('amount', parseFloat(e.target.value) || 0)}
+                  type="number"
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  select
+                  label="Payment Mode"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  value={multicredit.paymentMode || ''}
+                  onChange={(e) => handleCreditPaymentChange('paymentMode', e.target.value)}
+                >
+                  {paymentModes
+                    .filter((mode) => mode !== 'CREDIT') // Exclude "CREDIT"
+                    .map((mode) => (
+                      <MenuItem key={mode} value={mode}>
+                        {mode}
+                      </MenuItem>
+                    ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Comment"
+                  variant="outlined"
+                  fullWidth
+                  value={multicredit.comment || ''}
+                  onChange={(e) => handleCreditPaymentChange('comment', e.target.value)}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleMultiPaymentSubmit} color="secondary">
+              Save
+            </Button>
+            <Button onClick={handleClose} color="secondary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </>
   );

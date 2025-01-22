@@ -32,9 +32,9 @@ function JobCardCreate({ data }) {
     jobCloseDate: null,
     billGenerated: false,
     kiloMeters: null,
-    ownerName: null,
-    ownerAddress: null,
-    ownerPhoneNumber: null,
+    // ownerName: null,
+    // ownerAddress: null,
+    // ownerPhoneNumber: null,
     nextFreeCheckKms: null,
     nextServiceKms: null
   };
@@ -89,7 +89,6 @@ function JobCardCreate({ data }) {
       setAlertColor('success');
       setShowAlert(true);
       setUserDetails({});
-      setCarDetails({});
       if (photos.length === 0) {
         console.log('No photos to upload.');
         return;
