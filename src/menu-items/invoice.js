@@ -40,6 +40,13 @@ const getInvoice = () => {
               type: 'item',
               url: '/invoice/creditInvoice',
               icon: icons.IconTextPlus
+            },
+            {
+              id: 'receipts',
+              title: ' Receipts',
+              type: 'item',
+              url: '/invoice/receipts',
+              icon: icons.IconTextPlus
             }
           ]
         }

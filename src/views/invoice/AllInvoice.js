@@ -9,6 +9,7 @@ import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
 const MultiSettle = Loadable(lazy(() => import('views/invoice/MultiSettle')));
+const Receipt = Loadable(lazy(() => import('views/invoice/Receipt')));
 
 const AllInvoice = () => {
   const [showAlert, setShowAlert] = useState(false);
@@ -22,6 +23,9 @@ const AllInvoice = () => {
 
   const [settleBillDialogOpen, setSettleBillDialogOpen] = useState(false);
   const [paymentModes, setPaymentModes] = useState([]);
+
+  const [receipt, setReceipt] = useState({});
+  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchAllInvoiceData();
@@ -55,6 +59,7 @@ const AllInvoice = () => {
     setInvoiceCreateOpen(false);
     setInvoice({});
     setSettleBillDialogOpen(false);
+    setReceiptDialogOpen(false);
     fetchAllInvoiceData();
   };
 
@@ -231,6 +236,22 @@ const AllInvoice = () => {
                     <FactCheck />
                   </IconButton>
                 </Tooltip>
+                <Tooltip title="Receipt">
+                  <IconButton
+                    onClick={() => {
+                      setReceipt((prevState) => ({
+                        ...prevState,
+                        amount: selectedRows.reduce((sum, row) => sum + (row.grandTotal || 0), 0),
+                        invoiceIdList: selectedRows.map((row) => row.invoiceId),
+                        ownerName: selectedRows[0].ownerName
+                      }));
+
+                      setReceiptDialogOpen(true);
+                    }}
+                  >
+                    <FactCheck />
+                  </IconButton>
+                </Tooltip>
               </Box>
             )
           }
@@ -251,6 +272,18 @@ const AllInvoice = () => {
         <MultiSettle
           paymentModes={paymentModes}
           settleBillDialogOpen={settleBillDialogOpen}
+          selectedRows={selectedRows}
+          handleClose={handleClose}
+          setAlertMess={setAlertMess}
+          setShowAlert={setShowAlert}
+        />
+      )}
+      {receiptDialogOpen && (
+        <Receipt
+          receipt={receipt}
+          setReceipt={setReceipt}
+          paymentModes={paymentModes}
+          receiptDialogOpen={receiptDialogOpen}
           selectedRows={selectedRows}
           handleClose={handleClose}
           setAlertMess={setAlertMess}
