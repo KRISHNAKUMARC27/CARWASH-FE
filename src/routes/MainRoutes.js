@@ -24,6 +24,10 @@ const AllInvoice = Loadable(lazy(() => import('views/invoice/AllInvoice')));
 const CreditInvoice = Loadable(lazy(() => import('views/invoice/CreditInvoice')));
 const AllInvoiceReceipt = Loadable(lazy(() => import('views/invoice/AllInvoiceReceipt')));
 
+const AllEmployee = Loadable(lazy(() => import('views/employee/AllEmployee')));
+const EmployeeCreate = Loadable(lazy(() => import('views/employee/EmployeeCreate')));
+const Department = Loadable(lazy(() => import('views/employee/Department')));
+
 const MainRoutes = {
   path: '/',
   element: <MainLayout />,
@@ -137,6 +141,30 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'INVOICE']}>
           <AllInvoiceReceipt />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'employee/table',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN']}>
+          <AllEmployee />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'employee/createEmployee',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN']}>
+          <EmployeeCreate />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'employee/department',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN']}>
+          <Department />
         </PrivateRoute>
       )
     }
