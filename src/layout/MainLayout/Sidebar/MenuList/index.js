@@ -11,6 +11,7 @@ import service from 'menu-items/service';
 import getInvoice from 'menu-items/invoice';
 import getEmployee from 'menu-items/employee';
 import getAttendance from 'menu-items/attendance';
+import getAppointment from 'menu-items/appointment';
 
 import { useEffect } from 'react';
 
@@ -29,6 +30,7 @@ const MenuList = () => {
     }
 
     if (roles.some((role) => ['ADMIN', 'MANAGER'].includes(role))) {
+      dynamicMenus.push(getAppointment());
       dynamicMenus.push(getAttendance());
     }
 

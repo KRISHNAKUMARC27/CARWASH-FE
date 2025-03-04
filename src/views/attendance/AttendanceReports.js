@@ -166,7 +166,7 @@ const AttendanceReports = () => {
   };
 
   return (
-    <MainCard title="Attendance Report">
+    <MainCard title="Attendance/Leave Report">
       <Grid container spacing={2}>
         {/* Date Range Picker */}
         <Grid item lg={2} md={2} sm={2} xs={2}></Grid>

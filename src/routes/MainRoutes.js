@@ -31,6 +31,8 @@ const MarkAttendance = Loadable(lazy(() => import('views/attendance/MarkAttendan
 const AllAttendance = Loadable(lazy(() => import('views/attendance/AllAttendance')));
 const AttendanceReports = Loadable(lazy(() => import('views/attendance/AttendanceReports')));
 
+const AppointmentCreate = Loadable(lazy(() => import('views/appointment/AppointmentCreate')));
+
 const MainRoutes = {
   path: '/',
   element: <MainLayout />,
@@ -192,6 +194,14 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['ADMIN']}>
           <AttendanceReports />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'appointment/createAppointment',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <AppointmentCreate />
         </PrivateRoute>
       )
     }

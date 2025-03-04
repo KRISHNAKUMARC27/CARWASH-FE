@@ -48,7 +48,7 @@ const MarkAttendance = () => {
 
   return (
     <>
-      <MainCard title="Enter Employee Details">
+      <MainCard title="Mark Attendance">
         <Table>
           <TableHead>
             <TableRow>
