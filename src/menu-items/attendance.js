@@ -43,10 +43,10 @@ const getAttendance = () => {
               icon: icons.IconTableExport
             },
             {
-              id: 'department',
-              title: ' Department',
+              id: 'reports',
+              title: 'Reports',
               type: 'item',
-              url: '/attendance/leave',
+              url: '/attendance/reports',
               icon: icons.IconTextPlus
             }
           ]

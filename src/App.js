@@ -2,7 +2,8 @@ import { useSelector } from 'react-redux';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // routing
 import Routes from 'routes';
 
@@ -22,7 +23,9 @@ const App = () => {
       <ThemeProvider theme={themes(customization)}>
         <CssBaseline />
         <NavigationScroll>
-          <Routes />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Routes />
+          </LocalizationProvider>
         </NavigationScroll>
       </ThemeProvider>
     </StyledEngineProvider>
