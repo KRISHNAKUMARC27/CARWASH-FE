@@ -37,8 +37,9 @@ import User1 from 'assets/images/users/icons8-user-100.png';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import { IconLogout, IconSettings, IconReplace } from '@tabler/icons';
+import { IconLogout, IconSettings, IconReplace, IconUserCheck } from '@tabler/icons';
 import { postRequest } from 'utils/fetchRequest';
+import MarkAttendance from 'views/attendance/MarkAttendance';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -49,6 +50,8 @@ const ProfileSection = () => {
 
   const [open, setOpen] = useState(false);
   const [changePassOpen, setChangePassOpen] = useState(false);
+  const [markAttendanceOpen, setMarkAttendanceOpen] = useState(false);
+
   const username = localStorage.getItem('username');
   const [password, setPassword] = useState('');
   /**
@@ -73,6 +76,10 @@ const ProfileSection = () => {
 
   const handlePassChangeClose = () => {
     setChangePassOpen(false);
+  };
+
+  const handleMarkAttendanceClose = () => {
+    setMarkAttendanceOpen(false);
   };
 
   const handlePassChange = async () => {
@@ -203,6 +210,16 @@ const ProfileSection = () => {
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           selected={true}
+                          onClick={() => setMarkAttendanceOpen(true)}
+                        >
+                          <ListItemIcon>
+                            <IconUserCheck stroke={1.5} size="1.3rem" />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography variant="body2">Mark Attendance</Typography>} />
+                        </ListItemButton>
+                        <ListItemButton
+                          sx={{ borderRadius: `${customization.borderRadius}px` }}
+                          selected={true}
                           onClick={() => setChangePassOpen(true)}
                         >
                           <ListItemIcon>
@@ -263,6 +280,17 @@ const ProfileSection = () => {
           </Grid>
         </DialogContent>
         <DialogActions></DialogActions>
+      </Dialog>
+      <Dialog open={markAttendanceOpen} onClose={handleMarkAttendanceClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="sm">
+        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
+          {' '}
+          <MarkAttendance />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={handleMarkAttendanceClose}>
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box, Stack, Alert } from '@mui/material';
-import { Edit, FactCheck } from '@mui/icons-material';
+import { Edit, FactCheck, Receipt as ReceiptIcon } from '@mui/icons-material';
 import { lazy } from 'react';
 
 // project imports
@@ -249,7 +249,7 @@ const AllInvoice = () => {
                       setReceiptDialogOpen(true);
                     }}
                   >
-                    <FactCheck />
+                    <ReceiptIcon />
                   </IconButton>
                 </Tooltip>
               </Box>

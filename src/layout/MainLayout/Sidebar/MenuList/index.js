@@ -10,6 +10,7 @@ import getUtilities from 'menu-items/utilities';
 import service from 'menu-items/service';
 import getInvoice from 'menu-items/invoice';
 import getEmployee from 'menu-items/employee';
+import getAttendance from 'menu-items/attendance';
 
 import { useEffect } from 'react';
 
@@ -23,8 +24,12 @@ const MenuList = () => {
     const roles = JSON.parse(localStorage.getItem('roles')) || [];
     const dynamicMenus = [];
 
-    if (roles.includes('INVOICE')) {
+    if (roles.some((role) => ['INVOICE', 'ADMIN', 'MANAGER'].includes(role))) {
       dynamicMenus.push(getInvoice());
+    }
+
+    if (roles.some((role) => ['ADMIN', 'MANAGER'].includes(role))) {
+      dynamicMenus.push(getAttendance());
     }
 
     if (roles.includes('ADMIN')) {

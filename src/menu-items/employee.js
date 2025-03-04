@@ -1,12 +1,13 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconUsers, IconApps, IconUserCircle, IconUserPlus } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
-  IconIdBadge2,
-  IconTableExport,
-  IconTextPlus
+  IconUsers,
+  IconApps,
+  IconUserCircle,
+  IconUserPlus
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -25,28 +26,28 @@ const getEmployee = () => {
           id: 'employee',
           title: 'Employee',
           type: 'collapse',
-          icon: icons.IconIdBadge2,
+          icon: icons.IconUserCircle,
           children: [
             {
               id: 'allEmployee',
               title: 'All Employee',
               type: 'item',
               url: '/employee/table',
-              icon: icons.IconTableExport
+              icon: icons.IconUsers
             },
             {
               id: 'createEmployee',
               title: 'New Employee',
               type: 'item',
               url: '/employee/createEmployee',
-              icon: icons.IconTextPlus
+              icon: icons.IconUserPlus
             },
             {
               id: 'department',
               title: ' Department',
               type: 'item',
               url: '/employee/department',
-              icon: icons.IconTextPlus
+              icon: icons.IconApps
             }
           ]
         }

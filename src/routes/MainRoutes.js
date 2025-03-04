@@ -27,6 +27,8 @@ const AllInvoiceReceipt = Loadable(lazy(() => import('views/invoice/AllInvoiceRe
 const AllEmployee = Loadable(lazy(() => import('views/employee/AllEmployee')));
 const EmployeeCreate = Loadable(lazy(() => import('views/employee/EmployeeCreate')));
 const Department = Loadable(lazy(() => import('views/employee/Department')));
+const MarkAttendance = Loadable(lazy(() => import('views/attendance/MarkAttendance')));
+const AllAttendance = Loadable(lazy(() => import('views/attendance/AllAttendance')));
 
 const MainRoutes = {
   path: '/',
@@ -165,6 +167,22 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['ADMIN']}>
           <Department />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'attendance/markAttendance',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <MarkAttendance />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'attendance/table',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN']}>
+          <AllAttendance />
         </PrivateRoute>
       )
     }

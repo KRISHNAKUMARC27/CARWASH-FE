@@ -6,13 +6,14 @@ import getUtilities from './utilities';
 import service from './service';
 import getInvoice from './invoice';
 import getEmployee from './employee';
+import getAttendance from './attendance';
 //import other from './other';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 // The below menu items is NOT USED.
 const menuItems = {
-  items: [dashboard, pages, getInvoice(), service, getUtilities(), getEmployee()]
+  items: [dashboard, pages, getInvoice(), service, getUtilities(), getEmployee(), getAttendance()]
 };
 
 export default menuItems;
