@@ -8,9 +8,16 @@ import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { getRequest, postRequest } from 'utils/fetchRequest';
+import dayjs from 'dayjs';
 
 function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointmentData }) {
-  const [appointment, setAppointment] = useState(data || {});
+  const initialAppointment = data
+    ? {
+        ...data,
+        appointmentDateTime: data.appointmentDateTime ? dayjs(data.appointmentDateTime) : null
+      }
+    : {};
+  const [appointment, setAppointment] = useState(initialAppointment);
   const [serviceList, setServiceList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [showAlert, setShowAlert] = React.useState(false);
@@ -28,7 +35,15 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
   }, []);
 
   useEffect(() => {
-    setAppointment(data || {});
+    console.log(data);
+    if (data) {
+      setAppointment({
+        ...data,
+        appointmentDateTime: data.appointmentDateTime ? dayjs(data.appointmentDateTime) : null
+      });
+    } else {
+      setAppointment({});
+    }
   }, [data]);
 
   const fetchAllServiceListData = async () => {
@@ -108,16 +123,13 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
           </Grid>
           <Grid item xs={4}>
             <Autocomplete
-              options={serviceList} // Keep the full object as options
-              getOptionLabel={(option) => option.desc} // Display the description as label
-              renderInput={(params) => <TextField {...params} label="Select Service" variant="outlined" fullWidth />}
+              options={serviceList}
+              getOptionLabel={(option) => option.desc}
+              value={serviceList.find((option) => option.desc === appointment.service) || null} // Set initial value
               onChange={(event, newValue) => {
-                if (newValue) {
-                  handleInputChange('service', newValue.desc); // Store `desc` value in appointment state
-                } else {
-                  handleInputChange('service', ''); // Clear selection
-                }
+                handleInputChange('service', newValue ? newValue.desc : ''); // Store `desc` in state
               }}
+              renderInput={(params) => <TextField {...params} label="Select Service" variant="outlined" fullWidth />}
             />
           </Grid>
           <Grid item xs={4}>
