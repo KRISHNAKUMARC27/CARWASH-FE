@@ -88,6 +88,11 @@ const AllEmployee = () => {
         size: 100
       },
       {
+        accessorKey: 'salarySettlementType',
+        header: 'Settlement Type',
+        size: 100
+      },
+      {
         accessorKey: 'status',
         header: 'Status',
         size: 100

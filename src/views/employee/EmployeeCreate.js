@@ -144,6 +144,26 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
               ))}
             </TextField>
           </Grid>
+          <Grid item xs={3}>
+            <InputLabel id="demo-select-small" required>
+              Salary Settlement Type
+            </InputLabel>
+            <TextField
+              select
+              variant="outlined"
+              required
+              value={employeeDetails.salarySettlementType || ''}
+              onChange={(e) => handleInputChange('salarySettlementType', e.target.value)}
+            >
+              {salaryModes
+                .filter((mode) => mode !== 'HOURLY')
+                .map((mode) => (
+                  <MenuItem key={mode} value={mode}>
+                    {mode}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
           <Grid item xs={4}>
             <TextField
               label="Salary"
@@ -171,15 +191,6 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
                 </MenuItem>
               ))}
             </TextField>
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Salary Advance"
-              variant="outlined"
-              value={employeeDetails.salaryAdvance || ''}
-              onChange={(e) => handleInputChange('salaryAdvance', parseFloat(e.target.value) || 0)}
-              type="number"
-            />
           </Grid>
         </Grid>
       </MainCard>

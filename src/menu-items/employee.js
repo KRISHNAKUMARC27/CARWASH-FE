@@ -1,5 +1,5 @@
 // assets
-import { IconKey, IconUsers, IconApps, IconUserCircle, IconUserPlus } from '@tabler/icons';
+import { IconKey, IconUsers, IconApps, IconUserCircle, IconUserPlus, IconCoinRupee } from '@tabler/icons';
 
 // constant
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   IconUsers,
   IconApps,
   IconUserCircle,
-  IconUserPlus
+  IconUserPlus,
+  IconCoinRupee
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -48,6 +49,13 @@ const getEmployee = () => {
               type: 'item',
               url: '/employee/department',
               icon: icons.IconApps
+            },
+            {
+              id: 'settleSalary',
+              title: ' Salary Settle',
+              type: 'item',
+              url: '/employee/settleSalary',
+              icon: icons.IconCoinRupee
             }
           ]
         }
