@@ -4,9 +4,8 @@ import PropTypes from 'prop-types';
 import { TextField, InputLabel, Select, MenuItem, Grid, Button } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import { getRequest, postRequest } from 'utils/fetchRequest';
+import AlertDialog from 'views/utilities/AlertDialog';
 
 function LaborCreate({ data, setLaborUpdateOpen, fetchAllLaborData }) {
   const [laborDetails, setLaborDetails] = useState(data || {});
@@ -121,13 +120,7 @@ function LaborCreate({ data, setLaborUpdateOpen, fetchAllLaborData }) {
           </Button>
         )}
       </div>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );
 }

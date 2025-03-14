@@ -17,9 +17,8 @@ import {
 } from '@mui/material';
 //import DownloadIcon from '@mui/icons-material/Download';
 import { MaterialReactTable } from 'material-react-table';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 
+import AlertDialog from 'views/utilities/AlertDialog';
 import PropTypes from 'prop-types';
 import { gridSpacing } from 'store/constant';
 import { getRequest, getBlobRequest } from 'utils/fetchRequest';
@@ -77,7 +76,6 @@ function JobView({ open, onClose, job }) {
       link.click();
       link.parentNode.removeChild(link);
     } catch (err) {
-      onClose();
       console.log(err.message);
       setAlertMess(err.message);
       setShowAlert(true);
@@ -346,15 +344,7 @@ function JobView({ open, onClose, job }) {
           <Button onClick={onClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={showAlert} onClose={() => setShowAlert(false)} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          <Stack sx={{ width: '100%' }} spacing={2}>
-            <Alert variant="filled" severity="info" onClose={() => setShowAlert(false)}>
-              {alertMess}
-            </Alert>
-          </Stack>
-        </DialogContent>
-      </Dialog>
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={'info'} alertMess={alertMess} />}
     </>
   );
 }

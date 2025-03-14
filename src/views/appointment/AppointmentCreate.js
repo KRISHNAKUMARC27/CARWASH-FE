@@ -4,11 +4,10 @@ import PropTypes from 'prop-types';
 import { TextField, InputLabel, Select, MenuItem, Grid, Button, Autocomplete } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 import dayjs from 'dayjs';
+import AlertDialog from 'views/utilities/AlertDialog';
 
 function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointmentData }) {
   const initialAppointment = data
@@ -176,13 +175,7 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
           </Button>
         )}
       </div>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );
 }

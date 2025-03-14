@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box, Alert, Stack } from '@mui/material';
+import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box } from '@mui/material';
 import { PictureAsPdf } from '@mui/icons-material';
-
+import AlertDialog from 'views/utilities/AlertDialog';
 // project imports
 import { getRequest, getBlobRequest } from 'utils/fetchRequest';
 
@@ -132,13 +132,8 @@ const AllInvoiceReceipt = () => {
 
   return (
     <>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity="info" onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
+
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}

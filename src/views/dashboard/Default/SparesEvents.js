@@ -5,8 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Grid, IconButton, Too
 import { Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
+import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest } from 'utils/fetchRequest';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
@@ -78,13 +77,6 @@ function SparesEvents() {
         <MainCard title="Spares Inventory Shortage">
           <Grid container direction="row" spacing={gridSpacing}>
             <Grid item xs={12}>
-              {showAlert && (
-                <Stack sx={{ width: '100%' }} spacing={2}>
-                  <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
-                    {alertMess}
-                  </Alert>
-                </Stack>
-              )}
               <Grid item xs={12}>
                 <div style={{ overflowX: 'auto' }}>
                   <Table>
@@ -121,6 +113,7 @@ function SparesEvents() {
           </Grid>
         </MainCard>
       </CardWrapper>
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );
 }

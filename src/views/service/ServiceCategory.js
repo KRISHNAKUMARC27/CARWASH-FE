@@ -4,8 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Gr
 import { Edit, Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
+
+import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from 'utils/fetchRequest';
 
 function ServiceCategory() {
@@ -138,13 +138,6 @@ function ServiceCategory() {
             </div>
           </Grid>
           <Grid item xs={12}>
-            {showAlert && (
-              <Stack sx={{ width: '100%' }} spacing={2}>
-                <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
-                  {alertMess}
-                </Alert>
-              </Stack>
-            )}
             <Grid item xs={12}>
               <div style={{ overflowX: 'auto' }}>
                 <Table>
@@ -202,6 +195,7 @@ function ServiceCategory() {
           </Grid>
         </Grid>
       </MainCard>
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );
 }

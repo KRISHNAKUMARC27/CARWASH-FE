@@ -124,11 +124,24 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
   // Add a new credit payment row
   const addCreditPaymentRow = () => {
+    const grandTotal = invoice.grandTotal || 0;
+    const totalPaid = invoice.paymentSplitList
+      .filter((payment) => payment.paymentMode !== 'CREDIT')
+      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const totalCreditPaid = invoice.creditPaymentList.reduce((sum, cred) => sum + (cred.amount || 0), 0);
+    const remainingAmount = grandTotal - totalPaid - totalCreditPaid;
+
+    if (remainingAmount <= 0) {
+      alert('No remaining amount to allocate. Please adjust the existing payment splits.');
+      return;
+    }
+
+    // Add a new row with the remaining amount prefilled
     setInvoice((prevState) => ({
       ...prevState,
       creditPaymentList: [
         ...(prevState.creditPaymentList || []), // Safely fallback to an empty array
-        { amount: 0, paymentMode: '', comment: '' } // New credit payment row
+        { amount: remainingAmount, paymentMode: '', comment: '' } // New credit payment row
       ]
     }));
   };
@@ -159,6 +172,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     const totalPaid = invoice.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
     const remaining = grandTotal - totalPaid;
 
+    console.log('REMAINING ' + remaining);
     const hasEmptyPaymentMode = invoice.paymentSplitList.some((split) => !split.paymentMode);
 
     if (hasEmptyPaymentMode) {
@@ -204,7 +218,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     const updatedInvoice = {
       ...invoice,
       pendingAmount: newPendingAmount > 0 ? newPendingAmount : 0,
-      creditSettledFlag: newPendingAmount === 0
+      creditSettledFlag: newPendingAmount > 0 ? false : true
     };
 
     try {

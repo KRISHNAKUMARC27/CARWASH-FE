@@ -9,11 +9,10 @@ import CarIcon from '@mui/icons-material/DirectionsCarFilled';
 import Person4Icon from '@mui/icons-material/Person4';
 //import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import { Button } from '@mui/material';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import JSZip from 'jszip';
 
 import { postRequest, postRequestMultiPart } from 'utils/fetchRequest';
+import AlertDialog from 'views/utilities/AlertDialog';
 
 const JobUserDetails = Loadable(lazy(() => import('views/job/JobUserDetails')));
 const JobCarDetails = Loadable(lazy(() => import('views/job/JobCarDetails')));
@@ -175,13 +174,7 @@ function JobCardCreate({ data }) {
           </Button>
         )}
       </div>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );
 }

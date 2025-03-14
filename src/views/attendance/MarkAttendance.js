@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 //import PropTypes from 'prop-types';
 
 import MainCard from 'ui-component/cards/MainCard';
-//import { gridSpacing } from 'store/constant';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 import { Button, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-
+import AlertDialog from 'views/utilities/AlertDialog';
 const MarkAttendance = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [absentReason, setAbsentReason] = useState({});
@@ -92,13 +89,7 @@ const MarkAttendance = () => {
           </TableBody>
         </Table>
       </MainCard>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </>
   );
 };

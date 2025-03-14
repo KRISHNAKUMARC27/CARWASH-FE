@@ -1,12 +1,13 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box, Stack, Alert } from '@mui/material';
+import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box } from '@mui/material';
 import { Edit, FactCheck } from '@mui/icons-material';
 import { lazy } from 'react';
 
 // project imports
 import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
+import AlertDialog from 'views/utilities/AlertDialog';
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
 const MultiSettle = Loadable(lazy(() => import('views/invoice/MultiSettle')));
 
@@ -175,13 +176,7 @@ const CreditInvoice = () => {
 
   return (
     <>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity="info" onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}

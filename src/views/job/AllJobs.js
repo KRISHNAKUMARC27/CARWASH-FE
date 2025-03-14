@@ -11,13 +11,12 @@ import Box from '@mui/material/Box';
 //import DataRowDialog from 'utils/DataRowDialog';
 import { OpenInNew, AddCircle, CurrencyRupee } from '@mui/icons-material';
 //import Alert from 'views/utilities/Alert';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import { lazy } from 'react';
 
 // project imports
 import { getRequest, putRequest } from 'utils/fetchRequest';
 import Loadable from 'ui-component/Loadable';
+import AlertDialog from 'views/utilities/AlertDialog';
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
 const JobView = Loadable(lazy(() => import('views/job/JobView')));
 const JobCardCreate = Loadable(lazy(() => import('views/job/JobCardCreate')));
@@ -294,13 +293,8 @@ const AllJobs = () => {
 
   return (
     <div>
-      {showAlert && (
-        <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity="info" onClose={() => setShowAlert(false)}>
-            {alertMess}
-          </Alert>
-        </Stack>
-      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
+
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}

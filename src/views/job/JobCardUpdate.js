@@ -20,9 +20,7 @@ import {
 import { Edit, Build } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import { gridSpacing } from 'store/constant';
-//import Alert from 'views/utilities/Alert';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
+
 import JSZip from 'jszip';
 
 const JobUserDetails = Loadable(lazy(() => import('views/job/JobUserDetails')));
@@ -32,6 +30,7 @@ const JobSparesUpdate = Loadable(lazy(() => import('views/job/JobSparesUpdate'))
 
 const JobServiceUpdate = Loadable(lazy(() => import('views/job/JobServiceUpdate')));
 import { getRequest, putRequest, postRequest, getRequestMultiPart, postRequestMultiPart } from 'utils/fetchRequest';
+import AlertDialog from 'views/utilities/AlertDialog';
 
 const JobCardUpdate = () => {
   const [data, setData] = useState([]);
@@ -55,6 +54,7 @@ const JobCardUpdate = () => {
   const [jobSparesUpdateOpen, setJobSparesUpdateOpen] = useState(false);
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
+  const [alertColor, setAlertColor] = React.useState('');
 
   useEffect(() => {
     findAllByJobStatusOpen();
@@ -157,6 +157,10 @@ const JobCardUpdate = () => {
 
       if (photos.length === 0) {
         console.log('No photos to upload.');
+        setAlertMess('Job Card updated successfully. No photos to upload');
+        setAlertColor('success');
+        setShowAlert(true);
+        handleClose();
         return;
       }
       const zip = new JSZip();
@@ -547,15 +551,7 @@ const JobCardUpdate = () => {
           </Grid>
         </DialogActions>
       </Dialog>
-      <Dialog open={showAlert} onClose={() => setShowAlert(false)} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          <Stack sx={{ width: '100%' }} spacing={2}>
-            <Alert variant="filled" severity="info" onClose={() => setShowAlert(false)}>
-              {alertMess}
-            </Alert>
-          </Stack>
-        </DialogContent>
-      </Dialog>
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );
 };
