@@ -30,7 +30,7 @@ const SettleSalary = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     salaryPaid: '',
-    paymentMode: ''
+    paymentMode: 'CASH'
   });
   const [salaryAdvanceDialogOpen, setSalaryAdvanceDialogOpen] = useState(false);
   const [expense, setExpense] = useState({

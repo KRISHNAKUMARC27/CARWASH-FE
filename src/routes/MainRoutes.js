@@ -36,6 +36,11 @@ const AttendanceReports = Loadable(lazy(() => import('views/attendance/Attendanc
 const AppointmentCreate = Loadable(lazy(() => import('views/appointment/AppointmentCreate')));
 const AllAppointment = Loadable(lazy(() => import('views/appointment/AllAppointment')));
 
+const AllExpense = Loadable(lazy(() => import('views/expense/AllExpense')));
+const ExpenseCreate = Loadable(lazy(() => import('views/expense/ExpenseCreate')));
+const ExpenseCategory = Loadable(lazy(() => import('views/expense/ExpenseCategory')));
+const ExpenseReports = Loadable(lazy(() => import('views/expense/ExpenseReports')));
+
 const MainRoutes = {
   path: '/',
   element: <MainLayout />,
@@ -221,6 +226,38 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
           <AllAppointment />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'expense/table',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <AllExpense />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'expense/createExpense',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <ExpenseCreate />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'expense/expenseCategory',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <ExpenseCategory />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'expense/reports',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <ExpenseReports />
         </PrivateRoute>
       )
     }

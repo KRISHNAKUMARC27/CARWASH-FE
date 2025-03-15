@@ -1,12 +1,11 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus, IconUserCheck } from '@tabler/icons';
+import { IconIdBadge2, IconTableExport, IconChartHistogram, IconUserCheck } from '@tabler/icons';
 
 // constant
 const icons = {
-  IconKey,
   IconIdBadge2,
   IconTableExport,
-  IconTextPlus,
+  IconChartHistogram,
   IconUserCheck
 };
 
@@ -47,7 +46,7 @@ const getAttendance = () => {
               title: 'Reports',
               type: 'item',
               url: '/attendance/reports',
-              icon: icons.IconTextPlus
+              icon: icons.IconChartHistogram
             }
           ]
         }
