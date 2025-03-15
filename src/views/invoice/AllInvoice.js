@@ -15,6 +15,7 @@ const Receipt = Loadable(lazy(() => import('views/invoice/Receipt')));
 const AllInvoice = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
+  const [alertColor, setAlertColor] = useState('info');
 
   const [data, setData] = useState([]);
   const [invoice, setInvoice] = useState();
@@ -182,7 +183,7 @@ const AllInvoice = () => {
 
   return (
     <>
-      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={'info'} alertMess={alertMess} />}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
 
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
@@ -263,6 +264,7 @@ const AllInvoice = () => {
           handleClose={handleClose}
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
         />
       )}
       {settleBillDialogOpen && (

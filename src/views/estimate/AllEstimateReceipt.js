@@ -132,7 +132,7 @@ const AllEstimateReceipt = () => {
 
   return (
     <>
-      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={'info'} alertMess={alertMess} />}
 
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
