@@ -18,6 +18,7 @@ import { getRequest, putRequest } from 'utils/fetchRequest';
 import Loadable from 'ui-component/Loadable';
 import AlertDialog from 'views/utilities/AlertDialog';
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
+const BillPaymentEstimate = Loadable(lazy(() => import('views/estimate/BillPayment')));
 const JobView = Loadable(lazy(() => import('views/job/JobView')));
 const JobCardCreate = Loadable(lazy(() => import('views/job/JobCardCreate')));
 
@@ -47,12 +48,20 @@ const AllJobs = () => {
 
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
+  const [alertColor, setAlertColor] = React.useState('');
 
-  const invoiceRole = ['INVOICE'];
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
+  const invoiceRole = ['INVOICE'];
+  const estimateRole = ['ESTIMATE'];
   const isAuthorizedForInvoice = roles.some((role) => invoiceRole.includes(role));
+  const isAuthorizedForEstimate = roles.some((role) => estimateRole.includes(role));
+
   const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
   const [invoice, setInvoice] = useState();
+
+  const [estimateCreateOpen, setEstimateCreateOpen] = useState(false);
+  const [estimate, setEstimate] = useState();
+
   const [paymentModes, setPaymentModes] = useState([]);
 
   useEffect(() => {
@@ -98,7 +107,9 @@ const AllJobs = () => {
     setJobInfoOpen(false);
     setJobCardCreateOpen(false);
     setInvoiceCreateOpen(false);
+    setEstimateCreateOpen(false);
     setInvoice({});
+    setEstimate({});
     fetchAllJobsData();
   };
 
@@ -117,6 +128,7 @@ const AllJobs = () => {
     } catch (err) {
       console.log(err.message);
       setAlertMess(err.message);
+      setAlertColor('info');
       setShowAlert(true);
       setSelectedRow({});
       setJobStatusOpen(false);
@@ -136,6 +148,22 @@ const AllJobs = () => {
       }
     } else {
       getSelectedRowJobSpares(payload);
+    }
+  };
+
+  const prepareInitialEstimateObject = async (payload) => {
+    if (payload.estimateObjId != null) {
+      try {
+        const estimateData = await getRequest(process.env.REACT_APP_API_URL + '/estimate/' + payload.estimateObjId);
+
+        setEstimate(estimateData);
+        setEstimateCreateOpen(true);
+      } catch (err) {
+        console.log(err.message);
+        getSelectedRowJobSparesEstimate(payload);
+      }
+    } else {
+      getSelectedRowJobSparesEstimate(payload);
     }
   };
 
@@ -159,6 +187,29 @@ const AllJobs = () => {
 
       //setJobSpares(data);
       setInvoiceCreateOpen(true);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  const getSelectedRowJobSparesEstimate = async (payload) => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
+
+      setEstimate((prevState) => ({
+        ...prevState,
+        jobId: payload.jobId,
+        ownerName: payload.ownerName,
+        ownerPhoneNumber: payload.ownerPhoneNumber,
+        vehicleRegNo: payload.vehicleRegNo,
+        vehicleName: payload.vehicleName,
+        grandTotal: data.grandTotal,
+        jobObjId: data.id,
+        paymentSplitList: [{ paymentAmount: data.grandTotal || 0, paymentMode: '' }],
+        creditPaymentList: []
+      }));
+
+      setEstimateCreateOpen(true);
     } catch (err) {
       console.log(err.message);
     }
@@ -354,6 +405,18 @@ const AllJobs = () => {
                   </IconButton>
                 </Tooltip>
               )}
+              {isAuthorizedForEstimate && (
+                <Tooltip arrow placement="right" title="Estimate">
+                  <IconButton
+                    onClick={() => {
+                      setSelectedRow(row.original);
+                      prepareInitialEstimateObject(row.original);
+                    }}
+                  >
+                    <CurrencyRupee />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
           )}
         />{' '}
@@ -444,6 +507,19 @@ const AllJobs = () => {
           handleClose={handleClose}
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
+        />
+      )}
+      {estimateCreateOpen && (
+        <BillPaymentEstimate
+          estimate={estimate}
+          setEstimate={setEstimate}
+          paymentModes={paymentModes}
+          estimateCreateOpen={estimateCreateOpen}
+          handleClose={handleClose}
+          setAlertMess={setAlertMess}
+          setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
         />
       )}
     </div>

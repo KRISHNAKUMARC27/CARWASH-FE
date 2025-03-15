@@ -13,6 +13,7 @@ import getEmployee from 'menu-items/employee';
 import getAttendance from 'menu-items/attendance';
 import getAppointment from 'menu-items/appointment';
 import getExpense from 'menu-items/expense';
+import getEstimate from 'menu-items/estimate';
 
 import { useEffect } from 'react';
 
@@ -28,6 +29,9 @@ const MenuList = () => {
 
     if (roles.some((role) => ['INVOICE', 'ADMIN', 'MANAGER'].includes(role))) {
       dynamicMenus.push(getInvoice());
+    }
+    if (roles.some((role) => ['ESTIMATE', 'ADMIN', 'MANAGER'].includes(role))) {
+      dynamicMenus.push(getEstimate());
     }
 
     if (roles.some((role) => ['ADMIN', 'MANAGER'].includes(role))) {

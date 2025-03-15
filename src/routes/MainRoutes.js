@@ -24,6 +24,10 @@ const AllInvoice = Loadable(lazy(() => import('views/invoice/AllInvoice')));
 const CreditInvoice = Loadable(lazy(() => import('views/invoice/CreditInvoice')));
 const AllInvoiceReceipt = Loadable(lazy(() => import('views/invoice/AllInvoiceReceipt')));
 
+const AllEstimate = Loadable(lazy(() => import('views/estimate/AllEstimate')));
+const CreditEstimate = Loadable(lazy(() => import('views/estimate/CreditEstimate')));
+const AllEstimateReceipt = Loadable(lazy(() => import('views/estimate/AllEstimateReceipt')));
+
 const AllEmployee = Loadable(lazy(() => import('views/employee/AllEmployee')));
 const EmployeeCreate = Loadable(lazy(() => import('views/employee/EmployeeCreate')));
 const Department = Loadable(lazy(() => import('views/employee/Department')));
@@ -154,6 +158,30 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'INVOICE']}>
           <AllInvoiceReceipt />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'estimate/table',
+      element: (
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'ESTIMATE']}>
+          <AllEstimate />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'estimate/creditEstimate',
+      element: (
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'ESTIMATE']}>
+          <CreditEstimate />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'estimate/receipts',
+      element: (
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'ESTIMATE']}>
+          <AllEstimateReceipt />
         </PrivateRoute>
       )
     },

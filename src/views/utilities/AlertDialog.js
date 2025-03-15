@@ -6,7 +6,7 @@ const AlertDialog = ({ showAlert, setShowAlert, alertColor, alertMess }) => {
     <Dialog open={showAlert} onClose={() => setShowAlert(false)} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
       <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
         <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity={alertColor} onClose={() => setShowAlert(false)}>
+          <Alert variant="filled" severity={alertColor != null ? alertColor : 'info'} onClose={() => setShowAlert(false)}>
             {alertMess}
           </Alert>
         </Stack>

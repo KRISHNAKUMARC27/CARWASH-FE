@@ -20,7 +20,16 @@ import { gridSpacing } from 'store/constant';
 import { postRequest } from 'utils/fetchRequest';
 import { AddCircle, RemoveCircle } from '@mui/icons-material';
 
-const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, handleClose, setAlertMess, setShowAlert, setAlertColor }) => {
+const BillPayment = ({
+  estimate,
+  setEstimate,
+  paymentModes,
+  estimateCreateOpen,
+  handleClose,
+  setAlertMess,
+  setShowAlert,
+  setAlertColor
+}) => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [remainingAmount, setRemainingAmount] = useState(0); // To store remaining amount dynamically
 
@@ -31,7 +40,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
   }, []);
 
   const handlePaymentSplitChange = (index, field, value) => {
-    const updatedPaymentSplitList = [...invoice.paymentSplitList];
+    const updatedPaymentSplitList = [...estimate.paymentSplitList];
 
     // Update the specific field in the payment split list
     updatedPaymentSplitList[index] = {
@@ -44,10 +53,10 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
       .filter((split) => split.paymentMode !== 'CREDIT') // Exclude CREDIT payments
       .reduce((sum, split) => sum + (split.paymentAmount || 0), 0); // Sum up payment amounts
 
-    const grandTotal = invoice.grandTotal || 0;
+    const grandTotal = estimate.grandTotal || 0;
     const pendingAmount = grandTotal - totalPaidExcludingCredit;
 
-    setInvoice((prevState) => ({
+    setEstimate((prevState) => ({
       ...prevState,
       paymentSplitList: updatedPaymentSplitList,
       pendingAmount: pendingAmount > 0 ? pendingAmount : 0, // Ensure non-negative pending amount
@@ -56,8 +65,8 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
   };
 
   const addPaymentSplitRow = () => {
-    const grandTotal = invoice.grandTotal || 0;
-    const totalPaid = invoice.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const grandTotal = estimate.grandTotal || 0;
+    const totalPaid = estimate.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
     const remainingAmount = grandTotal - totalPaid;
 
     if (remainingAmount <= 0) {
@@ -66,7 +75,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     }
 
     // Add a new row with the remaining amount prefilled
-    setInvoice((prevState) => ({
+    setEstimate((prevState) => ({
       ...prevState,
       paymentSplitList: [
         ...prevState.paymentSplitList,
@@ -76,8 +85,8 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
   };
 
   const removePaymentSplitRow = (index) => {
-    const updatedPaymentSplitList = invoice.paymentSplitList.filter((_, i) => i !== index);
-    setInvoice((prevState) => ({ ...prevState, paymentSplitList: updatedPaymentSplitList }));
+    const updatedPaymentSplitList = estimate.paymentSplitList.filter((_, i) => i !== index);
+    setEstimate((prevState) => ({ ...prevState, paymentSplitList: updatedPaymentSplitList }));
   };
 
   const handleOpenConfirmDialog = (remaining) => {
@@ -94,19 +103,19 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
   const handleConfirmAddCredit = () => {
     setConfirmDialogOpen(false); // Close confirmation dialog
     // Add remaining amount as CREDIT
-    setInvoice((prevState) => ({
+    setEstimate((prevState) => ({
       ...prevState,
       paymentSplitList: [...prevState.paymentSplitList, { paymentAmount: remainingAmount, paymentMode: 'CREDIT' }],
       pendingAmount: remainingAmount,
       creditFlag: true
     }));
     // handleClose();
-    // handleInvoiceSave(); // Proceed with saving the invoice
+    // handleEstimateSave(); // Proceed with saving the estimate
   };
 
   // Handle changes in credit payments
   const handleCreditPaymentChange = (index, field, value) => {
-    const updatedCreditPaymentList = [...invoice.creditPaymentList];
+    const updatedCreditPaymentList = [...estimate.creditPaymentList];
 
     // Update the specific field in the credit payment list
     updatedCreditPaymentList[index] = {
@@ -116,7 +125,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
     // Calculate new pending amount
 
-    setInvoice((prevState) => ({
+    setEstimate((prevState) => ({
       ...prevState,
       creditPaymentList: updatedCreditPaymentList
     }));
@@ -124,11 +133,11 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
   // Add a new credit payment row
   const addCreditPaymentRow = () => {
-    const grandTotal = invoice.grandTotal || 0;
-    const totalPaid = invoice.paymentSplitList
+    const grandTotal = estimate.grandTotal || 0;
+    const totalPaid = estimate.paymentSplitList
       .filter((payment) => payment.paymentMode !== 'CREDIT')
       .reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
-    const totalCreditPaid = invoice.creditPaymentList.reduce((sum, cred) => sum + (cred.amount || 0), 0);
+    const totalCreditPaid = estimate.creditPaymentList.reduce((sum, cred) => sum + (cred.amount || 0), 0);
     const remainingAmount = grandTotal - totalPaid - totalCreditPaid;
 
     if (remainingAmount <= 0) {
@@ -137,7 +146,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     }
 
     // Add a new row with the remaining amount prefilled
-    setInvoice((prevState) => ({
+    setEstimate((prevState) => ({
       ...prevState,
       creditPaymentList: [
         ...(prevState.creditPaymentList || []), // Safely fallback to an empty array
@@ -148,13 +157,13 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
   // Remove a credit payment row
   const removeCreditPaymentRow = (index) => {
-    const updatedCreditPaymentList = invoice.creditPaymentList.filter((_, i) => i !== index);
+    const updatedCreditPaymentList = estimate.creditPaymentList.filter((_, i) => i !== index);
 
     // Recalculate pendingAmount after removing a row
     const totalCreditPayments = updatedCreditPaymentList.reduce((sum, credit) => sum + (credit.amount || 0), 0);
-    const newPendingAmount = (invoice.grandTotal || 0) - totalCreditPayments;
+    const newPendingAmount = (estimate.grandTotal || 0) - totalCreditPayments;
 
-    setInvoice((prevState) => ({
+    setEstimate((prevState) => ({
       ...prevState,
       creditPaymentList: updatedCreditPaymentList,
       pendingAmount: newPendingAmount > 0 ? newPendingAmount : 0,
@@ -162,18 +171,18 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     }));
   };
 
-  const handleInvoiceSave = async () => {
-    //console.log(invoice);
-    if (invoice.grandTotal <= 0) {
+  const handleEstimateSave = async () => {
+    //console.log(estimate);
+    if (estimate.grandTotal <= 0) {
       alert('Grant total is 0. Cannot generate bill');
       return;
     }
-    const grandTotal = invoice.grandTotal || 0;
-    const totalPaid = invoice.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const grandTotal = estimate.grandTotal || 0;
+    const totalPaid = estimate.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
     const remaining = grandTotal - totalPaid;
 
     console.log('REMAINING ' + remaining);
-    const hasEmptyPaymentMode = invoice.paymentSplitList.some((split) => !split.paymentMode);
+    const hasEmptyPaymentMode = estimate.paymentSplitList.some((split) => !split.paymentMode);
 
     if (hasEmptyPaymentMode) {
       alert('Please select a payment mode for all entries.');
@@ -183,7 +192,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     if (remaining > 0) {
       // Automatically add CREDIT for the remaining amount
       console.log("I'm still open");
-      console.log(invoice);
+      console.log(estimate);
       handleOpenConfirmDialog(remaining);
       return;
     } else if (remaining < 0) {
@@ -192,7 +201,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
       return;
     }
 
-    const updatedCreditPaymentList = [...invoice.creditPaymentList];
+    const updatedCreditPaymentList = [...estimate.creditPaymentList];
     const hasEmptyPaymentModeCredit = updatedCreditPaymentList.some((split) => !split.paymentMode);
 
     if (hasEmptyPaymentModeCredit) {
@@ -202,7 +211,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
     const totalCreditPayments = updatedCreditPaymentList.reduce((sum, credit) => sum + (credit.amount || 0), 0);
 
-    const updatedPaymentSplitList = [...invoice.paymentSplitList];
+    const updatedPaymentSplitList = [...estimate.paymentSplitList];
 
     const totalPaidExcludingCredit = updatedPaymentSplitList
       .filter((split) => split.paymentMode !== 'CREDIT') // Exclude CREDIT payments
@@ -215,15 +224,15 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     console.log('totalCreditPayments' + totalCreditPayments);
     console.log('newPendingAmount ' + newPendingAmount);
 
-    const updatedInvoice = {
-      ...invoice,
+    const updatedEstimate = {
+      ...estimate,
       pendingAmount: newPendingAmount > 0 ? newPendingAmount : 0,
       creditSettledFlag: newPendingAmount > 0 ? false : true
     };
 
     try {
-      const data = await postRequest(process.env.REACT_APP_API_URL + '/invoice', updatedInvoice);
-      setAlertMess('Bill id ' + data.invoiceId + ' saved successfully');
+      const data = await postRequest(process.env.REACT_APP_API_URL + '/estimate', updatedEstimate);
+      setAlertMess('Bill id ' + data.estimateId + ' saved successfully');
       setAlertColor('success');
       setShowAlert(true);
       handleClose();
@@ -237,9 +246,9 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
   return (
     <>
-      {invoiceCreateOpen && (
+      {estimateCreateOpen && (
         <Dialog
-          open={invoiceCreateOpen}
+          open={estimateCreateOpen}
           onClose={handleClose}
           scroll={'paper'}
           aria-labelledby="scroll-dialog-title"
@@ -248,16 +257,16 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
           maxWidth="lg"
         >
           <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1.0rem' }}>
-            Invoice Generation for {invoice.vehicleRegNo}
+            Estimate Generation for {estimate.vehicleRegNo}
           </DialogTitle>
 
           <DialogContent dividers={scroll === 'paper'}>
             <br></br>
             <Grid container direction="row" spacing={gridSpacing}>
               <Grid item xs={6}>
-                <TextField label="Grand Total" required variant="outlined" value={invoice?.grandTotal || 0} />
+                <TextField label="Grand Total" required variant="outlined" value={estimate?.grandTotal || 0} />
               </Grid>
-              {invoice.paymentSplitList.map((split, index) => (
+              {estimate.paymentSplitList.map((split, index) => (
                 <Grid container item spacing={gridSpacing} key={index} alignItems="center">
                   <Grid item xs={5}>
                     <TextField
@@ -302,12 +311,12 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
               ))}
             </Grid>
             <br></br>
-            {invoice.creditFlag && (
+            {estimate.creditFlag && (
               <Grid container direction="row" spacing={gridSpacing}>
                 <Grid item xs={4}>
                   <Typography variant="h4">Credit Payment</Typography>
                 </Grid>
-                {(invoice.creditPaymentList || []).map((credit, index) => (
+                {(estimate.creditPaymentList || []).map((credit, index) => (
                   <Grid container item spacing={gridSpacing} key={index} alignItems="center">
                     <Grid item xs={4}>
                       <TextField
@@ -364,7 +373,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleInvoiceSave} color="secondary">
+            <Button onClick={handleEstimateSave} color="secondary">
               Save
             </Button>
             <Button onClick={handleClose} color="secondary">
@@ -396,10 +405,10 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 };
 
 BillPayment.propTypes = {
-  invoice: PropTypes.object.isRequired,
-  setInvoice: PropTypes.func.isRequired,
+  estimate: PropTypes.object.isRequired,
+  setEstimate: PropTypes.func.isRequired,
   paymentModes: PropTypes.array.isRequired,
-  invoiceCreateOpen: PropTypes.bool.isRequired,
+  estimateCreateOpen: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   setAlertMess: PropTypes.func.isRequired,
   setShowAlert: PropTypes.func.isRequired,

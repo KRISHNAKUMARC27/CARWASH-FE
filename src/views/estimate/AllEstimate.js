@@ -8,17 +8,17 @@ import AlertDialog from 'views/utilities/AlertDialog';
 // project imports
 import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
-const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
-const MultiSettle = Loadable(lazy(() => import('views/invoice/MultiSettle')));
-const Receipt = Loadable(lazy(() => import('views/invoice/Receipt')));
+const BillPayment = Loadable(lazy(() => import('views/estimate/BillPayment')));
+const MultiSettle = Loadable(lazy(() => import('views/estimate/MultiSettle')));
+const Receipt = Loadable(lazy(() => import('views/estimate/Receipt')));
 
-const AllInvoice = () => {
+const AllEstimate = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
 
   const [data, setData] = useState([]);
-  const [invoice, setInvoice] = useState();
-  const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
+  const [estimate, setEstimate] = useState();
+  const [estimateCreateOpen, setEstimateCreateOpen] = useState(false);
 
   const [rowSelection, setRowSelection] = useState({});
   const selectedRows = useMemo(() => Object.keys(rowSelection).map((key) => data[key]), [rowSelection, data]);
@@ -30,7 +30,7 @@ const AllInvoice = () => {
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
 
   useEffect(() => {
-    fetchAllInvoiceData();
+    fetchAllEstimateData();
     getPaymentModes();
 
     return () => {
@@ -39,9 +39,9 @@ const AllInvoice = () => {
     };
   }, []);
 
-  const fetchAllInvoiceData = async () => {
+  const fetchAllEstimateData = async () => {
     try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/invoice');
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/estimate');
       setData(data);
     } catch (err) {
       console.error(err.message);
@@ -58,18 +58,18 @@ const AllInvoice = () => {
   };
 
   const handleClose = () => {
-    setInvoiceCreateOpen(false);
-    setInvoice({});
+    setEstimateCreateOpen(false);
+    setEstimate({});
     setSettleBillDialogOpen(false);
     setReceiptDialogOpen(false);
-    fetchAllInvoiceData();
+    fetchAllEstimateData();
   };
 
   //should be memoized or stable
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'invoiceId', //access nested data with dot notation
+        accessorKey: 'estimateId', //access nested data with dot notation
         header: 'Id',
         size: 50
         //filterVariant: 'multi-select'
@@ -203,11 +203,11 @@ const AllInvoice = () => {
           }}
           renderRowActions={({ row }) => (
             <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="right" title="Invoice">
+              <Tooltip arrow placement="right" title="Estimate">
                 <IconButton
                   onClick={() => {
-                    setInvoice(row.original);
-                    setInvoiceCreateOpen(true);
+                    setEstimate(row.original);
+                    setEstimateCreateOpen(true);
                   }}
                 >
                   <Edit />
@@ -239,7 +239,7 @@ const AllInvoice = () => {
                       setReceipt((prevState) => ({
                         ...prevState,
                         amount: selectedRows.reduce((sum, row) => sum + (row.grandTotal || 0), 0),
-                        invoiceIdList: selectedRows.map((row) => row.invoiceId),
+                        estimateIdList: selectedRows.map((row) => row.estimateId),
                         ownerName: selectedRows[0].ownerName
                       }));
 
@@ -254,12 +254,12 @@ const AllInvoice = () => {
           }
         />
       </ThemeProvider>
-      {invoiceCreateOpen && (
+      {estimateCreateOpen && (
         <BillPayment
-          invoice={invoice}
-          setInvoice={setInvoice}
+          estimate={estimate}
+          setEstimate={setEstimate}
           paymentModes={paymentModes}
-          invoiceCreateOpen={invoiceCreateOpen}
+          estimateCreateOpen={estimateCreateOpen}
           handleClose={handleClose}
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
@@ -291,4 +291,4 @@ const AllInvoice = () => {
   );
 };
 
-export default AllInvoice;
+export default AllEstimate;

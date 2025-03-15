@@ -1,24 +1,22 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box } from '@mui/material';
-import { Edit, FactCheck, Receipt as ReceiptIcon } from '@mui/icons-material';
+import { Edit, FactCheck } from '@mui/icons-material';
 import { lazy } from 'react';
-import AlertDialog from 'views/utilities/AlertDialog';
 
 // project imports
 import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
-const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
-const MultiSettle = Loadable(lazy(() => import('views/invoice/MultiSettle')));
-const Receipt = Loadable(lazy(() => import('views/invoice/Receipt')));
+import AlertDialog from 'views/utilities/AlertDialog';
+const BillPayment = Loadable(lazy(() => import('views/estimate/BillPayment')));
+const MultiSettle = Loadable(lazy(() => import('views/estimate/MultiSettle')));
 
-const AllInvoice = () => {
+const CreditEstimate = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
-
   const [data, setData] = useState([]);
-  const [invoice, setInvoice] = useState();
-  const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
+  const [estimate, setEstimate] = useState();
+  const [estimateCreateOpen, setEstimateCreateOpen] = useState(false);
 
   const [rowSelection, setRowSelection] = useState({});
   const selectedRows = useMemo(() => Object.keys(rowSelection).map((key) => data[key]), [rowSelection, data]);
@@ -26,11 +24,8 @@ const AllInvoice = () => {
   const [settleBillDialogOpen, setSettleBillDialogOpen] = useState(false);
   const [paymentModes, setPaymentModes] = useState([]);
 
-  const [receipt, setReceipt] = useState({});
-  const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
-
   useEffect(() => {
-    fetchAllInvoiceData();
+    fetchCreditOpenEstimateData();
     getPaymentModes();
 
     return () => {
@@ -39,9 +34,9 @@ const AllInvoice = () => {
     };
   }, []);
 
-  const fetchAllInvoiceData = async () => {
+  const fetchCreditOpenEstimateData = async () => {
     try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/invoice');
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/estimate/findByCreditFlag');
       setData(data);
     } catch (err) {
       console.error(err.message);
@@ -58,18 +53,17 @@ const AllInvoice = () => {
   };
 
   const handleClose = () => {
-    setInvoiceCreateOpen(false);
-    setInvoice({});
+    setEstimateCreateOpen(false);
+    setEstimate({});
     setSettleBillDialogOpen(false);
-    setReceiptDialogOpen(false);
-    fetchAllInvoiceData();
+    fetchCreditOpenEstimateData();
   };
 
   //should be memoized or stable
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'invoiceId', //access nested data with dot notation
+        accessorKey: 'estimateId', //access nested data with dot notation
         header: 'Id',
         size: 50
         //filterVariant: 'multi-select'
@@ -182,8 +176,7 @@ const AllInvoice = () => {
 
   return (
     <>
-      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={'info'} alertMess={alertMess} />}
-
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}
@@ -203,11 +196,11 @@ const AllInvoice = () => {
           }}
           renderRowActions={({ row }) => (
             <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="right" title="Invoice">
+              <Tooltip arrow placement="right" title="Estimate">
                 <IconButton
                   onClick={() => {
-                    setInvoice(row.original);
-                    setInvoiceCreateOpen(true);
+                    setEstimate(row.original);
+                    setEstimateCreateOpen(true);
                   }}
                 >
                   <Edit />
@@ -233,33 +226,17 @@ const AllInvoice = () => {
                     <FactCheck />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Receipt">
-                  <IconButton
-                    onClick={() => {
-                      setReceipt((prevState) => ({
-                        ...prevState,
-                        amount: selectedRows.reduce((sum, row) => sum + (row.grandTotal || 0), 0),
-                        invoiceIdList: selectedRows.map((row) => row.invoiceId),
-                        ownerName: selectedRows[0].ownerName
-                      }));
-
-                      setReceiptDialogOpen(true);
-                    }}
-                  >
-                    <ReceiptIcon />
-                  </IconButton>
-                </Tooltip>
               </Box>
             )
           }
         />
       </ThemeProvider>
-      {invoiceCreateOpen && (
+      {estimateCreateOpen && (
         <BillPayment
-          invoice={invoice}
-          setInvoice={setInvoice}
+          estimate={estimate}
+          setEstimate={setEstimate}
           paymentModes={paymentModes}
-          invoiceCreateOpen={invoiceCreateOpen}
+          estimateCreateOpen={estimateCreateOpen}
           handleClose={handleClose}
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
@@ -275,20 +252,8 @@ const AllInvoice = () => {
           setShowAlert={setShowAlert}
         />
       )}
-      {receiptDialogOpen && (
-        <Receipt
-          receipt={receipt}
-          setReceipt={setReceipt}
-          paymentModes={paymentModes}
-          receiptDialogOpen={receiptDialogOpen}
-          selectedRows={selectedRows}
-          handleClose={handleClose}
-          setAlertMess={setAlertMess}
-          setShowAlert={setShowAlert}
-        />
-      )}
     </>
   );
 };
 
-export default AllInvoice;
+export default CreditEstimate;
