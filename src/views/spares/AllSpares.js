@@ -81,6 +81,11 @@ const AllSpares = () => {
         size: 100
       },
       {
+        accessorKey: 'cgst',
+        header: 'CGST',
+        size: 50
+      },
+      {
         accessorKey: 'amount',
         header: 'Amount',
         size: 100

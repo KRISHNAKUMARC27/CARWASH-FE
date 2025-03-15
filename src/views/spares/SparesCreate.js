@@ -48,6 +48,10 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
       sparesDetails.qty !== undefined &&
       sparesDetails.sellRate !== null &&
       sparesDetails.sellRate !== undefined &&
+      sparesDetails.cgst !== null &&
+      sparesDetails.cgst !== undefined &&
+      sparesDetails.sgst !== null &&
+      sparesDetails.sgst !== undefined &&
       sparesDetails.amount !== null &&
       sparesDetails.amount !== undefined &&
       sparesDetails.minThresh
@@ -103,6 +107,14 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
     const amount = (parseFloat(sellRate) || 0) * parseFloat(sparesDetails.qty || 0);
     const roundedAmount = parseFloat(amount.toFixed(2)); // rounding to 2 decimal places
     const updatedData = { ...sparesDetails, sellRate: sellRate, amount: isNaN(roundedAmount) ? '' : roundedAmount };
+    setSparesDetails(updatedData);
+  };
+  const handleCGSTChange = (event) => {
+    const updatedData = { ...sparesDetails, cgst: event.target.value };
+    setSparesDetails(updatedData);
+  };
+  const handleSGSTChange = (event) => {
+    const updatedData = { ...sparesDetails, sgst: event.target.value };
     setSparesDetails(updatedData);
   };
 
@@ -197,6 +209,12 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
           </Grid>
           <Grid item xs={4}>
             <TextField label="Sell Rate" required variant="outlined" value={sparesDetails.sellRate || ''} onChange={handleSellRateChange} />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField label="CGST" required variant="outlined" value={sparesDetails.cgst || ''} onChange={handleCGSTChange} />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField label="SGST" required variant="outlined" value={sparesDetails.sgst || ''} onChange={handleSGSTChange} />
           </Grid>
           <Grid item xs={4}>
             <TextField

@@ -393,7 +393,7 @@ const AllJobs = () => {
                   <AddCircle />
                 </IconButton>
               </Tooltip>
-              {isAuthorizedForInvoice && (
+              {isAuthorizedForInvoice && row.original.jobStatus === 'CLOSED' && (
                 <Tooltip arrow placement="right" title="Invoice">
                   <IconButton
                     onClick={() => {
@@ -405,7 +405,7 @@ const AllJobs = () => {
                   </IconButton>
                 </Tooltip>
               )}
-              {isAuthorizedForEstimate && (
+              {isAuthorizedForEstimate && row.original.jobStatus === 'CLOSED' && (
                 <Tooltip arrow placement="right" title="Estimate">
                   <IconButton
                     onClick={() => {

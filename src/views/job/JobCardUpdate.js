@@ -36,7 +36,8 @@ const JobCardUpdate = () => {
   const [data, setData] = useState([]);
   // const [jobInfoOpen, setJobInfoOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
-  const [selectedRowSpares, setSelectedRowSpares] = useState({});
+  const [selectedRowJobCard, setSelectedRowJobCard] = useState({});
+  const [selectedRowJobSpares, setSelectedRowJobSpares] = useState({});
 
   // const [userDetails, setUserDetails] = useState({});
   // const [carDetails, setCarDetails] = useState({});
@@ -82,6 +83,7 @@ const JobCardUpdate = () => {
   const getJobSpares = async (id) => {
     try {
       const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + id);
+      setSelectedRowJobSpares(data);
       setJobSparesInfo(data.jobSparesInfo);
       setJobServiceInfo(data.jobServiceInfo);
       let sparesCost = {
@@ -191,7 +193,7 @@ const JobCardUpdate = () => {
   };
 
   const updateJobSparesInfo = (row) => {
-    setSelectedRowSpares(row);
+    setSelectedRowJobCard(row);
     getJobSpares(row.id);
   };
 
@@ -231,8 +233,9 @@ const JobCardUpdate = () => {
     handleGrandTotalValueChange(grandTotalValue);
 
     const jobSpares = {
-      id: selectedRowSpares.id,
-      jobId: selectedRowSpares.jobId,
+      // id: selectedRowJobCard.id,
+      // jobId: selectedRowJobCard.jobId,
+      ...selectedRowJobSpares,
       jobSparesInfo: jobSparesInfo,
       jobServiceInfo: jobServiceInfo,
       totalSparesValue: totalSparesValue,
@@ -261,7 +264,7 @@ const JobCardUpdate = () => {
     setJobInfoUpdateOpen(false);
     setSelectedRow({});
     setJobSparesUpdateOpen(false);
-    setSelectedRowSpares({});
+    setSelectedRowJobCard({});
     setJobSparesInfo(
       [...Array(1)].map(() => ({ sparesId: '', category: '', sparesAndLabour: '', qty: '', rate: '', discount: '', amount: '' }))
     );
@@ -472,7 +475,7 @@ const JobCardUpdate = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="h2">
-                    {'Updating Spares for JobCard: ' + selectedRowSpares.jobId + ' VehicleNo.: ' + selectedRowSpares.vehicleRegNo}
+                    {'Updating Spares for JobCard: ' + selectedRowJobCard.jobId + ' VehicleNo.: ' + selectedRowJobCard.vehicleRegNo}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>

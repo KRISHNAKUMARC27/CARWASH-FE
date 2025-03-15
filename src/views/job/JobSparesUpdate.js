@@ -34,6 +34,14 @@ const JobSparesUpdate = ({ data, updateData }) => {
   const [options, setOptions] = React.useState([]);
   const [allSpares, setAllSpares] = React.useState([]);
 
+  const discountRole = ['ADMIN'];
+
+  // Get logged-in user's roles
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
+
+  // Check if user is authorized to see the "DISCOUNT" column
+  const isAuthorizedForDiscount = roles.some((role) => discountRole.includes(role));
+
   React.useEffect(() => {
     fetchAllSparesCategoryListData();
     fetchAllSparesData();
@@ -111,19 +119,17 @@ const JobSparesUpdate = ({ data, updateData }) => {
   // };
 
   const addAdditionalRows = () => {
-    updateData((prevRows) => [
-      ...prevRows,
-      {
-        sparesId: '', // No sparesId yet
-        tempId: Date.now(), // Use a temporary ID until saved
-        category: '',
-        sparesAndLabour: '',
-        qty: '',
-        rate: '',
-        amount: '',
-        action: 'ADD'
-      }
-    ]);
+    const newRows = [...Array(1)].map(() => ({
+      sparesId: '',
+      category: '',
+      sparesAndLabour: '',
+      qty: '',
+      rate: '',
+      discount: '',
+      amount: '',
+      action: 'ADD'
+    }));
+    updateData((prevRows) => [...prevRows, ...newRows]);
   };
 
   // Handle row deletion by marking action as DELETE
@@ -232,7 +238,7 @@ const JobSparesUpdate = ({ data, updateData }) => {
                             //setChoosenSpares(newValue);
                             handleInputChange(row.sparesId, 'sparesAndLabour', newValue.desc);
                             handleInputChange(row.sparesId, 'rate', newValue.sellRate);
-                            handleInputChange(row.sparesId, 'amount', newValue.sellRate * row?.qty || 0);
+                            handleInputChange(row.sparesId, 'amount', newValue.sellRate * row?.qty - row?.discount || 0);
                             handleInputChange(row.sparesId, 'sparesId', newValue.id);
                           }}
                           renderInput={(params) => <TextField {...params} label="Search Spares" disabled={!!row.sparesId} />}
@@ -245,7 +251,7 @@ const JobSparesUpdate = ({ data, updateData }) => {
                           onChange={(e) => {
                             const val = e.target.value;
                             handleInputChange(row.sparesId, 'qty', val);
-                            handleInputChange(row.sparesId, 'amount', val * row?.rate || 0);
+                            handleInputChange(row.sparesId, 'amount', val * row?.rate - row?.discount || 0);
                           }}
                           onBlur={(e) => {
                             const val = e.target.value;
@@ -257,12 +263,31 @@ const JobSparesUpdate = ({ data, updateData }) => {
                         />
                       </TableCell>
                       <TableCell sx={{ width: '10%' }}>
-                        <TextField fullWidth value={row?.rate || ''} onChange={(e) => handleInputChange(index, 'rate', e.target.value)} />
+                        <TextField
+                          fullWidth
+                          disabled
+                          value={row?.rate || ''}
+                          onChange={(e) => handleInputChange(row.sparesId, 'rate', e.target.value)}
+                        />
                       </TableCell>
+                      {isAuthorizedForDiscount && (
+                        <TableCell sx={{ width: '10%' }}>
+                          <TextField
+                            fullWidth
+                            value={row?.discount || ''}
+                            onChange={(e) => {
+                              const val = Number(e.target.value) || 0;
+                              handleInputChange(row.sparesId, 'discount', val);
+                              handleInputChange(row.sparesId, 'amount', Number(row?.rate * row?.qty) - val || 0);
+                            }}
+                          />
+                        </TableCell>
+                      )}
                       <TableCell sx={{ width: '10%' }}>
                         <TextField
                           fullWidth
                           value={row?.amount || ''}
+                          disabled
                           onChange={(e) => handleInputChange(row.sparesId, 'amount', e.target.value)}
                         />
                       </TableCell>
