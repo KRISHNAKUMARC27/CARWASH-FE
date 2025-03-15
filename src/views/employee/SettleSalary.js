@@ -28,13 +28,21 @@ const SettleSalary = () => {
   const [salaryDate, setSalaryDate] = useState(dayjs()); // Default: Today
   const [employeeSalary, setEmployeeSalary] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMess, setAlertMess] = useState('');
-  const [alertColor, setAlertColor] = useState('');
   const [formValues, setFormValues] = useState({
     salaryPaid: '',
     paymentMode: ''
   });
+  const [salaryAdvanceDialogOpen, setSalaryAdvanceDialogOpen] = useState(false);
+  const [expense, setExpense] = useState({
+    type: 'SALARY-ADVANCE',
+    paymentMode: '',
+    expenseAmount: 0,
+    comment: ''
+  });
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMess, setAlertMess] = useState('');
+  const [alertColor, setAlertColor] = useState('');
 
   useEffect(() => {
     fetchAllEmployeeListData();
@@ -56,7 +64,7 @@ const SettleSalary = () => {
       );
       setEmployeeSalary(data);
       setFormValues({
-        salaryPaid: data.salaryEarned,
+        salaryPaid: data.salaryEarned - data.salaryAdvance,
         paymentMode: ''
       });
       setDialogOpen(true);
@@ -70,6 +78,7 @@ const SettleSalary = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+    setSalaryAdvanceDialogOpen(false);
     setEmployeeSalary(null);
     setFormValues({
       salaryPaid: '',
@@ -80,6 +89,14 @@ const SettleSalary = () => {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleExpenseChange = (e) => {
+    const { name, value } = e.target;
+    setExpense((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -107,6 +124,26 @@ const SettleSalary = () => {
     }
   };
 
+  const handleSubmitAdvance = async () => {
+    try {
+      const payload = {
+        ...expense,
+        desc: expense?.empName + ' - SALARY-ADVANCE'
+      };
+      await postRequest(`${process.env.REACT_APP_API_URL}/expense/salaryAdvance`, payload);
+
+      setAlertMess('Salary advance added successfully!');
+      setAlertColor('success');
+      setShowAlert(true);
+      handleDialogClose();
+    } catch (err) {
+      console.error('Error submitting advance:', err);
+      setAlertMess(err.message || 'Failed to submit advance.');
+      setAlertColor('error');
+      setShowAlert(true);
+    }
+  };
+
   return (
     <>
       <MainCard title="Settle Salary">
@@ -127,6 +164,20 @@ const SettleSalary = () => {
                 <TableCell>
                   <Button variant="contained" color="success" onClick={() => setupEmployeeSalary(employee.id)}>
                     Settle Salary
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="info"
+                    onClick={() => {
+                      setExpense((prev) => ({
+                        ...prev,
+                        empName: employee.name,
+                        empId: employee.id
+                      }));
+                      setSalaryAdvanceDialogOpen(true);
+                    }}
+                  >
+                    Pay Advance
                   </Button>
                 </TableCell>
               </TableRow>
@@ -189,6 +240,38 @@ const SettleSalary = () => {
         <DialogActions>
           <Button onClick={handleDialogClose}>Cancel</Button>
           <Button variant="contained" color="primary" onClick={handleSubmitSalary}>
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={salaryAdvanceDialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Paying Salary Advance for {expense?.empName}</DialogTitle>
+        <DialogContent>
+          <TextField fullWidth margin="dense" label="Expense Type" value={expense?.type || ''} InputProps={{ readOnly: true }} />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Advance Amount"
+            name="expenseAmount"
+            type="number"
+            value={expense.expenseAmount}
+            onChange={handleExpenseChange}
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Payment Mode</InputLabel>
+            <Select name="paymentMode" value={expense.paymentMode} onChange={handleExpenseChange} label="Payment Mode">
+              <MenuItem value="CASH">Cash</MenuItem>
+              <MenuItem value="BANK TRANSFER">Bank Transfer</MenuItem>
+              <MenuItem value="UPI">UPI</MenuItem>
+              {/* Add more if needed */}
+            </Select>
+          </FormControl>
+          <TextField fullWidth margin="dense" label="Comment" name="comment" value={expense.comment} onChange={handleExpenseChange} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button variant="contained" color="primary" onClick={handleSubmitAdvance}>
             Submit
           </Button>
         </DialogActions>
