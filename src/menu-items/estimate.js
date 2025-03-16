@@ -1,12 +1,13 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
   IconIdBadge2,
   IconTableExport,
-  IconTextPlus
+  IconTextPlus,
+  IconChartHistogram
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -47,6 +48,13 @@ const getEstimate = () => {
               type: 'item',
               url: '/estimate/receipts',
               icon: icons.IconTextPlus
+            },
+            {
+              id: 'reports',
+              title: 'Estimate Reports',
+              type: 'item',
+              url: '/estimate/reports',
+              icon: icons.IconChartHistogram
             }
           ]
         }
