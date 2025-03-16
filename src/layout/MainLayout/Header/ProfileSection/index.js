@@ -24,7 +24,8 @@ import {
   DialogContent,
   Grid,
   TextField,
-  Button
+  Button,
+  Autocomplete
 } from '@mui/material';
 
 // third-party
@@ -37,9 +38,10 @@ import User1 from 'assets/images/users/icons8-user-100.png';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import { IconLogout, IconSettings, IconReplace, IconUserCheck } from '@tabler/icons';
-import { postRequest } from 'utils/fetchRequest';
+import { IconLogout, IconSettings, IconReplace, IconUserCheck, IconUserPlus } from '@tabler/icons';
+import { postRequest, getRequest } from 'utils/fetchRequest';
 import MarkAttendance from 'views/attendance/MarkAttendance';
+import AlertDialog from 'views/utilities/AlertDialog';
 
 // ==============================|| PROFILE MENU ||============================== //
 
@@ -51,9 +53,20 @@ const ProfileSection = () => {
   const [open, setOpen] = useState(false);
   const [changePassOpen, setChangePassOpen] = useState(false);
   const [markAttendanceOpen, setMarkAttendanceOpen] = useState(false);
+  const [userCreateOpen, setUserCreateOpen] = useState(false);
 
   const username = localStorage.getItem('username');
   const [password, setPassword] = useState('');
+  const [rolesList, setRolesList] = useState([]);
+  const [userCreate, setUserCreate] = useState({});
+
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
+  const isAuthorizedForUserCreation = roles.some((role) => ['ADMIN'].includes(role));
+  const isAuthorizedForAttendance = roles.some((role) => ['ADMIN', 'MANAGER'].includes(role));
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMess, setAlertMess] = useState('');
+  const [alertColor, setAlertColor] = useState('');
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
@@ -80,6 +93,44 @@ const ProfileSection = () => {
 
   const handleMarkAttendanceClose = () => {
     setMarkAttendanceOpen(false);
+  };
+
+  const handleUserCreateClose = () => {
+    setUserCreateOpen(false);
+    setUserCreate({});
+  };
+
+  const isUserComplete = () => {
+    return userCreate.username?.trim() && userCreate.password?.trim() && Array.isArray(userCreate.roles) && userCreate.roles.length > 0;
+  };
+
+  const fetchAllRoles = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/user/role');
+      setRolesList(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const handleUserCreateInputChange = (field, value) => {
+    const updatedData = { ...userCreate, [field]: value };
+    setUserCreate(updatedData);
+  };
+
+  const handleCreateNewUser = async () => {
+    try {
+      await postRequest(process.env.REACT_APP_API_URL + '/user/signup', userCreate);
+      handleUserCreateClose();
+      setAlertMess(userCreate.username + ' added successfully ');
+      setAlertColor('success');
+      setShowAlert(true);
+    } catch (err) {
+      console.error(err.message);
+      setAlertMess(err.message);
+      setAlertColor('info');
+      setShowAlert(true);
+    }
   };
 
   const handlePassChange = async () => {
@@ -185,7 +236,7 @@ const ProfileSection = () => {
                           {username}
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">DMS User</Typography>
+                      <Typography variant="subtitle2">{roles.join(',')}</Typography>
                     </Stack>
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
@@ -207,16 +258,33 @@ const ProfileSection = () => {
                           }
                         }}
                       >
-                        <ListItemButton
-                          sx={{ borderRadius: `${customization.borderRadius}px` }}
-                          selected={true}
-                          onClick={() => setMarkAttendanceOpen(true)}
-                        >
-                          <ListItemIcon>
-                            <IconUserCheck stroke={1.5} size="1.3rem" />
-                          </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Mark Attendance</Typography>} />
-                        </ListItemButton>
+                        {isAuthorizedForAttendance && (
+                          <ListItemButton
+                            sx={{ borderRadius: `${customization.borderRadius}px` }}
+                            selected={true}
+                            onClick={() => setMarkAttendanceOpen(true)}
+                          >
+                            <ListItemIcon>
+                              <IconUserCheck stroke={1.5} size="1.3rem" />
+                            </ListItemIcon>
+                            <ListItemText primary={<Typography variant="body2">Mark Attendance</Typography>} />
+                          </ListItemButton>
+                        )}
+                        {isAuthorizedForUserCreation && (
+                          <ListItemButton
+                            sx={{ borderRadius: `${customization.borderRadius}px` }}
+                            selected={true}
+                            onClick={() => {
+                              fetchAllRoles();
+                              setUserCreateOpen(true);
+                            }}
+                          >
+                            <ListItemIcon>
+                              <IconUserPlus stroke={1.5} size="1.3rem" />
+                            </ListItemIcon>
+                            <ListItemText primary={<Typography variant="body2">Create User</Typography>} />
+                          </ListItemButton>
+                        )}
                         <ListItemButton
                           sx={{ borderRadius: `${customization.borderRadius}px` }}
                           selected={true}
@@ -281,17 +349,93 @@ const ProfileSection = () => {
         </DialogContent>
         <DialogActions></DialogActions>
       </Dialog>
-      <Dialog open={markAttendanceOpen} onClose={handleMarkAttendanceClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="sm">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          {' '}
-          <MarkAttendance />
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={handleMarkAttendanceClose}>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {markAttendanceOpen && (
+        <Dialog
+          open={markAttendanceOpen}
+          onClose={handleMarkAttendanceClose}
+          aria-labelledby="data-row-dialog-title"
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
+            {' '}
+            <MarkAttendance />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="error" onClick={handleMarkAttendanceClose}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {userCreateOpen && (
+        <Dialog open={userCreateOpen} onClose={handleUserCreateClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="sm">
+          <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
+            {' '}
+            <Grid container spacing={gridSpacing}>
+              <Grid item xs={12}>
+                <Grid container spacing={gridSpacing}>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="h2">Add new user</Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Username"
+                      required
+                      fullWidth
+                      variant="outlined"
+                      // type="password"
+                      value={userCreate.username || ''}
+                      onChange={(e) => handleUserCreateInputChange('username', e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Password"
+                      required
+                      fullWidth
+                      variant="outlined"
+                      // type="password"
+                      value={userCreate.password || ''}
+                      onChange={(e) => handleUserCreateInputChange('password', e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Autocomplete
+                      multiple
+                      required
+                      options={rolesList}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, value) => handleUserCreateInputChange('roles', value)}
+                      renderInput={(params) => (
+                        <TextField {...params} variant="outlined" label="Select Roles" placeholder="Roles" fullWidth />
+                      )}
+                      value={userCreate.roles || []}
+                      isOptionEqualToValue={(option, value) => option.id === value.id}
+                    />
+                  </Grid>
+                  {isUserComplete() && (
+                    <Grid item xs={12}>
+                      <Button variant="contained" color="error" onClick={handleCreateNewUser}>
+                        Add User
+                      </Button>
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="error" onClick={handleUserCreateClose}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </>
   );
 };

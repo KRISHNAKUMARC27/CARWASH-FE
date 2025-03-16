@@ -44,25 +44,25 @@ function JobView({ open, onClose, job }) {
     }
   };
 
-  const downloadJobCardPDF = async () => {
-    try {
-      const blob = await getBlobRequest(process.env.REACT_APP_API_URL + '/jobCard/pdf/' + job.id);
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.setAttribute('download', 'Job_' + job.jobId + '_' + job.vehicleRegNo + '.pdf'); // Use the filename you wish
-      //link.setAttribute('download', response.headers.get('Content-Disposition').split('filename=')[1] || 'download.pdf');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } catch (err) {
-      console.log(err.message);
-      onClose();
-      console.log(err.message);
-      setAlertMess(err.message);
-      setShowAlert(true);
-    }
-  };
+  // const downloadJobCardPDF = async () => {
+  //   try {
+  //     const blob = await getBlobRequest(process.env.REACT_APP_API_URL + '/jobCard/pdf/' + job.id);
+  //     const downloadUrl = window.URL.createObjectURL(blob);
+  //     const link = document.createElement('a');
+  //     link.href = downloadUrl;
+  //     link.setAttribute('download', 'Job_' + job.jobId + '_' + job.vehicleRegNo + '.pdf'); // Use the filename you wish
+  //     //link.setAttribute('download', response.headers.get('Content-Disposition').split('filename=')[1] || 'download.pdf');
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     link.parentNode.removeChild(link);
+  //   } catch (err) {
+  //     console.log(err.message);
+  //     onClose();
+  //     console.log(err.message);
+  //     setAlertMess(err.message);
+  //     setShowAlert(true);
+  //   }
+  // };
 
   const printBillPDF = async () => {
     try {
@@ -161,12 +161,9 @@ function JobView({ open, onClose, job }) {
         <DialogTitle id="data-row-dialog-title">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Typography variant="h4">{'JobCard: ' + job.jobId + ' VehicleNo.: ' + job.vehicleRegNo}</Typography>
-            <Tooltip title="Download Jobcard">
-              {/* <IconButton onClick={downloadJobCardPDF} color="primary">
-              <DownloadIcon />
-            </IconButton> */}
+            {/* <Tooltip title="Download Jobcard">
               <Button onClick={downloadJobCardPDF}>Print Jobcard</Button>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title="Print Bill">
               {/* <IconButton onClick={printBillPDF} color="primary">
               <DownloadIcon />

@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { DialogTitle, Button, FormControl, InputLabel, Select, MenuItem, IconButton, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 //import DataRowDialog from 'utils/DataRowDialog';
-import { OpenInNew, AddCircle, CurrencyRupee } from '@mui/icons-material';
+import { OpenInNew, AddCircle, CurrencyRupee, RequestQuote } from '@mui/icons-material';
 //import Alert from 'views/utilities/Alert';
 import { lazy } from 'react';
 
@@ -55,6 +55,7 @@ const AllJobs = () => {
   const estimateRole = ['ESTIMATE'];
   const isAuthorizedForInvoice = roles.some((role) => invoiceRole.includes(role));
   const isAuthorizedForEstimate = roles.some((role) => estimateRole.includes(role));
+  const isAuthorizedForOpeningClosedJobs = roles.some((role) => ['ADMIN'].includes(role));
 
   const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
   const [invoice, setInvoice] = useState();
@@ -120,6 +121,14 @@ const AllJobs = () => {
   };
 
   const updateJobCard = async (payload) => {
+    if (payload.jobStatus === 'OPEN') {
+      if (!isAuthorizedForOpeningClosedJobs) {
+        setAlertMess('Not authorized to Re-Open the job');
+        setAlertColor('error');
+        setShowAlert(true);
+        return;
+      }
+    }
     try {
       await putRequest(process.env.REACT_APP_API_URL + '/jobCard/jobStatus', payload);
       setSelectedRow({});
@@ -413,7 +422,7 @@ const AllJobs = () => {
                       prepareInitialEstimateObject(row.original);
                     }}
                   >
-                    <CurrencyRupee />
+                    <RequestQuote />
                   </IconButton>
                 </Tooltip>
               )}
