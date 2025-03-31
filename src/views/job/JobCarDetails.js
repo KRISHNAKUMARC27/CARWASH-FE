@@ -151,7 +151,7 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
             <TextField label="Vehicle Name" required variant="outlined" value={data.vehicleName || ''} onChange={handleVehicleNameChange} />
           </Grid>
           <Grid item xs={4}>
-            <TextField label="Vehicle K.Ms" required variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
+            <TextField label="Vehicle K.Ms" variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Take Photos</Typography>

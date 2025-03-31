@@ -141,7 +141,7 @@ const AllEmployee = () => {
 
   return (
     <div>
-      <AppointmentCalendar appointments={data} />
+      <AppointmentCalendar appointments={data} setAppointment={setAppointment} setAppointmentUpdateOpen={setAppointmentUpdateOpen} />
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}

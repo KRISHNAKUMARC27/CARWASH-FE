@@ -38,13 +38,7 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
   };
 
   function isServiceComplete() {
-    return (
-      serviceDetails.category &&
-      serviceDetails.desc &&
-      serviceDetails.amount !== null &&
-      serviceDetails.cgst !== null &&
-      serviceDetails.sgst !== null
-    );
+    return serviceDetails.category && serviceDetails.desc && serviceDetails.amount && serviceDetails.cgst && serviceDetails.sgst;
   }
 
   const saveServiceInventory = async (payload) => {

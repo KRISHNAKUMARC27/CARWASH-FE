@@ -59,7 +59,7 @@ function JobCardCreate({ data }) {
   }
 
   function isCarDetailsComplete() {
-    return userDetails.vehicleRegNo && userDetails.vehicleName && userDetails.kiloMeters;
+    return userDetails.vehicleRegNo && userDetails.vehicleName;
   }
 
   function isJobComplete() {

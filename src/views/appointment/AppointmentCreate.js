@@ -68,8 +68,13 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
   }
 
   const saveAppointment = async (payload) => {
+    const finalPayload = {
+      ...payload,
+      appointmentDateTime: dayjs(payload.appointmentDateTime).format('YYYY-MM-DDTHH:mm:ss')
+    };
+    //console.log(JSON.stringify(finalPayload));
     try {
-      const data = await postRequest(process.env.REACT_APP_API_URL + '/appointments', payload);
+      const data = await postRequest(process.env.REACT_APP_API_URL + '/appointments', finalPayload);
       if (fetchAllAppointmentData) {
         fetchAllAppointmentData();
       }
@@ -93,8 +98,11 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
     setAppointment(updatedData);
   };
 
+  // const handleDateTimeChange = (dateTime) => {
+  //   setAppointment({ ...appointment, appointmentDateTime: dateTime.format('YYYY-MM-DDTHH:mm:ss') });
+  // };
   const handleDateTimeChange = (dateTime) => {
-    setAppointment({ ...appointment, appointmentDateTime: dateTime.format('YYYY-MM-DDTHH:mm:ss') });
+    setAppointment({ ...appointment, appointmentDateTime: dateTime });
   };
 
   return (
@@ -136,9 +144,28 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
               label="Appointment Date & Time"
               value={appointment.appointmentDateTime}
               onChange={handleDateTimeChange}
+              shouldDisableDate={(date) => date.day() === 0}
               renderInput={(params) => <TextField {...params} fullWidth />}
             />
           </Grid>
+
+          <Grid item xs={4}>
+            <InputLabel id="demo-select-small">Status</InputLabel>
+            <Select
+              labelId="demo-select-small"
+              id="demo-select-small"
+              value={appointment.status || 'SCHEDULED'}
+              label="Status"
+              onChange={(e) => handleInputChange('status', e.target.value)}
+            >
+              {['SCHEDULED', 'IN-PROGRESS', 'COMPLETED', 'CANCELLED'].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </Grid>
+
           <Grid item xs={4}>
             <InputLabel id="demo-select-small">Staff</InputLabel>
             <Select
