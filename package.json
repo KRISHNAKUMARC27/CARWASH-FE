@@ -1,8 +1,8 @@
 {
-  "name": "berry-free-material-react-cra",
-  "version": "3.3.2",
+  "name": "car-wash-management",
+  "version": "1.0.0",
   "private": true,
-  "homepage": "https://berrydashboard.io/",
+  "homepage": "",
   "dependencies": {
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.1",
