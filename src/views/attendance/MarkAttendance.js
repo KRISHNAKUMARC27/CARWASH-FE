@@ -54,38 +54,40 @@ const MarkAttendance = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {employeeList.map((employee) => (
-              <TableRow key={employee.id}>
-                <TableCell>{employee.name}</TableCell>
-                <TableCell>
-                  <Button variant="contained" color="success" onClick={() => markAttendance(employee.id, 'IN')}>
-                    IN
-                  </Button>
-                  <Button variant="contained" color="primary" onClick={() => markAttendance(employee.id, 'OUT')}>
-                    OUT
-                  </Button>
-                  <Select
-                    value={absentReason[employee.id] || ''}
-                    onChange={(e) => setAbsentReason({ ...absentReason, [employee.id]: e.target.value })}
-                    displayEmpty
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    <MenuItem value="SICK">SICK</MenuItem>
-                    <MenuItem value="CASUAL">CASUAL</MenuItem>
-                    <MenuItem value="EARNED">EARNED</MenuItem>
-                    <MenuItem value="UNPAID">UNPAID</MenuItem>
-                  </Select>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => markAttendance(employee.id, 'ABSENT', absentReason[employee.id])}
-                    disabled={!absentReason[employee.id]}
-                  >
-                    Absent
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {employeeList
+              .filter((employee) => employee.status === 'ACTIVE')
+              .map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>{employee.name}</TableCell>
+                  <TableCell>
+                    <Button variant="contained" color="success" onClick={() => markAttendance(employee.id, 'IN')}>
+                      IN
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={() => markAttendance(employee.id, 'OUT')}>
+                      OUT
+                    </Button>
+                    <Select
+                      value={absentReason[employee.id] || ''}
+                      onChange={(e) => setAbsentReason({ ...absentReason, [employee.id]: e.target.value })}
+                      displayEmpty
+                    >
+                      <MenuItem value="">None</MenuItem>
+                      <MenuItem value="SICK">SICK</MenuItem>
+                      <MenuItem value="CASUAL">CASUAL</MenuItem>
+                      <MenuItem value="EARNED">EARNED</MenuItem>
+                      <MenuItem value="UNPAID">UNPAID</MenuItem>
+                    </Select>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => markAttendance(employee.id, 'ABSENT', absentReason[employee.id])}
+                      disabled={!absentReason[employee.id]}
+                    >
+                      Absent
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </MainCard>
