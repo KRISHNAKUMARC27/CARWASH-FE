@@ -42,7 +42,7 @@ import { IconLogout, IconSettings, IconReplace, IconUserCheck, IconUserPlus } fr
 import { postRequest, getRequest } from 'utils/fetchRequest';
 import MarkAttendance from 'views/attendance/MarkAttendance';
 import AlertDialog from 'views/utilities/AlertDialog';
-
+import SettleSalary from 'views/employee/SettleSalary';
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
@@ -53,6 +53,7 @@ const ProfileSection = () => {
   const [open, setOpen] = useState(false);
   const [changePassOpen, setChangePassOpen] = useState(false);
   const [markAttendanceOpen, setMarkAttendanceOpen] = useState(false);
+  const [settleSalaryOpen, setSettleSalaryOpen] = useState(false);
   const [userCreateOpen, setUserCreateOpen] = useState(false);
 
   const username = localStorage.getItem('username');
@@ -93,6 +94,10 @@ const ProfileSection = () => {
 
   const handleMarkAttendanceClose = () => {
     setMarkAttendanceOpen(false);
+  };
+
+  const handleSettleSalaryClose = () => {
+    setSettleSalaryOpen(false);
   };
 
   const handleUserCreateClose = () => {
@@ -270,6 +275,18 @@ const ProfileSection = () => {
                             <ListItemText primary={<Typography variant="body2">Mark Attendance</Typography>} />
                           </ListItemButton>
                         )}
+                        {isAuthorizedForAttendance && (
+                          <ListItemButton
+                            sx={{ borderRadius: `${customization.borderRadius}px` }}
+                            selected={true}
+                            onClick={() => setSettleSalaryOpen(true)}
+                          >
+                            <ListItemIcon>
+                              <IconUserCheck stroke={1.5} size="1.3rem" />
+                            </ListItemIcon>
+                            <ListItemText primary={<Typography variant="body2">Settle Salary</Typography>} />
+                          </ListItemButton>
+                        )}
                         {isAuthorizedForUserCreation && (
                           <ListItemButton
                             sx={{ borderRadius: `${customization.borderRadius}px` }}
@@ -363,6 +380,19 @@ const ProfileSection = () => {
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="error" onClick={handleMarkAttendanceClose}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      {settleSalaryOpen && (
+        <Dialog open={settleSalaryOpen} onClose={handleSettleSalaryClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="sm">
+          <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
+            {' '}
+            <SettleSalary />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="error" onClick={handleSettleSalaryClose}>
               Close
             </Button>
           </DialogActions>

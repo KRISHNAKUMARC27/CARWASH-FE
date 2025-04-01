@@ -44,6 +44,8 @@ const SettleSalary = () => {
   const [alertMess, setAlertMess] = useState('');
   const [alertColor, setAlertColor] = useState('');
 
+  const roles = JSON.parse(localStorage.getItem('roles') || '[]');
+
   useEffect(() => {
     fetchAllEmployeeListData();
   }, []);
@@ -162,9 +164,11 @@ const SettleSalary = () => {
               <TableRow key={employee.id}>
                 <TableCell>{employee.name}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="success" onClick={() => setupEmployeeSalary(employee.id)}>
-                    Settle Salary
-                  </Button>
+                  {roles.includes('ADMIN') && (
+                    <Button variant="contained" color="success" onClick={() => setupEmployeeSalary(employee.id)}>
+                      Settle Salary
+                    </Button>
+                  )}
                   <Button
                     variant="contained"
                     color="info"
