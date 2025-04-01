@@ -51,8 +51,8 @@ const AllJobs = () => {
   const [alertColor, setAlertColor] = React.useState('');
 
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
-  const invoiceRole = ['INVOICE'];
-  const estimateRole = ['ESTIMATE'];
+  const invoiceRole = ['INVOICE', 'ADMIN', 'MANAGER'];
+  const estimateRole = ['ESTIMATE', 'ADMIN', 'MANAGER'];
   const isAuthorizedForInvoice = roles.some((role) => invoiceRole.includes(role));
   const isAuthorizedForEstimate = roles.some((role) => estimateRole.includes(role));
   const isAuthorizedForOpeningClosedJobs = roles.some((role) => ['ADMIN'].includes(role));

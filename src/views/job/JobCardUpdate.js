@@ -132,7 +132,7 @@ const JobCardUpdate = () => {
   }
 
   function isCarDetailsComplete() {
-    return selectedRow.vehicleRegNo && selectedRow.vehicleName && selectedRow.kiloMeters;
+    return selectedRow.vehicleRegNo && selectedRow.vehicleName;
   }
 
   // function isJobInfoComplete() {
@@ -233,9 +233,9 @@ const JobCardUpdate = () => {
     handleGrandTotalValueChange(grandTotalValue);
 
     const jobSpares = {
-      // id: selectedRowJobCard.id,
-      // jobId: selectedRowJobCard.jobId,
       ...selectedRowJobSpares,
+      id: selectedRowJobCard.id,
+      jobId: selectedRowJobCard.jobId,
       jobSparesInfo: jobSparesInfo,
       jobServiceInfo: jobServiceInfo,
       totalSparesValue: totalSparesValue,

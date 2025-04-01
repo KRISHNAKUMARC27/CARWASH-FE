@@ -11,7 +11,7 @@ const icons = {
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
-const allowedRoles = ['ESTIMATE'];
+const allowedRoles = ['ESTIMATE', 'ADMIN', 'MANAGER'];
 
 const getEstimate = () => {
   const roles = JSON.parse(localStorage.getItem('roles'));
