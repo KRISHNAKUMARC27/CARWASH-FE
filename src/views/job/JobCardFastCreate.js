@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Grid, TextField, Button } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
@@ -11,14 +11,28 @@ const JobCardFastCreate = () => {
   const [fastJobCard, setFastJobCard] = useState({});
   const [jobServiceInfo, setJobServiceInfo] = useState([]);
   const [jobSparesInfo, setJobSparesInfo] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMess, setAlertMess] = useState('');
+  const [alertColor, setAlertColor] = useState('');
 
-  const [showAlert, setShowAlert] = React.useState(false);
-  const [alertMess, setAlertMess] = React.useState('');
-  const [alertColor, setAlertColor] = React.useState('');
+  // Refs for each field
+  const ownerNameRef = useRef();
+  const ownerPhoneRef = useRef();
+  const ownerAddressRef = useRef();
+  const vehicleRegNoRef = useRef();
+  const vehicleNameRef = useRef();
+  const kiloMetersRef = useRef();
+  const jobServiceFirstInputRef = useRef();
 
   const handleInputChange = (field, value) => {
-    const updatedData = { ...fastJobCard, [field]: value };
-    setFastJobCard(updatedData);
+    setFastJobCard({ ...fastJobCard, [field]: value });
+  };
+
+  const handleEnter = (e, nextRef) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      nextRef?.current?.focus();
+    }
   };
 
   const handleClose = () => {
@@ -27,23 +41,17 @@ const JobCardFastCreate = () => {
     setJobServiceInfo([]);
   };
 
-  function isUserDetailsComplete() {
-    return fastJobCard.ownerName && fastJobCard.ownerAddress && fastJobCard.ownerPhoneNumber;
-  }
+  const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerAddress && fastJobCard.ownerPhoneNumber;
 
-  function isCarDetailsComplete() {
-    return fastJobCard.vehicleRegNo && fastJobCard.vehicleName;
-  }
+  const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName;
 
-  function isJobComplete() {
-    return isUserDetailsComplete() && isCarDetailsComplete();
-  }
+  const isJobComplete = () => isUserDetailsComplete() && isCarDetailsComplete();
 
   const submitFastJobCard = async () => {
     const payload = {
       ...fastJobCard,
-      jobServiceInfo: jobServiceInfo,
-      jobSparesInfo: jobSparesInfo
+      jobServiceInfo,
+      jobSparesInfo
     };
     try {
       await postRequest(process.env.REACT_APP_API_URL + '/jobCard/fastjobCard', payload);
@@ -66,60 +74,73 @@ const JobCardFastCreate = () => {
         <Grid container direction="row" spacing={gridSpacing}>
           <Grid item xs={3}>
             <TextField
+              inputRef={ownerNameRef}
               label="Owner Name"
               required
               variant="outlined"
               value={fastJobCard.ownerName || ''}
               onChange={(e) => handleInputChange('ownerName', e.target.value)}
+              onKeyDown={(e) => handleEnter(e, ownerPhoneRef)}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
+              inputRef={ownerPhoneRef}
               label="Owner PhoneNumber"
               required
               variant="outlined"
               value={fastJobCard.ownerPhoneNumber || ''}
               onChange={(e) => handleInputChange('ownerPhoneNumber', e.target.value)}
+              onKeyDown={(e) => handleEnter(e, ownerAddressRef)}
             />
           </Grid>
           <Grid item xs={6}>
             <TextField
+              inputRef={ownerAddressRef}
               label="Owner Address"
               required
               fullWidth
               variant="outlined"
               value={fastJobCard.ownerAddress || ''}
               onChange={(e) => handleInputChange('ownerAddress', e.target.value)}
+              onKeyDown={(e) => handleEnter(e, vehicleRegNoRef)}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
+              inputRef={vehicleRegNoRef}
               label="Vehicle Reg. No."
               required
               variant="outlined"
               value={fastJobCard.vehicleRegNo || ''}
               onChange={(e) => handleInputChange('vehicleRegNo', e.target.value)}
+              onKeyDown={(e) => handleEnter(e, vehicleNameRef)}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
+              inputRef={vehicleNameRef}
               label="Vehicle Name"
               required
               variant="outlined"
               value={fastJobCard.vehicleName || ''}
               onChange={(e) => handleInputChange('vehicleName', e.target.value)}
+              onKeyDown={(e) => handleEnter(e, kiloMetersRef)}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
+              inputRef={kiloMetersRef}
               label="Vehicle K.Ms"
               variant="outlined"
               value={fastJobCard.kiloMeters || ''}
               onChange={(e) => handleInputChange('kiloMeters', e.target.value)}
+              onKeyDown={(e) => handleEnter(e, jobServiceFirstInputRef)} // No next field here
             />
           </Grid>
+
           <Grid item xs={12}>
-            <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} />
+            <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} firstInputRef={jobServiceFirstInputRef} />
           </Grid>
           <Grid item xs={12}>
             <JobSparesUpdate data={jobSparesInfo} updateData={setJobSparesInfo} />
@@ -133,8 +154,10 @@ const JobCardFastCreate = () => {
           )}
         </Grid>
       </MainCard>
+
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </>
   );
 };
+
 export default JobCardFastCreate;
