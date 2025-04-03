@@ -33,6 +33,14 @@ const pages = {
           //target: true
         },
         {
+          id: 'createFastCard',
+          title: 'Create Fast Card',
+          type: 'item',
+          url: '/card/createFastCard',
+          icon: icons.IconTextPlus
+          //target: true
+        },
+        {
           id: 'createCard',
           title: 'Create New Card',
           type: 'item',

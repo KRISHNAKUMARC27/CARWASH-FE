@@ -11,6 +11,7 @@ const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')))
 const CreateCard = Loadable(lazy(() => import('views/job/JobCardCreate')));
 const AllJobs = Loadable(lazy(() => import('views/job/AllJobs')));
 const JobCardUpdate = Loadable(lazy(() => import('views/job/JobCardUpdate')));
+const JobCardFastCreate = Loadable(lazy(() => import('views/job/JobCardFastCreate')));
 
 const AllSpares = Loadable(lazy(() => import('views/spares/AllSpares')));
 const CreateSpares = Loadable(lazy(() => import('views/spares/SparesCreate')));
@@ -72,6 +73,14 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
           <AllJobs />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'card/createFastCard',
+      element: (
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
+          <JobCardFastCreate />
         </PrivateRoute>
       )
     },
