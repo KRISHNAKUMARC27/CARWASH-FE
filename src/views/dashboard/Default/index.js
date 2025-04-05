@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 // material-ui
-import { Grid } from '@mui/material';
+import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 
 // project imports
@@ -32,6 +32,7 @@ const yearArray = Array.from({ length: 6 }, (_, i) => {
 const Dashboard = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalJobCards, setTotalJobCards] = useState(0);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
 
   const [displayFlag, setDisplayFlag] = useState(false);
   const roles = JSON.parse(localStorage.getItem('roles') || '[]');
@@ -39,6 +40,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchTotalRevenueData();
     fetchTotalJobCardsData();
+    fetchUpcomingAppointmentsData();
   }, []);
 
   const fetchTotalRevenueData = async () => {
@@ -61,8 +63,50 @@ const Dashboard = () => {
     }
   };
 
+  const fetchUpcomingAppointmentsData = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/appointments/upcoming');
+      setUpcomingAppointments(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const renderAppointmentsTable = () => (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Appointment Date & Time</TableCell>
+            <TableCell>Customer Name</TableCell>
+            <TableCell>Phone</TableCell>
+            <TableCell>Service</TableCell>
+            <TableCell>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {upcomingAppointments.map((appointment) => (
+            <TableRow key={appointment.id}>
+              <TableCell>{appointment.appointmentDateTime}</TableCell>
+              <TableCell>{appointment.customerName}</TableCell>
+              <TableCell>{appointment.phone}</TableCell>
+              <TableCell>{appointment.service}</TableCell>
+              <TableCell>{appointment.status}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
   return (
     <Grid container spacing={gridSpacing}>
+      {upcomingAppointments.length > 0 && (
+        <Grid item xs={12}>
+          <Typography variant="h4">Upcoming Appointments</Typography>
+          {renderAppointmentsTable()}
+        </Grid>
+      )}
       <Grid item xs={12}>
         <Grid container spacing={gridSpacing}>
           <Grid item lg={4} md={12} sm={12} xs={12}>
@@ -151,6 +195,13 @@ const Dashboard = () => {
           {/* <Grid item xs={12} md={4}>
             <PopularCard isLoading={isLoading} />
           </Grid> */}
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} md={12}>
+            {renderAppointmentsTable()}
+          </Grid>
         </Grid>
       </Grid>
     </Grid>

@@ -70,6 +70,7 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
   const saveAppointment = async (payload) => {
     const finalPayload = {
       ...payload,
+      status: payload.status ? payload.status : 'SCHEDULED',
       appointmentDateTime: dayjs(payload.appointmentDateTime).format('YYYY-MM-DDTHH:mm:ss')
     };
     //console.log(JSON.stringify(finalPayload));
