@@ -1,7 +1,22 @@
 import { useEffect, useState } from 'react';
 
 // material-ui
-import { Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import {
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Divider
+} from '@mui/material';
 import dayjs from 'dayjs';
 
 // project imports
@@ -19,6 +34,9 @@ import TotalJobCardRevenueBarChart from './TotalJobCardRevenueBarChart';
 import TotalJobRevenueSplitBarChart from './TotalJobRevenueSplitBarChart';
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 import { getRequest } from 'utils/fetchRequest';
+import Loadable from 'ui-component/Loadable';
+import { lazy } from 'react';
+const AppointmentCreate = Loadable(lazy(() => import('views/appointment/AppointmentCreate')));
 
 const currentYear = dayjs().year();
 const yearArray = Array.from({ length: 6 }, (_, i) => {
@@ -36,6 +54,9 @@ const Dashboard = () => {
 
   const [displayFlag, setDisplayFlag] = useState(false);
   const roles = JSON.parse(localStorage.getItem('roles') || '[]');
+
+  const [appointment, setAppointment] = useState({});
+  const [appointmentUpdateOpen, setAppointmentUpdateOpen] = useState(false);
 
   useEffect(() => {
     fetchTotalRevenueData();
@@ -72,6 +93,15 @@ const Dashboard = () => {
     }
   };
 
+  const handleRowClick = (appointment) => {
+    setAppointment(appointment);
+    setAppointmentUpdateOpen(true);
+  };
+
+  const handleClose = () => {
+    setAppointmentUpdateOpen(false);
+  };
+
   const renderAppointmentsTable = () => (
     <TableContainer component={Paper}>
       <Table>
@@ -86,7 +116,7 @@ const Dashboard = () => {
         </TableHead>
         <TableBody>
           {upcomingAppointments.map((appointment) => (
-            <TableRow key={appointment.id}>
+            <TableRow key={appointment.id} onClick={() => handleRowClick(appointment)} style={{ cursor: 'pointer' }}>
               <TableCell>{appointment.appointmentDateTime}</TableCell>
               <TableCell>{appointment.customerName}</TableCell>
               <TableCell>{appointment.phone}</TableCell>
@@ -100,111 +130,140 @@ const Dashboard = () => {
   );
 
   return (
-    <Grid container spacing={gridSpacing}>
-      {upcomingAppointments.length > 0 && (
-        <Grid item xs={12}>
-          <Typography variant="h4">Upcoming Appointments</Typography>
-          {renderAppointmentsTable()}
-        </Grid>
-      )}
-      <Grid item xs={12}>
-        <Grid container spacing={gridSpacing}>
-          <Grid item lg={4} md={12} sm={12} xs={12}>
-            <TotalJobsLineChartCard />
-          </Grid>
-          <Grid item lg={4} md={12} sm={12} xs={12}>
-            <Grid container spacing={gridSpacing}>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.total} name={'Total JobCards'} />}
-              </Grid>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.open} name={'Total Open JobCards'} />}
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item lg={4} md={12} sm={12} xs={12}>
-            <Grid container spacing={gridSpacing}>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.closed} name={'Total Closed JobCards'} />}
-              </Grid>
-              <Grid item sm={6} xs={12} md={6} lg={12}>
-                {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.cancelled} name={'Total Cancelled JobCards'} />}
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
-      {roles.includes('ADMIN') && (
-        <>
+    <>
+      <Grid container spacing={gridSpacing}>
+        {upcomingAppointments.length > 0 && (
           <Grid item xs={12}>
-            <Grid container spacing={gridSpacing}>
-              <Grid item lg={4} md={12} sm={12} xs={12}>
-                <TotalRevenueLineChartCard />
-              </Grid>
-              <Grid item lg={4} md={12} sm={12} xs={12}>
-                <Grid container spacing={gridSpacing}>
-                  <Grid item sm={6} xs={12} md={6} lg={12}>
-                    {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.total} name={'Total Income'} />}
-                  </Grid>
-                  <Grid item sm={6} xs={12} md={6} lg={12}>
-                    {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.totalSparesWorth} name={'Total Spares Worth'} />}
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item lg={4} md={12} sm={12} xs={12}>
-                <Grid container spacing={gridSpacing}>
-                  <Grid item sm={6} xs={12} md={6} lg={12}>
-                    {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.spares} name={'Total Income From Spares'} />}
-                  </Grid>
-                  <Grid item sm={6} xs={12} md={6} lg={12}>
-                    {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.labor} name={'Total Income From Labor'} />}
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={6}>
-            <Grid container spacing={gridSpacing}>
-              <Grid item xs={12} md={12}>
-                <TotalJobRevenueSplitBarChart yearArray={yearArray} />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item xs={6}>
-            <Grid container spacing={gridSpacing}>
-              <Grid item xs={12} md={12}>
-                <TotalJobCardRevenueBarChart yearArray={yearArray} />
-              </Grid>
-            </Grid>
-          </Grid>
-        </>
-      )}
-      <Grid item xs={12}>
-        <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} md={12}>
-            <TotalJobCardBarChart yearArray={yearArray} />
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} md={12}>
-            {/* <TotalGrowthBarChart isLoading={isLoading} /> */}
-            <SparesEvents></SparesEvents>
-          </Grid>
-          {/* <Grid item xs={12} md={4}>
-            <PopularCard isLoading={isLoading} />
-          </Grid> */}
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={gridSpacing}>
-          <Grid item xs={12} md={12}>
+            <Typography variant="h4">Upcoming Appointments</Typography>
             {renderAppointmentsTable()}
           </Grid>
+        )}
+        <Grid item xs={12}>
+          <Grid container spacing={gridSpacing}>
+            <Grid item lg={4} md={12} sm={12} xs={12}>
+              <TotalJobsLineChartCard />
+            </Grid>
+            <Grid item lg={4} md={12} sm={12} xs={12}>
+              <Grid container spacing={gridSpacing}>
+                <Grid item sm={6} xs={12} md={6} lg={12}>
+                  {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.total} name={'Total JobCards'} />}
+                </Grid>
+                <Grid item sm={6} xs={12} md={6} lg={12}>
+                  {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.open} name={'Total Open JobCards'} />}
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item lg={4} md={12} sm={12} xs={12}>
+              <Grid container spacing={gridSpacing}>
+                <Grid item sm={6} xs={12} md={6} lg={12}>
+                  {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.closed} name={'Total Closed JobCards'} />}
+                </Grid>
+                <Grid item sm={6} xs={12} md={6} lg={12}>
+                  {displayFlag && <TotalIncomeLightCard totalJobCards={totalJobCards.cancelled} name={'Total Cancelled JobCards'} />}
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+        {roles.includes('ADMIN') && (
+          <>
+            <Grid item xs={12}>
+              <Grid container spacing={gridSpacing}>
+                <Grid item lg={4} md={12} sm={12} xs={12}>
+                  <TotalRevenueLineChartCard />
+                </Grid>
+                <Grid item lg={4} md={12} sm={12} xs={12}>
+                  <Grid container spacing={gridSpacing}>
+                    <Grid item sm={6} xs={12} md={6} lg={12}>
+                      {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.total} name={'Total Income'} />}
+                    </Grid>
+                    <Grid item sm={6} xs={12} md={6} lg={12}>
+                      {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.totalSparesWorth} name={'Total Spares Worth'} />}
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item lg={4} md={12} sm={12} xs={12}>
+                  <Grid container spacing={gridSpacing}>
+                    <Grid item sm={6} xs={12} md={6} lg={12}>
+                      {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.spares} name={'Total Income From Spares'} />}
+                    </Grid>
+                    <Grid item sm={6} xs={12} md={6} lg={12}>
+                      {displayFlag && <TotalIncomeDarkCard totalRevenue={totalRevenue.labor} name={'Total Income From Labor'} />}
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Grid container spacing={gridSpacing}>
+                <Grid item xs={12} md={12}>
+                  <TotalJobRevenueSplitBarChart yearArray={yearArray} />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Grid container spacing={gridSpacing}>
+                <Grid item xs={12} md={12}>
+                  <TotalJobCardRevenueBarChart yearArray={yearArray} />
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )}
+        <Grid item xs={12}>
+          <Grid container spacing={gridSpacing}>
+            <Grid item xs={12} md={12}>
+              <TotalJobCardBarChart yearArray={yearArray} />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={gridSpacing}>
+            <Grid item xs={12} md={12}>
+              {/* <TotalGrowthBarChart isLoading={isLoading} /> */}
+              <SparesEvents></SparesEvents>
+            </Grid>
+            {/* <Grid item xs={12} md={4}>
+            <PopularCard isLoading={isLoading} />
+          </Grid> */}
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={gridSpacing}>
+            <Grid item xs={12} md={12}>
+              {renderAppointmentsTable()}
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
+      <Dialog open={appointmentUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
+        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
+          {' '}
+          <Grid container spacing={gridSpacing}>
+            <Grid item xs={12}>
+              <Grid container spacing={gridSpacing}>
+                <Grid item xs={12}>
+                  <Divider />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h2">{'Updating Appointment: ' + appointment.customerName}</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <AppointmentCreate
+                    data={appointment}
+                    setAppointmentUpdateOpen={setAppointmentUpdateOpen}
+                    fetchAllAppointmentData={fetchUpcomingAppointmentsData}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
