@@ -268,6 +268,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                       value={split.paymentAmount}
                       onChange={(e) => handlePaymentSplitChange(index, 'paymentAmount', parseFloat(e.target.value) || 0)}
                       type="number"
+                      disabled={!!split.paymentDate}
                     />
                   </Grid>
                   <Grid item xs={5}>
@@ -278,6 +279,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                       fullWidth
                       required
                       value={split.paymentMode}
+                      disabled={!!split.paymentDate}
                       onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
                     >
                       {paymentModes.map((mode) => (
@@ -289,11 +291,11 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                   </Grid>
                   <Grid item xs={2}>
                     {index === 0 ? (
-                      <IconButton onClick={addPaymentSplitRow} color="primary">
+                      <IconButton onClick={addPaymentSplitRow} color="primary" disabled={!!split.paymentDate}>
                         <AddCircle />
                       </IconButton>
                     ) : (
-                      <IconButton onClick={() => removePaymentSplitRow(index)} color="secondary">
+                      <IconButton onClick={() => removePaymentSplitRow(index)} color="secondary" disabled={!!split.paymentDate}>
                         <RemoveCircle />
                       </IconButton>
                     )}
@@ -318,6 +320,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                         value={credit.amount}
                         onChange={(e) => handleCreditPaymentChange(index, 'amount', parseFloat(e.target.value) || 0)}
                         type="number"
+                        disabled={!!credit.creditDate}
                       />
                     </Grid>
                     <Grid item xs={3}>
@@ -328,6 +331,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                         fullWidth
                         required
                         value={credit.paymentMode}
+                        disabled={!!credit.creditDate}
                         onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
                       >
                         {paymentModes
@@ -345,11 +349,12 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                         variant="outlined"
                         fullWidth
                         value={credit.comment || ''}
+                        disabled={!!credit.creditDate}
                         onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={1}>
-                      <IconButton onClick={() => removeCreditPaymentRow(index)} color="secondary">
+                      <IconButton onClick={() => removeCreditPaymentRow(index)} color="secondary" disabled={!!credit.creditDate}>
                         <RemoveCircle />
                       </IconButton>
                     </Grid>
