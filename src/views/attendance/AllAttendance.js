@@ -1,11 +1,13 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { createTheme, ThemeProvider, useTheme } from '@mui/material';
+import { createTheme, ThemeProvider, useTheme, MenuItem } from '@mui/material';
 //import { gridSpacing } from 'store/constant';
-import { getRequest } from 'utils/fetchRequest';
+import { getRequest, putRequest } from 'utils/fetchRequest';
 
 const AllAttendance = () => {
   const [data, setData] = useState([]);
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
+  const isAuthorizedForAttendanceEdit = roles.some((role) => ['ADMIN'].includes(role));
 
   useEffect(() => {
     fetchAllAttendanceData();
@@ -23,39 +25,81 @@ const AllAttendance = () => {
     }
   };
 
+  const handleSaveRow = async ({ row, values, exitEditingMode }) => {
+    try {
+      // assuming your backend expects something like:
+      // { employeeId, date, checkInTime, checkOutTime, leaveType }
+      const payload = {
+        ...row.original, // all original fields (e.g., id, employeeId, date, etc.)
+        ...values // overwrite with updated checkInTime, checkOutTime, leaveType
+      };
+      if (isAuthorizedForAttendanceEdit) {
+        console.log(JSON.stringify(payload));
+        await putRequest(`${process.env.REACT_APP_API_URL}/employee/attendance`, payload);
+      } else {
+        alert('Not authorized to edit attendance');
+        return;
+      }
+
+      // update local state
+      fetchAllAttendanceData();
+
+      exitEditingMode(); // required to exit editing mode after save
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   //should be memoized or stable
   const columns = useMemo(
     () => [
       {
         accessorKey: 'employeeName', //access nested data with dot notation
         header: 'Name',
-        size: 100
+        size: 100,
+        enableEditing: false
         // filterVariant: 'multi-select'
       },
       {
         accessorKey: 'date', //normal accessorKey
         header: 'Date',
-        size: 50
+        size: 50,
+        enableEditing: false
       },
       {
         accessorKey: 'checkInTime',
         header: 'In Time',
-        size: 100
+        size: 100,
+        muiTableBodyCellEditTextFieldProps: {
+          type: 'time'
+        }
       },
       {
         accessorKey: 'checkOutTime',
         header: 'Out Time',
-        size: 100
+        size: 100,
+        muiTableBodyCellEditTextFieldProps: {
+          type: 'time'
+        }
       },
       {
         accessorKey: 'workingHours',
         header: 'Working Hours',
-        size: 50
+        size: 50,
+        enableEditing: false
       },
       {
         accessorKey: 'leaveType',
         header: 'Leave',
-        size: 100
+        size: 100,
+        muiTableBodyCellEditTextFieldProps: {
+          select: true,
+          children: ['NONE', 'SICK', 'CASUAL', 'EARNED', 'UNPAID'].map((option) => (
+            <MenuItem key={option} value={option === 'NONE' ? null : option}>
+              {option === 'NONE' ? 'None' : option}
+            </MenuItem>
+          ))
+        }
       }
     ],
     []
@@ -126,6 +170,7 @@ const AllAttendance = () => {
               background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
             }
           }}
+          onEditingRowSave={handleSaveRow}
         />{' '}
       </ThemeProvider>
     </div>
