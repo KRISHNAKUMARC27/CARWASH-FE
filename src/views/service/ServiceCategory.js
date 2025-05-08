@@ -11,11 +11,10 @@ import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from '
 function ServiceCategory() {
   const [serviceCategory, setServiceCategory] = useState({});
   const [serviceCategoryList, setServiceCategoryList] = useState([]);
-  const [oldCategory, setOldCategory] = useState('');
-  const [newCategory, setNewCategory] = useState('');
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
+  const [editRowIndex, setEditRowIndex] = useState(null);
 
   useEffect(() => {
     fetchAllServiceCategoryListData();
@@ -29,7 +28,11 @@ function ServiceCategory() {
   const fetchAllServiceCategoryListData = async () => {
     try {
       const data = await getRequest(process.env.REACT_APP_API_URL + '/service/serviceCategory');
-      setServiceCategoryList(data);
+      const enhancedData = data.map((item) => ({
+        ...item,
+        _originalCategory: item.category
+      }));
+      setServiceCategoryList(enhancedData);
     } catch (err) {
       console.error(err.message);
     }
@@ -83,15 +86,18 @@ function ServiceCategory() {
     }
   };
 
-  const handleInputChange = (oldValue, newValue, index, column) => {
-    const newRows = [...serviceCategoryList];
-    newRows[index][column] = newValue;
-    setServiceCategoryList(newRows);
-    setOldCategory(oldValue);
-    setNewCategory(newValue);
+  const handleInputChange = (newValue, index, column) => {
+    const updatedRows = [...serviceCategoryList];
+    updatedRows[index][column] = newValue;
+    setServiceCategoryList(updatedRows);
+    setEditRowIndex(index); // mark which row is being edited
   };
 
   const updateServiceCategory = async () => {
+    if (editRowIndex === null) return;
+
+    const oldCategory = serviceCategoryList[editRowIndex]._originalCategory || '';
+    const newCategory = serviceCategoryList[editRowIndex].category;
     try {
       const data = await putRequestNotStringify(
         process.env.REACT_APP_API_URL + '/service/serviceCategory/' + oldCategory + '/' + newCategory,
@@ -100,16 +106,13 @@ function ServiceCategory() {
       setAlertMess('ServiceCategory ' + data.category + ' updated successfully');
       setAlertColor('success');
       setShowAlert(true);
-      setOldCategory('');
-      setNewCategory('');
+      setEditRowIndex(null); // reset the edit row index
       fetchAllServiceCategoryListData();
     } catch (err) {
       console.error(err.message);
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
-      setOldCategory('');
-      setNewCategory('');
     }
   };
 
@@ -156,7 +159,7 @@ function ServiceCategory() {
                           <TextField
                             variant="outlined"
                             value={row?.category || ''}
-                            onChange={(e) => handleInputChange(row.category, e.target.value, index, 'category')}
+                            onChange={(e) => handleInputChange(e.target.value, index, 'category')}
                           />
                         </TableCell>
                         <TableCell>{row?.count}</TableCell>

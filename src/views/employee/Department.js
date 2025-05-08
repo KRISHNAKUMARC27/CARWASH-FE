@@ -10,12 +10,11 @@ import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from '
 function Department() {
   const [department, setDepartment] = useState({});
   const [departmentList, setDepartmentList] = useState([]);
-  const [oldDepartment, setOldDepartment] = useState('');
-  const [newDepartment, setNewDepartment] = useState('');
+
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
-
+  const [editRowIndex, setEditRowIndex] = useState(null);
   useEffect(() => {
     fetchAllDepartmentListData();
 
@@ -28,7 +27,11 @@ function Department() {
   const fetchAllDepartmentListData = async () => {
     try {
       const data = await getRequest(process.env.REACT_APP_API_URL + '/employee/department');
-      setDepartmentList(data);
+      const enhancedData = data.map((item) => ({
+        ...item,
+        _originalDepartment: item.departmentName
+      }));
+      setDepartmentList(enhancedData);
     } catch (err) {
       console.error(err.message);
     }
@@ -82,15 +85,18 @@ function Department() {
     }
   };
 
-  const handleInputChange = (oldValue, newValue, index, column) => {
-    const newRows = [...departmentList];
-    newRows[index][column] = newValue;
-    setDepartmentList(newRows);
-    setOldDepartment(oldValue);
-    setNewDepartment(newValue);
+  const handleInputChange = (newValue, index, column) => {
+    const updatedRows = [...departmentList];
+    updatedRows[index][column] = newValue;
+    setDepartmentList(updatedRows);
+    setEditRowIndex(index); // mark which row is being edited
   };
 
   const updateDepartment = async () => {
+    if (editRowIndex === null) return;
+
+    const oldDepartment = departmentList[editRowIndex]._originalDepartment || '';
+    const newDepartment = departmentList[editRowIndex].departmentName;
     try {
       const data = await putRequestNotStringify(
         process.env.REACT_APP_API_URL + '/employee/department/' + oldDepartment + '/' + newDepartment,
@@ -99,16 +105,13 @@ function Department() {
       setAlertMess('Department ' + data.category + ' updated successfully');
       setAlertColor('success');
       setShowAlert(true);
-      setOldDepartment('');
-      setNewDepartment('');
+      setEditRowIndex(null); // reset the edit row index
       fetchAllDepartmentListData();
     } catch (err) {
       console.error(err.message);
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
-      setOldDepartment('');
-      setNewDepartment('');
     }
   };
 
@@ -155,7 +158,7 @@ function Department() {
                           <TextField
                             variant="outlined"
                             value={row?.departmentName || ''}
-                            onChange={(e) => handleInputChange(row.departmentName, e.target.value, index, 'departmentName')}
+                            onChange={(e) => handleInputChange(e.target.value, index, 'departmentName')}
                           />
                         </TableCell>
                         <TableCell>{row?.laborCount}</TableCell>

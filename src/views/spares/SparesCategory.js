@@ -11,11 +11,10 @@ import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from '
 function SparesCategory() {
   const [sparesCategory, setSparesCategory] = useState({});
   const [sparesCategoryList, setSparesCategoryList] = useState([]);
-  const [oldCategory, setOldCategory] = useState('');
-  const [newCategory, setNewCategory] = useState('');
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
+  const [editRowIndex, setEditRowIndex] = useState(null);
 
   useEffect(() => {
     fetchAllSparesCategoryListData();
@@ -29,7 +28,11 @@ function SparesCategory() {
   const fetchAllSparesCategoryListData = async () => {
     try {
       const data = await getRequest(process.env.REACT_APP_API_URL + '/spares/sparesCategory');
-      setSparesCategoryList(data);
+      const enhancedData = data.map((item) => ({
+        ...item,
+        _originalCategory: item.category
+      }));
+      setSparesCategoryList(enhancedData);
     } catch (err) {
       console.error(err.message);
     }
@@ -82,15 +85,18 @@ function SparesCategory() {
     }
   };
 
-  const handleInputChange = (oldValue, newValue, index, column) => {
-    const newRows = [...sparesCategoryList];
-    newRows[index][column] = newValue;
-    setSparesCategoryList(newRows);
-    setOldCategory(oldValue);
-    setNewCategory(newValue);
+  const handleInputChange = (newValue, index, column) => {
+    const updatedRows = [...sparesCategoryList];
+    updatedRows[index][column] = newValue;
+    setSparesCategoryList(updatedRows);
+    setEditRowIndex(index); // mark which row is being edited
   };
 
   const updateSparesCategory = async () => {
+    if (editRowIndex === null) return;
+
+    const oldCategory = sparesCategoryList[editRowIndex]._originalCategory || '';
+    const newCategory = sparesCategoryList[editRowIndex].category;
     try {
       const data = await putRequestNotStringify(
         process.env.REACT_APP_API_URL + '/spares/sparesCategory/' + oldCategory + '/' + newCategory,
@@ -99,16 +105,13 @@ function SparesCategory() {
       setAlertMess('SparesCategory ' + data.category + ' updated successfully');
       setAlertColor('success');
       setShowAlert(true);
-      setOldCategory('');
-      setNewCategory('');
+      setEditRowIndex(null); // reset the edit row index
       fetchAllSparesCategoryListData();
     } catch (err) {
       console.error(err.message);
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
-      setOldCategory('');
-      setNewCategory('');
     }
   };
 
@@ -155,7 +158,7 @@ function SparesCategory() {
                           <TextField
                             variant="outlined"
                             value={row?.category || ''}
-                            onChange={(e) => handleInputChange(row.category, e.target.value, index, 'category')}
+                            onChange={(e) => handleInputChange(e.target.value, index, 'category')}
                           />
                         </TableCell>
                         <TableCell>{row?.sparesCount}</TableCell>
