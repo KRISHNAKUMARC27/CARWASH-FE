@@ -16,7 +16,8 @@ import {
   InputLabel,
   FormControl,
   Stack,
-  Grid
+  Grid,
+  Box
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -183,42 +184,50 @@ const SettleSalary = () => {
         <Stack direction="row" spacing={2} mb={2}>
           <DatePicker label="Salary Date" value={salaryDate} onChange={(newValue) => setSalaryDate(newValue)} format="YYYY-MM-DD" />
         </Stack>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Staff Name</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {employeeList.map((employee) => (
-              <TableRow key={employee.id}>
-                <TableCell>{employee.name}</TableCell>
-                <TableCell>
-                  {roles.includes('ADMIN') && (
-                    <Button variant="contained" color="success" onClick={() => setupEmployeeSalary(employee.id)}>
-                      Settle Salary
-                    </Button>
-                  )}
-                  <Button
-                    variant="contained"
-                    color="info"
-                    onClick={() => {
-                      setExpense((prev) => ({
-                        ...prev,
-                        empName: employee.name,
-                        empId: employee.id
-                      }));
-                      setSalaryAdvanceDialogOpen(true);
-                    }}
-                  >
-                    Pay Advance
-                  </Button>
-                </TableCell>
+        <Box sx={{ overflowX: 'auto' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Staff Name</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {employeeList.map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>{employee.name}</TableCell>
+                  <TableCell>
+                    {roles.includes('ADMIN') && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => setupEmployeeSalary(employee.id)}
+                        sx={{ mb: { xs: 1, sm: 0 } }}
+                      >
+                        Settle Salary
+                      </Button>
+                    )}
+                    <Button
+                      variant="contained"
+                      color="info"
+                      sx={{ ml: { sm: 1 }, mt: { xs: 1, sm: 0 } }}
+                      onClick={() => {
+                        setExpense((prev) => ({
+                          ...prev,
+                          empName: employee.name,
+                          empId: employee.id
+                        }));
+                        setSalaryAdvanceDialogOpen(true);
+                      }}
+                    >
+                      Pay Advance
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
       </MainCard>
 
       {/* Salary Dialog */}
@@ -227,12 +236,12 @@ const SettleSalary = () => {
         onClose={handleDialogClose}
         maxWidth="xs"
         fullWidth
-        sx={{ '& .MuiDialog-paper': { width: '100%', maxWidth: 500 } }}
+        sx={{ '& .MuiDialog-paper': { width: '100%', maxWidth: 500, m: 1 } }}
       >
         <DialogTitle>Settle Salary - {employeeSalary?.name}</DialogTitle>
         <DialogContent>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -241,7 +250,7 @@ const SettleSalary = () => {
                 InputProps={{ readOnly: true }}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -259,7 +268,7 @@ const SettleSalary = () => {
             InputProps={{ readOnly: true }}
           />
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -268,7 +277,7 @@ const SettleSalary = () => {
                 InputProps={{ readOnly: true }}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -308,7 +317,13 @@ const SettleSalary = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={salaryAdvanceDialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+      <Dialog
+        open={salaryAdvanceDialogOpen}
+        onClose={handleDialogClose}
+        maxWidth="xs"
+        fullWidth
+        sx={{ '& .MuiDialog-paper': { width: '100%', maxWidth: 500, m: 1 } }}
+      >
         <DialogTitle>Paying Salary Advance for {expense?.empName}</DialogTitle>
         <DialogContent>
           <TextField fullWidth margin="dense" label="Expense Type" value={expense?.type || ''} InputProps={{ readOnly: true }} />
@@ -328,7 +343,6 @@ const SettleSalary = () => {
               <MenuItem value="CASH">Cash</MenuItem>
               <MenuItem value="BANK TRANSFER">Bank Transfer</MenuItem>
               <MenuItem value="UPI">UPI</MenuItem>
-              {/* Add more if needed */}
             </Select>
           </FormControl>
           <TextField fullWidth margin="dense" label="Comment" name="comment" value={expense.comment} onChange={handleExpenseChange} />
