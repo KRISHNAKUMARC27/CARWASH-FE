@@ -224,7 +224,16 @@ const JobCardUpdate = () => {
       }, 0); // Start with a total of 0
   };
 
+  const hasEmptyRow = (rows) =>
+    rows.some(
+      ({ sparesId, category, sparesAndLabour, qty, rate, amount }) => !sparesId || !category || !sparesAndLabour || !qty || !rate || !amount
+    );
+
   const submitJobSpares = () => {
+    if (hasEmptyRow(jobServiceInfo) || hasEmptyRow(jobSparesInfo)) {
+      alert('Please fill all required fields in Service or Spares');
+      return;
+    }
     const totalSparesValue = sumAmounts(jobSparesInfo);
     handleTotalSparesValueChange(totalSparesValue);
     const totalServiceValue = sumAmounts(jobServiceInfo);

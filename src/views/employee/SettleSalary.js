@@ -36,7 +36,7 @@ const SettleSalary = () => {
   const [expense, setExpense] = useState({
     type: 'SALARY-ADVANCE',
     paymentMode: '',
-    expenseAmount: 0,
+    expenseAmount: 1,
     comment: ''
   });
 
@@ -98,6 +98,12 @@ const SettleSalary = () => {
 
   const handleExpenseChange = (e) => {
     const { name, value } = e.target;
+    const numericValue = Number(value);
+
+    if (numericValue < 1) {
+      alert('Amount must be greater than 0');
+      return;
+    }
     setExpense((prev) => ({
       ...prev,
       [name]: value
@@ -261,6 +267,7 @@ const SettleSalary = () => {
             type="number"
             value={expense.expenseAmount}
             onChange={handleExpenseChange}
+            inputProps={{ min: 1 }}
           />
           <FormControl fullWidth margin="dense">
             <InputLabel>Payment Mode</InputLabel>

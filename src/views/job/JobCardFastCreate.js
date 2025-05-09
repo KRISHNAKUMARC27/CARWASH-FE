@@ -47,7 +47,16 @@ const JobCardFastCreate = () => {
 
   const isJobComplete = () => isUserDetailsComplete() && isCarDetailsComplete();
 
+  const hasEmptyRow = (rows) =>
+    rows.some(
+      ({ sparesId, category, sparesAndLabour, qty, rate, amount }) => !sparesId || !category || !sparesAndLabour || !qty || !rate || !amount
+    );
+
   const submitFastJobCard = async () => {
+    if (hasEmptyRow(jobServiceInfo) || hasEmptyRow(jobSparesInfo)) {
+      alert('Please fill all required fields in Service or Spares');
+      return;
+    }
     const payload = {
       ...fastJobCard,
       jobServiceInfo,
