@@ -51,6 +51,7 @@ function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
       if (setExpenseUpdateOpen) {
         setExpenseUpdateOpen(false);
       }
+      setExpenseDetails({});
       setAlertMess(data.desc + ' added successfully ');
       setAlertColor('success');
       setShowAlert(true);

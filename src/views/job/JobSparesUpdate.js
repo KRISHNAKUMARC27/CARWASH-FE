@@ -129,7 +129,7 @@ const JobSparesUpdate = ({ data, updateData }) => {
       amount: '',
       action: 'ADD'
     }));
-    updateData((prevRows) => [...prevRows, ...newRows]);
+    updateData((prevRows) => [...(prevRows ?? []), ...newRows]);
   };
 
   // Handle row deletion by marking action as DELETE

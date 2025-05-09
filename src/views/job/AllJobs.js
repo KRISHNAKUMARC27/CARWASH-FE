@@ -463,11 +463,11 @@ const AllJobs = () => {
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSave} color="primary">
-              Save
-            </Button>
             <Button onClick={handleClose} color="secondary">
               Close
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              Save
             </Button>
           </DialogActions>
         </Dialog>

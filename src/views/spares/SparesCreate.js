@@ -67,6 +67,7 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
       if (setSparesUpdateOpen) {
         setSparesUpdateOpen(false);
       }
+      setSparesDetails({});
       setAlertMess(data.desc + ' added successfully ');
       setAlertColor('success');
       setShowAlert(true);

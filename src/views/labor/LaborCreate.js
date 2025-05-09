@@ -49,6 +49,7 @@ function LaborCreate({ data, setLaborUpdateOpen, fetchAllLaborData }) {
       if (setLaborUpdateOpen) {
         setLaborUpdateOpen(false);
       }
+      setLaborDetails({});
       setAlertMess(data.desc + ' added successfully ');
       setAlertColor('success');
       setShowAlert(true);

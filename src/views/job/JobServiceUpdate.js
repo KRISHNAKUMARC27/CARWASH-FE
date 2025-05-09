@@ -87,7 +87,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
         amount: ''
       }
     ];
-    updateData((prevRows) => [...prevRows, ...newRows]);
+    updateData((prevRows) => [...(prevRows ?? []), ...newRows]);
   };
 
   const handleRowDelete = (rowIndex) => {
@@ -96,17 +96,18 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
     if (newRows.length > 0) {
       updateData(newRows);
     } else {
-      updateData([
-        {
-          sparesId: '',
-          category: '',
-          sparesAndLabour: '',
-          qty: '',
-          rate: '',
-          discount: '',
-          amount: ''
-        }
-      ]);
+      // updateData([
+      //   {
+      //     sparesId: '',
+      //     category: '',
+      //     sparesAndLabour: '',
+      //     qty: '',
+      //     rate: '',
+      //     discount: '',
+      //     amount: ''
+      //   }
+      // ]);
+      updateData(null);
     }
   };
 
@@ -125,7 +126,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: '20%' }}>Category</TableCell>
-                <TableCell sx={{ width: '30%' }}>Spares</TableCell>
+                <TableCell sx={{ width: '30%' }}>Service</TableCell>
                 <TableCell sx={{ width: '10%' }}>Qty</TableCell>
                 <TableCell sx={{ width: '10%' }}>Rate</TableCell>
                 {isAuthorizedForDiscount && <TableCell sx={{ width: '10%' }}>Discount</TableCell>}
@@ -134,7 +135,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row, index) => (
+              {data?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell sx={{ width: '20%' }}>
                     <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>

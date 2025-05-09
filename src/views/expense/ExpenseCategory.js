@@ -10,11 +10,10 @@ import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from '
 function ExpenseCategory() {
   const [expenseCategory, setExpenseCategory] = useState({});
   const [expenseCategoryList, setExpenseCategoryList] = useState([]);
-  const [oldCategory, setOldCategory] = useState('');
-  const [newCategory, setNewCategory] = useState('');
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
+  const [editRowIndex, setEditRowIndex] = useState(null);
 
   useEffect(() => {
     fetchAllExpenseCategoryListData();
@@ -28,7 +27,11 @@ function ExpenseCategory() {
   const fetchAllExpenseCategoryListData = async () => {
     try {
       const data = await getRequest(process.env.REACT_APP_API_URL + '/expense/expenseCategory');
-      setExpenseCategoryList(data);
+      const enhancedData = data.map((item) => ({
+        ...item,
+        _originalCategory: item.category
+      }));
+      setExpenseCategoryList(enhancedData);
     } catch (err) {
       console.error(err.message);
     }
@@ -82,15 +85,18 @@ function ExpenseCategory() {
     }
   };
 
-  const handleInputChange = (oldValue, newValue, index, column) => {
-    const newRows = [...expenseCategoryList];
-    newRows[index][column] = newValue;
-    setExpenseCategoryList(newRows);
-    setOldCategory(oldValue);
-    setNewCategory(newValue);
+  const handleInputChange = (newValue, index, column) => {
+    const updatedRows = [...expenseCategoryList];
+    updatedRows[index][column] = newValue;
+    setExpenseCategoryList(updatedRows);
+    setEditRowIndex(index); // mark which row is being edited
   };
 
   const updateExpenseCategory = async () => {
+    if (editRowIndex === null) return;
+
+    const oldCategory = expenseCategoryList[editRowIndex]._originalCategory || '';
+    const newCategory = expenseCategoryList[editRowIndex].category;
     try {
       const data = await putRequestNotStringify(
         process.env.REACT_APP_API_URL + '/expense/expenseCategory/' + oldCategory + '/' + newCategory,
@@ -99,16 +105,13 @@ function ExpenseCategory() {
       setAlertMess('ExpenseCategory ' + data.category + ' updated successfully');
       setAlertColor('success');
       setShowAlert(true);
-      setOldCategory('');
-      setNewCategory('');
+      setEditRowIndex(null); // reset the edit row index
       fetchAllExpenseCategoryListData();
     } catch (err) {
       console.error(err.message);
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
-      setOldCategory('');
-      setNewCategory('');
     }
   };
 
@@ -154,7 +157,7 @@ function ExpenseCategory() {
                           <TextField
                             variant="outlined"
                             value={row?.category || ''}
-                            onChange={(e) => handleInputChange(row.category, e.target.value, index, 'category')}
+                            onChange={(e) => handleInputChange(e.target.value, index, 'category')}
                           />
                         </TableCell>
                         <TableCell>
