@@ -287,7 +287,7 @@ const BillPayment = ({
                       variant="outlined"
                       fullWidth
                       required
-                      value={split.paymentMode}
+                      value={split.paymentMode || 'CASH'}
                       disabled={!!split.paymentDate}
                       onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
                     >
@@ -339,7 +339,7 @@ const BillPayment = ({
                         variant="outlined"
                         fullWidth
                         required
-                        value={credit.paymentMode}
+                        value={credit.paymentMode || 'CASH'}
                         disabled={!!credit.creditDate}
                         onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
                       >
@@ -378,11 +378,11 @@ const BillPayment = ({
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleEstimateSave} color="secondary">
-              Save
-            </Button>
             <Button onClick={handleClose} color="secondary">
               Close
+            </Button>
+            <Button onClick={handleEstimateSave} color="secondary">
+              Save
             </Button>
           </DialogActions>
         </Dialog>

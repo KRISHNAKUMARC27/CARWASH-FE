@@ -172,6 +172,7 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
               value={employeeDetails.salary || ''}
               onChange={(e) => handleInputChange('salary', parseFloat(e.target.value) || 0)}
               type="number"
+              inputProps={{ min: 0 }}
             />
           </Grid>
           <Grid item xs={3}>

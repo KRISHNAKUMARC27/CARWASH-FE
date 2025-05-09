@@ -55,7 +55,7 @@ function JobCardCreate({ data }) {
   }, []);
 
   function isUserDetailsComplete() {
-    return userDetails.ownerName && userDetails.ownerAddress && userDetails.ownerPhoneNumber;
+    return userDetails.ownerName && userDetails.ownerPhoneNumber;
   }
 
   function isCarDetailsComplete() {

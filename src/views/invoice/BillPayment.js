@@ -278,7 +278,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                       variant="outlined"
                       fullWidth
                       required
-                      value={split.paymentMode}
+                      value={split.paymentMode || 'CASH'}
                       disabled={!!split.paymentDate}
                       onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
                     >
@@ -330,7 +330,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
                         variant="outlined"
                         fullWidth
                         required
-                        value={credit.paymentMode}
+                        value={credit.paymentMode || 'CASH'}
                         disabled={!!credit.creditDate}
                         onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
                       >
@@ -369,11 +369,11 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleInvoiceSave} color="secondary">
-              Save
-            </Button>
             <Button onClick={handleClose} color="secondary">
               Close
+            </Button>
+            <Button onClick={handleInvoiceSave} color="secondary">
+              Save
             </Button>
           </DialogActions>
         </Dialog>

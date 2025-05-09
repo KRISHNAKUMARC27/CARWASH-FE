@@ -40,7 +40,6 @@ const JobUserDetails = ({ data, updateData }) => {
           <Grid item xs={6}>
             <TextField
               label="Owner Address"
-              required
               fullWidth
               margin="dense"
               multiline

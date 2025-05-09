@@ -41,7 +41,7 @@ const JobCardFastCreate = () => {
     setJobServiceInfo([]);
   };
 
-  const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerAddress && fastJobCard.ownerPhoneNumber;
+  const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerPhoneNumber;
 
   const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName;
 
@@ -107,7 +107,6 @@ const JobCardFastCreate = () => {
             <TextField
               inputRef={ownerAddressRef}
               label="Owner Address"
-              required
               fullWidth
               variant="outlined"
               value={fastJobCard.ownerAddress || ''}

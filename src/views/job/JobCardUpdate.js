@@ -128,7 +128,7 @@ const JobCardUpdate = () => {
   };
 
   function isUserDetailsComplete() {
-    return selectedRow.ownerName && selectedRow.ownerAddress && selectedRow.ownerPhoneNumber;
+    return selectedRow.ownerName && selectedRow.ownerPhoneNumber;
   }
 
   function isCarDetailsComplete() {

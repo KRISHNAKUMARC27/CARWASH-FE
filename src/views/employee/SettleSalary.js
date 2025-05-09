@@ -339,7 +339,7 @@ const SettleSalary = () => {
           />
           <FormControl fullWidth margin="dense">
             <InputLabel>Payment Mode</InputLabel>
-            <Select name="paymentMode" value={expense.paymentMode} onChange={handleExpenseChange} label="Payment Mode">
+            <Select name="paymentMode" value={expense.paymentMode || 'CASH'} onChange={handleExpenseChange} label="Payment Mode">
               <MenuItem value="CASH">Cash</MenuItem>
               <MenuItem value="BANK TRANSFER">Bank Transfer</MenuItem>
               <MenuItem value="UPI">UPI</MenuItem>

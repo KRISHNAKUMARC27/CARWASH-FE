@@ -109,7 +109,7 @@ function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
               select
               variant="outlined"
               required
-              value={expenseDetails.paymentMode || ''}
+              value={expenseDetails.paymentMode || 'CASH'}
               onChange={(e) => handleInputChange('paymentMode', e.target.value)}
             >
               {paymentMode.map((mode) => (
