@@ -15,7 +15,8 @@ import {
   TextField,
   InputLabel,
   FormControl,
-  Stack
+  Stack,
+  Grid
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -30,7 +31,8 @@ const SettleSalary = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     salaryPaid: '',
-    paymentMode: 'CASH'
+    paymentMode: 'CASH',
+    deductAdvance: ''
   });
   const [salaryAdvanceDialogOpen, setSalaryAdvanceDialogOpen] = useState(false);
   const [expense, setExpense] = useState({
@@ -67,7 +69,8 @@ const SettleSalary = () => {
       setEmployeeSalary(data);
       setFormValues({
         salaryPaid: data.salaryEarned - data.salaryAdvance,
-        paymentMode: ''
+        paymentMode: 'CASH',
+        deductAdvance: 0
       });
       setDialogOpen(true);
     } catch (err) {
@@ -90,10 +93,32 @@ const SettleSalary = () => {
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    const numericValue = Number(value);
+
+    setFormValues((prev) => {
+      let updated = { ...prev, [name]: value };
+
+      if (name === 'deductAdvance') {
+        const maxDeduct = Math.min(Number(employeeSalary?.salaryAdvance || 0), Number(employeeSalary?.salaryEarned || 0));
+
+        let safeValue = numericValue;
+
+        if (numericValue > maxDeduct) {
+          alert(`Deduction cannot be greater than Salary Advance or Salary Earned (Max allowed: ${maxDeduct})`);
+          safeValue = maxDeduct;
+        }
+
+        const newSalaryPaid = (Number(employeeSalary?.salaryEarned) || 0) - (safeValue || 0);
+
+        updated = {
+          ...updated,
+          deductAdvance: safeValue,
+          salaryPaid: newSalaryPaid < 0 ? 0 : newSalaryPaid
+        };
+      }
+
+      return updated;
+    });
   };
 
   const handleExpenseChange = (e) => {
@@ -197,23 +222,35 @@ const SettleSalary = () => {
       </MainCard>
 
       {/* Salary Dialog */}
-      <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        maxWidth="xs"
+        fullWidth
+        sx={{ '& .MuiDialog-paper': { width: '100%', maxWidth: 500 } }}
+      >
         <DialogTitle>Settle Salary - {employeeSalary?.name}</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Salary Type"
-            value={employeeSalary?.salaryType || ''}
-            InputProps={{ readOnly: true }}
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Settlement Type"
-            value={employeeSalary?.salarySettlementType || ''}
-            InputProps={{ readOnly: true }}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Salary Type"
+                value={employeeSalary?.salaryType || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Settlement Type"
+                value={employeeSalary?.salarySettlementType || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+          </Grid>
           <TextField
             fullWidth
             margin="dense"
@@ -221,13 +258,29 @@ const SettleSalary = () => {
             value={employeeSalary?.salaryEarned || ''}
             InputProps={{ readOnly: true }}
           />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Salary Advance"
-            value={employeeSalary?.salaryAdvance || ''}
-            InputProps={{ readOnly: true }}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Salary Advance"
+                value={employeeSalary?.salaryAdvance || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Deduct from Advance"
+                name="deductAdvance"
+                type="number"
+                value={formValues.deductAdvance}
+                onChange={handleFormChange}
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+          </Grid>
           <TextField
             fullWidth
             margin="dense"
@@ -235,7 +288,7 @@ const SettleSalary = () => {
             name="salaryPaid"
             type="number"
             value={formValues.salaryPaid}
-            onChange={handleFormChange}
+            InputProps={{ readOnly: true }}
           />
           <FormControl fullWidth margin="dense">
             <InputLabel>Payment Mode</InputLabel>
