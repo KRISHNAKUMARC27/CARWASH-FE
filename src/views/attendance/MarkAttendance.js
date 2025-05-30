@@ -8,12 +8,15 @@ import AlertDialog from 'views/utilities/AlertDialog';
 const MarkAttendance = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [absentReason, setAbsentReason] = useState({});
+  const [attendanceData, setAttendanceData] = useState([]);
+
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
   const [alertColor, setAlertColor] = React.useState('');
 
   useEffect(() => {
     fetchAllEmployeeListData();
+    fetchAttendanceData();
   }, []);
 
   const fetchAllEmployeeListData = async () => {
@@ -22,6 +25,15 @@ const MarkAttendance = () => {
       setEmployeeList(data);
     } catch (err) {
       console.error('Error fetching employees:', err);
+    }
+  };
+
+  const fetchAttendanceData = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/employee/attendance/today');
+      setAttendanceData(data);
+    } catch (err) {
+      console.error('Error fetching attendance data:', err);
     }
   };
 
@@ -35,12 +47,18 @@ const MarkAttendance = () => {
       setAlertMess(`Attendance marked: ${status}`);
       setAlertColor('success');
       setShowAlert(true);
+      fetchAttendanceData();
     } catch (err) {
       console.error('Error marking attendance:', err);
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
+      fetchAttendanceData();
     }
+  };
+
+  const isAttendanceMarked = (employeeId) => {
+    return attendanceData.some((record) => record.employeeId === employeeId);
   };
 
   return (
@@ -60,16 +78,27 @@ const MarkAttendance = () => {
                 <TableRow key={employee.id}>
                   <TableCell>{employee.name}</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="success" onClick={() => markAttendance(employee.id, 'IN')}>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => markAttendance(employee.id, 'IN')}
+                      disabled={isAttendanceMarked(employee.id)}
+                    >
                       IN
                     </Button>
-                    <Button variant="contained" color="primary" onClick={() => markAttendance(employee.id, 'OUT')}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => markAttendance(employee.id, 'OUT')}
+                      disabled={isAttendanceMarked(employee.id)}
+                    >
                       OUT
                     </Button>
                     <Select
                       value={absentReason[employee.id] || ''}
                       onChange={(e) => setAbsentReason({ ...absentReason, [employee.id]: e.target.value })}
                       displayEmpty
+                      disabled={isAttendanceMarked(employee.id)}
                     >
                       <MenuItem value="">None</MenuItem>
                       <MenuItem value="SICK">SICK</MenuItem>
@@ -81,7 +110,7 @@ const MarkAttendance = () => {
                       variant="contained"
                       color="error"
                       onClick={() => markAttendance(employee.id, 'ABSENT', absentReason[employee.id])}
-                      disabled={!absentReason[employee.id]}
+                      disabled={!absentReason[employee.id] || isAttendanceMarked(employee.id)}
                     >
                       Absent
                     </Button>

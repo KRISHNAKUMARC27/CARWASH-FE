@@ -35,14 +35,19 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
 
   const startCamera = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API is not supported in this browser.');
+      }
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Rear camera
+        video: { facingMode: 'environment' }
       });
+
       setStream(mediaStream);
       setIsCapturing(true);
     } catch (error) {
       console.error('Error accessing the camera:', error);
-      alert('Unable to access the camera.');
+      alert('Unable to access the camera. Make sure you are using a supported browser and have given permission.');
     }
   };
 

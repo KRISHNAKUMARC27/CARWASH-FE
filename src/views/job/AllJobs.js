@@ -349,8 +349,10 @@ const AllJobs = () => {
   );
   const gradientAngle = 195;
   const color1 = '#fff';
-  const color2 = '#c38b81';
-
+  let color2 = '#c38b81';
+  if (roles.includes('INVOICE')) {
+    color2 = '#71acda';
+  }
   return (
     <div>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}

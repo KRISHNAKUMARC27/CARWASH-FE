@@ -14,7 +14,29 @@ import themeTypography from './typography';
  */
 
 export const theme = (customization) => {
-  const color = colors;
+  let color = { ...colors };
+
+  // Get the role from localStorage (you stored it as a JSON string)
+  let userRoles;
+  try {
+    userRoles = JSON.parse(localStorage.getItem('roles'));
+  } catch {
+    userRoles = [];
+  }
+
+  const userRole = Array.isArray(userRoles) ? userRoles[0] : null; // You can enhance this logic
+
+  // Apply role-specific color overrides
+  switch (userRole) {
+    case 'INVOICE':
+      color.errorDark = color.primary800; // light orange
+      color.errorMain = color.primaryMain; // purple
+      break;
+    // Add more role-specific overrides if needed
+    default:
+      // Keep default colors
+      break;
+  }
 
   const themeOption = {
     colors: color,

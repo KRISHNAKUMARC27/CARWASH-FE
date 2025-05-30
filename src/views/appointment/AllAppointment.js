@@ -62,6 +62,11 @@ const AllEmployee = () => {
         size: 100
       },
       {
+        accessorKey: 'vehicleRegNo',
+        header: 'Vehicle Reg.No',
+        size: 100
+      },
+      {
         accessorKey: 'appointmentDateTime',
         header: 'AppointmentTime',
         size: 200

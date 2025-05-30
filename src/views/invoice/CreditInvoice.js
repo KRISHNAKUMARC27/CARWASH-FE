@@ -23,7 +23,7 @@ const CreditInvoice = () => {
 
   const [settleBillDialogOpen, setSettleBillDialogOpen] = useState(false);
   const [paymentModes, setPaymentModes] = useState([]);
-
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
   useEffect(() => {
     fetchCreditOpenInvoiceData();
     getPaymentModes();
@@ -171,8 +171,12 @@ const CreditInvoice = () => {
     [globalTheme]
   );
   const gradientAngle = 195;
-  const color1 = '#e2d7d5';
-  const color2 = '#cf8989';
+  let color1 = '#e2d7d5';
+  let color2 = '#cf8989';
+  if (roles.includes('INVOICE')) {
+    color1 = '#e2d7d5';
+    color2 = '#71acda';
+  }
 
   return (
     <>

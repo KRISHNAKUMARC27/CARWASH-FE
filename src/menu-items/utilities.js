@@ -10,7 +10,7 @@ const icons = {
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
-const allowedRoles = ['INVOICE', 'ESTIMATE', 'ADMIN', 'MANAGER'];
+const allowedRoles = ['ADMIN', 'MANAGER'];
 
 const getUtilities = () => {
   const roles = JSON.parse(localStorage.getItem('roles'));

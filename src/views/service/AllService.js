@@ -27,6 +27,7 @@ const AllService = () => {
   //const [serviceCategoryList, setServiceCategoryList] = useState([]);
   const [serviceDetails, setServiceDetails] = useState({});
   const [serviceUpdateOpen, setServiceUpdateOpen] = useState(false);
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
 
   useEffect(() => {
     fetchAllServiceData();
@@ -129,7 +130,10 @@ const AllService = () => {
   );
   const gradientAngle = 195;
   const color1 = '#ffff';
-  const color2 = '#bc9595';
+  let color2 = '#bc9595';
+  if (roles.includes('INVOICE')) {
+    color2 = '#71acda';
+  }
 
   return (
     <div>

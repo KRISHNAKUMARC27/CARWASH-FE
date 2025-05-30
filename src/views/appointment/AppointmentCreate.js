@@ -64,7 +64,9 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
   };
 
   function isAppointmentComplete() {
-    return appointment.customerName && appointment.phone && appointment.service && appointment.appointmentDateTime;
+    return (
+      appointment.customerName && appointment.phone && appointment.vehicleRegNo && appointment.service && appointment.appointmentDateTime
+    );
   }
 
   const saveAppointment = async (payload) => {
@@ -130,6 +132,15 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
             />
           </Grid>
           <Grid item xs={4}>
+            <TextField
+              label="Vehicle Registration No"
+              required
+              variant="outlined"
+              value={appointment.vehicleRegNo || ''}
+              onChange={(e) => handleInputChange('vehicleRegNo', e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={4}>
             <Autocomplete
               options={serviceList}
               getOptionLabel={(option) => option.desc}
@@ -167,7 +178,7 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
             </Select>
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid item xs={2}>
             <InputLabel id="demo-select-small">Staff</InputLabel>
             <Select
               labelId="demo-select-small"
@@ -183,7 +194,7 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
               ))}
             </Select>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={10}>
             <TextField
               label="Description"
               variant="standard" // Optional: "standard" works, but "outlined" improves visibility
