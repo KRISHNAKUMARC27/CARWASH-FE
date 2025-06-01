@@ -49,6 +49,7 @@ const ExpenseCategory = Loadable(lazy(() => import('views/expense/ExpenseCategor
 const ExpenseReports = Loadable(lazy(() => import('views/expense/ExpenseReports')));
 
 const AllPayments = Loadable(lazy(() => import('views/financials/AllPayments')));
+const PaymentsReports = Loadable(lazy(() => import('views/financials/PaymentsReports')));
 
 const MainRoutes = {
   path: '/',
@@ -323,6 +324,14 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['ADMIN']}>
           <AllPayments />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'financials/reports',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <PaymentsReports />
         </PrivateRoute>
       )
     }

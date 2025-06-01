@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import { getRequest } from 'utils/fetchRequest';
 import { Tabs, Tab, Typography, Grid, Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import MainCard from 'ui-component/cards/MainCard';
 import isoWeek from 'dayjs/plugin/isoWeek';
 dayjs.extend(isoWeek);
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, ArcElement, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ExpenseReports = () => {
   const [expenseData, setExpenseData] = useState({});
@@ -157,15 +157,15 @@ const ExpenseReports = () => {
         {/* Chart */}
         <Grid item xs={12} md={4}>
           <Typography variant="h6">Total Expense</Typography>
-          <Bar data={generateTotalExpenseChart()} />
+          <Doughnut data={generateTotalExpenseChart()} />
         </Grid>
-        <Grid item xs={12} md={4}>
-          <Typography variant="h6">By Type</Typography>
-          <Bar data={generateByTypeChart()} />
-        </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={8}>
           <Typography variant="h6">By Payment Mode</Typography>
           <Bar data={generateByPaymentModeChart()} />
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Typography variant="h6">By Type</Typography>
+          <Bar data={generateByTypeChart()} />
         </Grid>
       </Grid>
     </MainCard>

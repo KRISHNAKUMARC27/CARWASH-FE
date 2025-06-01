@@ -243,25 +243,27 @@ const AttendanceReports = () => {
     <MainCard title="Attendance/Leave Report">
       <Grid container spacing={2}>
         {/* Attendance Section */}
-        <Grid container item spacing={2} lg={4} md={4} sm={12} xs={12}>
-          <Grid item xs={12}>
+        <Grid container item spacing={2} lg={12} md={12} sm={12} xs={12}>
+          <Grid item xs={4}>
             <DatePicker label="Start Date" value={startDate} onChange={(newValue) => setStartDate(newValue)} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={4}>
             <DatePicker label="End Date" value={endDate} onChange={(newValue) => setEndDate(newValue)} />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={4}>
             <Button
               variant="contained"
               color="primary"
               onClick={() => {
                 fetchDateRangeData();
+                fetchLeaveDateRangeData();
+                fetchWorkingDaysDateRangeData();
               }}
             >
-              Get Attendance
+              Fetch Range Data
             </Button>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={8}>
             <Typography variant="h2">Attendance</Typography>
             <Tabs value={tabValue} onChange={handleTabChange}>
               <Tab label="Daily" />
@@ -280,18 +282,7 @@ const AttendanceReports = () => {
         </Grid>
 
         {/* Leave Section */}
-        <Grid container item spacing={2} lg={4} md={4} sm={12} xs={12}>
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                fetchLeaveDateRangeData();
-              }}
-            >
-              Fetch Leave
-            </Button>
-          </Grid>
+        <Grid container item spacing={2} lg={12} md={12} sm={12} xs={12}>
           <Grid item xs={12}>
             <Typography variant="h2">Leave</Typography>
             <Tabs value={leaveTabValue} onChange={handleLeaveTabChange}>
@@ -310,18 +301,7 @@ const AttendanceReports = () => {
         </Grid>
 
         {/* Working Days Section */}
-        <Grid container item spacing={2} lg={4} md={4} sm={12} xs={12}>
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => {
-                fetchWorkingDaysDateRangeData();
-              }}
-            >
-              Get Working Days
-            </Button>
-          </Grid>
+        <Grid container item spacing={2} lg={12} md={12} sm={12} xs={12}>
           <Grid item xs={12}>
             <Typography variant="h2">Working Days</Typography>
             <Tabs value={workingDaysTabValue} onChange={handleWorkingDaysTabChange}>

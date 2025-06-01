@@ -8,7 +8,7 @@ import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 
 function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
-  const [expenseDetails, setExpenseDetails] = useState(data || {});
+  const [expenseDetails, setExpenseDetails] = useState(data || { paymentMode: 'CASH' });
   const [expenseCategoryList, setExpenseCategoryList] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
@@ -26,7 +26,11 @@ function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
   }, []);
 
   useEffect(() => {
-    setExpenseDetails(data || {});
+    if (data) {
+      setExpenseDetails(data);
+    } else {
+      setExpenseDetails({ paymentMode: 'CASH' });
+    }
   }, [data]);
 
   const fetchAllExpenseCategoryListData = async () => {
@@ -109,7 +113,7 @@ function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
               select
               variant="outlined"
               required
-              value={expenseDetails.paymentMode || 'CASH'}
+              value={expenseDetails.paymentMode}
               onChange={(e) => handleInputChange('paymentMode', e.target.value)}
             >
               {paymentMode.map((mode) => (

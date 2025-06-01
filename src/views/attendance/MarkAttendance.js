@@ -44,9 +44,9 @@ const MarkAttendance = () => {
         status,
         reason
       });
-      setAlertMess(`Attendance marked: ${status}`);
-      setAlertColor('success');
-      setShowAlert(true);
+      // setAlertMess(`Attendance marked: ${status}`);
+      // setAlertColor('success');
+      // setShowAlert(true);
       fetchAttendanceData();
     } catch (err) {
       console.error('Error marking attendance:', err);

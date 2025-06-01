@@ -34,6 +34,13 @@ const getFinancials = () => {
               type: 'item',
               url: '/financials/table',
               icon: icons.IconLicense
+            },
+            {
+              id: 'reports',
+              title: 'Payments Reports',
+              type: 'item',
+              url: '/financials/reports',
+              icon: icons.IconChartHistogram
             }
           ]
         }
