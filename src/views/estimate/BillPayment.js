@@ -41,17 +41,26 @@ const BillPayment = ({
 
   const handlePaymentSplitChange = (index, field, value) => {
     const updatedPaymentSplitList = [...estimate.paymentSplitList];
+    const currentSplit = updatedPaymentSplitList[index];
 
-    // Update the specific field in the payment split list
-    updatedPaymentSplitList[index] = {
-      ...updatedPaymentSplitList[index],
+    // Update the field
+    const updatedSplit = {
+      ...currentSplit,
       [field]: value
     };
 
-    // Calculate the pending amount and credit flag
+    // If it's not a new record (no ADD flag) and already has a value, mark as MODIFY
+    const isExisting = currentSplit.paymentId && currentSplit.flag !== 'ADD';
+    if (isExisting) {
+      updatedSplit.flag = 'MODIFY';
+    }
+
+    updatedPaymentSplitList[index] = updatedSplit;
+
+    // Calculate totals
     const totalPaidExcludingCredit = updatedPaymentSplitList
-      .filter((split) => split.paymentMode !== 'CREDIT') // Exclude CREDIT payments
-      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0); // Sum up payment amounts
+      .filter((split) => split.paymentMode !== 'CREDIT')
+      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
 
     const grandTotal = estimate.grandTotal || 0;
     const pendingAmount = grandTotal - totalPaidExcludingCredit;
@@ -59,8 +68,8 @@ const BillPayment = ({
     setEstimate((prevState) => ({
       ...prevState,
       paymentSplitList: updatedPaymentSplitList,
-      pendingAmount: pendingAmount > 0 ? pendingAmount : 0, // Ensure non-negative pending amount
-      creditFlag: updatedPaymentSplitList.some((split) => split.paymentMode === 'CREDIT') // Set creditFlag if CREDIT is used
+      pendingAmount: pendingAmount > 0 ? pendingAmount : 0,
+      creditFlag: updatedPaymentSplitList.some((split) => split.paymentMode === 'CREDIT')
     }));
   };
 
@@ -79,14 +88,30 @@ const BillPayment = ({
       ...prevState,
       paymentSplitList: [
         ...prevState.paymentSplitList,
-        { paymentAmount: remainingAmount, paymentMode: '' } // Prefill paymentAmount with remaining value
+        { paymentAmount: remainingAmount, paymentMode: 'CASH', flag: 'ADD' } // Prefill paymentAmount with remaining value
       ]
     }));
   };
 
   const removePaymentSplitRow = (index) => {
-    const updatedPaymentSplitList = estimate.paymentSplitList.filter((_, i) => i !== index);
-    setEstimate((prevState) => ({ ...prevState, paymentSplitList: updatedPaymentSplitList }));
+    const updatedPaymentSplitList = [...estimate.paymentSplitList];
+    const currentSplit = updatedPaymentSplitList[index];
+
+    if (currentSplit.flag === 'ADD') {
+      // It's a new unsaved row, just remove it
+      updatedPaymentSplitList.splice(index, 1);
+    } else {
+      // It's an existing row, mark it as DELETE
+      updatedPaymentSplitList[index] = {
+        ...currentSplit,
+        flag: 'DELETE'
+      };
+    }
+
+    setEstimate((prevState) => ({
+      ...prevState,
+      paymentSplitList: updatedPaymentSplitList
+    }));
   };
 
   const handleOpenConfirmDialog = (remaining) => {
@@ -116,14 +141,20 @@ const BillPayment = ({
   // Handle changes in credit payments
   const handleCreditPaymentChange = (index, field, value) => {
     const updatedCreditPaymentList = [...estimate.creditPaymentList];
+    const currentCredit = updatedCreditPaymentList[index];
 
-    // Update the specific field in the credit payment list
-    updatedCreditPaymentList[index] = {
-      ...updatedCreditPaymentList[index],
+    const updatedCredit = {
+      ...currentCredit,
       [field]: value
     };
 
-    // Calculate new pending amount
+    // If it's an existing record and not marked as ADD, mark it as MODIFY
+    const isExisting = currentCredit.paymentId && currentCredit.flag !== 'ADD';
+    if (isExisting) {
+      updatedCredit.flag = 'MODIFY';
+    }
+
+    updatedCreditPaymentList[index] = updatedCredit;
 
     setEstimate((prevState) => ({
       ...prevState,
@@ -150,18 +181,34 @@ const BillPayment = ({
       ...prevState,
       creditPaymentList: [
         ...(prevState.creditPaymentList || []), // Safely fallback to an empty array
-        { amount: remainingAmount, paymentMode: '', comment: '' } // New credit payment row
+        { amount: remainingAmount, paymentMode: 'CASH', comment: '', flag: 'ADD' } // New credit payment row
       ]
     }));
   };
 
   // Remove a credit payment row
   const removeCreditPaymentRow = (index) => {
-    const updatedCreditPaymentList = estimate.creditPaymentList.filter((_, i) => i !== index);
+    const updatedCreditPaymentList = [...estimate.creditPaymentList];
+    const currentCredit = updatedCreditPaymentList[index];
 
-    // Recalculate pendingAmount after removing a row
-    const totalCreditPayments = updatedCreditPaymentList.reduce((sum, credit) => sum + (credit.amount || 0), 0);
-    const newPendingAmount = (estimate.grandTotal || 0) - totalCreditPayments;
+    if (currentCredit.flag === 'ADD') {
+      // Remove new row directly
+      updatedCreditPaymentList.splice(index, 1);
+    } else {
+      // Mark existing row as DELETE
+      updatedCreditPaymentList[index] = {
+        ...currentCredit,
+        flag: 'DELETE'
+      };
+    }
+
+    // Recalculate pending amount after change
+    const totalCreditPayments = updatedCreditPaymentList
+      .filter((c) => c.flag !== 'DELETE') // Don't count deleted ones
+      .reduce((sum, credit) => sum + (credit.amount || 0), 0);
+
+    const grandTotal = estimate.grandTotal || 0;
+    const newPendingAmount = grandTotal - totalCreditPayments;
 
     setEstimate((prevState) => ({
       ...prevState,
@@ -172,62 +219,50 @@ const BillPayment = ({
   };
 
   const handleEstimateSave = async () => {
-    //console.log(estimate);
     if (estimate.grandTotal <= 0) {
-      alert('Grant total is 0. Cannot generate bill');
+      alert('Grand total is 0. Cannot generate bill');
       return;
     }
+
     const grandTotal = estimate.grandTotal || 0;
-    const totalPaid = estimate.paymentSplitList.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+
+    // Filter out DELETE for validation and calculation
+    const activePaymentSplits = estimate.paymentSplitList.filter((split) => split.flag !== 'DELETE');
+    const totalPaid = activePaymentSplits.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
     const remaining = grandTotal - totalPaid;
 
-    console.log('REMAINING ' + remaining);
-    const hasEmptyPaymentMode = estimate.paymentSplitList.some((split) => !split.paymentMode);
-
-    if (hasEmptyPaymentMode) {
+    if (activePaymentSplits.some((split) => !split.paymentMode)) {
       alert('Please select a payment mode for all entries.');
       return;
     }
 
     if (remaining > 0) {
-      // Automatically add CREDIT for the remaining amount
-      console.log("I'm still open");
-      console.log(estimate);
       handleOpenConfirmDialog(remaining);
       return;
     } else if (remaining < 0) {
-      // Show alert if overpayment occurs
       alert('Payment exceeds the grand total. Please adjust the amounts.');
       return;
     }
 
-    const updatedCreditPaymentList = [...estimate.creditPaymentList];
-    const hasEmptyPaymentModeCredit = updatedCreditPaymentList.some((split) => !split.paymentMode);
-
-    if (hasEmptyPaymentModeCredit) {
+    const activeCreditPayments = estimate.creditPaymentList.filter((credit) => credit.flag !== 'DELETE');
+    if (activeCreditPayments.some((credit) => !credit.paymentMode)) {
       alert('Please select a payment mode for all entries.');
       return;
     }
 
-    const totalCreditPayments = updatedCreditPaymentList.reduce((sum, credit) => sum + (credit.amount || 0), 0);
-
-    const updatedPaymentSplitList = [...estimate.paymentSplitList];
-
-    const totalPaidExcludingCredit = updatedPaymentSplitList
-      .filter((split) => split.paymentMode !== 'CREDIT') // Exclude CREDIT payments
-      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0); // Sum up payment amounts
+    const totalCreditPayments = activeCreditPayments.reduce((sum, credit) => sum + (credit.amount || 0), 0);
+    const totalPaidExcludingCredit = activePaymentSplits
+      .filter((split) => split.paymentMode !== 'CREDIT')
+      .reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
 
     const newPendingAmount = grandTotal - totalPaidExcludingCredit - totalCreditPayments;
-
-    console.log('GrandTotal ' + grandTotal);
-    console.log('totalPaidExcludingCredit ' + totalPaidExcludingCredit);
-    console.log('totalCreditPayments' + totalCreditPayments);
-    console.log('newPendingAmount ' + newPendingAmount);
 
     const updatedEstimate = {
       ...estimate,
       pendingAmount: newPendingAmount > 0 ? newPendingAmount : 0,
       creditSettledFlag: newPendingAmount > 0 ? false : true
+      // Include all rows including DELETEs for backend
+      // estimate.paymentSplitList and estimate.creditPaymentList already contain full list
     };
 
     try {
@@ -266,51 +301,53 @@ const BillPayment = ({
               <Grid item xs={6}>
                 <TextField label="Grand Total" required variant="outlined" value={estimate?.grandTotal || 0} />
               </Grid>
-              {estimate.paymentSplitList.map((split, index) => (
-                <Grid container item spacing={gridSpacing} key={index} alignItems="center">
-                  <Grid item xs={5}>
-                    <TextField
-                      label="Payment Amount"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      value={split.paymentAmount}
-                      onChange={(e) => handlePaymentSplitChange(index, 'paymentAmount', parseFloat(e.target.value) || 0)}
-                      type="number"
-                      disabled={!!split.paymentDate}
-                    />
+              {estimate.paymentSplitList
+                .filter((split) => split.flag !== 'DELETE')
+                .map((split, index) => (
+                  <Grid container item spacing={gridSpacing} key={index} alignItems="center">
+                    <Grid item xs={5}>
+                      <TextField
+                        label="Payment Amount"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={split.paymentAmount}
+                        onChange={(e) => handlePaymentSplitChange(index, 'paymentAmount', parseFloat(e.target.value) || 0)}
+                        type="number"
+                        disabled={!!split.paymentDate}
+                      />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <TextField
+                        select
+                        label="Payment Mode"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={split.paymentMode || 'CASH'}
+                        disabled={!!split.paymentDate}
+                        onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
+                      >
+                        {paymentModes.map((mode) => (
+                          <MenuItem key={mode} value={mode}>
+                            {mode}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={2}>
+                      {index === 0 ? (
+                        <IconButton onClick={addPaymentSplitRow} color="primary" disabled={!!split.paymentDate}>
+                          <AddCircle />
+                        </IconButton>
+                      ) : (
+                        <IconButton onClick={() => removePaymentSplitRow(index)} color="secondary" disabled={!!split.paymentDate}>
+                          <RemoveCircle />
+                        </IconButton>
+                      )}
+                    </Grid>
                   </Grid>
-                  <Grid item xs={5}>
-                    <TextField
-                      select
-                      label="Payment Mode"
-                      variant="outlined"
-                      fullWidth
-                      required
-                      value={split.paymentMode || 'CASH'}
-                      disabled={!!split.paymentDate}
-                      onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
-                    >
-                      {paymentModes.map((mode) => (
-                        <MenuItem key={mode} value={mode}>
-                          {mode}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={2}>
-                    {index === 0 ? (
-                      <IconButton onClick={addPaymentSplitRow} color="primary" disabled={!!split.paymentDate}>
-                        <AddCircle />
-                      </IconButton>
-                    ) : (
-                      <IconButton onClick={() => removePaymentSplitRow(index)} color="secondary" disabled={!!split.paymentDate}>
-                        <RemoveCircle />
-                      </IconButton>
-                    )}
-                  </Grid>
-                </Grid>
-              ))}
+                ))}
             </Grid>
             <br></br>
             {estimate.creditFlag && (
@@ -318,57 +355,59 @@ const BillPayment = ({
                 <Grid item xs={4}>
                   <Typography variant="h4">Credit Payment</Typography>
                 </Grid>
-                {(estimate.creditPaymentList || []).map((credit, index) => (
-                  <Grid container item spacing={gridSpacing} key={index} alignItems="center">
-                    <Grid item xs={4}>
-                      <TextField
-                        label="Credit Amount"
-                        variant="outlined"
-                        fullWidth
-                        required
-                        value={credit.amount}
-                        onChange={(e) => handleCreditPaymentChange(index, 'amount', parseFloat(e.target.value) || 0)}
-                        type="number"
-                        disabled={!!credit.creditDate}
-                      />
+                {(estimate.creditPaymentList || [])
+                  .filter((credit) => credit.flag !== 'DELETE')
+                  .map((credit, index) => (
+                    <Grid container item spacing={gridSpacing} key={index} alignItems="center">
+                      <Grid item xs={4}>
+                        <TextField
+                          label="Credit Amount"
+                          variant="outlined"
+                          fullWidth
+                          required
+                          value={credit.amount}
+                          onChange={(e) => handleCreditPaymentChange(index, 'amount', parseFloat(e.target.value) || 0)}
+                          type="number"
+                          disabled={!!credit.creditDate}
+                        />
+                      </Grid>
+                      <Grid item xs={3}>
+                        <TextField
+                          select
+                          label="Payment Mode"
+                          variant="outlined"
+                          fullWidth
+                          required
+                          value={credit.paymentMode || 'CASH'}
+                          disabled={!!credit.creditDate}
+                          onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
+                        >
+                          {paymentModes
+                            .filter((mode) => mode !== 'CREDIT') // Exclude "CREDIT"
+                            .map((mode) => (
+                              <MenuItem key={mode} value={mode}>
+                                {mode}
+                              </MenuItem>
+                            ))}
+                        </TextField>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          label="Comment"
+                          variant="outlined"
+                          fullWidth
+                          value={credit.comment || ''}
+                          disabled={!!credit.creditDate}
+                          onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={1}>
+                        <IconButton onClick={() => removeCreditPaymentRow(index)} color="secondary" disabled={!!credit.creditDate}>
+                          <RemoveCircle />
+                        </IconButton>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={3}>
-                      <TextField
-                        select
-                        label="Payment Mode"
-                        variant="outlined"
-                        fullWidth
-                        required
-                        value={credit.paymentMode || 'CASH'}
-                        disabled={!!credit.creditDate}
-                        onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
-                      >
-                        {paymentModes
-                          .filter((mode) => mode !== 'CREDIT') // Exclude "CREDIT"
-                          .map((mode) => (
-                            <MenuItem key={mode} value={mode}>
-                              {mode}
-                            </MenuItem>
-                          ))}
-                      </TextField>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        label="Comment"
-                        variant="outlined"
-                        fullWidth
-                        value={credit.comment || ''}
-                        disabled={!!credit.creditDate}
-                        onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
-                      />
-                    </Grid>
-                    <Grid item xs={1}>
-                      <IconButton onClick={() => removeCreditPaymentRow(index)} color="secondary" disabled={!!credit.creditDate}>
-                        <RemoveCircle />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                ))}
+                  ))}
                 <Grid item xs={12}>
                   <Button onClick={addCreditPaymentRow} color="primary" startIcon={<AddCircle />}>
                     Add Credit Payment

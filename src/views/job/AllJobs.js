@@ -190,7 +190,7 @@ const AllJobs = () => {
         vehicleName: payload.vehicleName,
         grandTotal: data.grandTotalWithGST,
         jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: '' }],
+        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: 'CASH', flag: 'ADD' }],
         creditPaymentList: []
       }));
 
@@ -214,7 +214,7 @@ const AllJobs = () => {
         vehicleName: payload.vehicleName,
         grandTotal: data.grandTotal,
         jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotal || 0, paymentMode: '' }],
+        paymentSplitList: [{ paymentAmount: data.grandTotal || 0, paymentMode: 'CASH', flag: 'ADD' }],
         creditPaymentList: []
       }));
 

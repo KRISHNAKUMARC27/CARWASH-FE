@@ -14,6 +14,7 @@ import getAttendance from 'menu-items/attendance';
 import getAppointment from 'menu-items/appointment';
 import getExpense from 'menu-items/expense';
 import getEstimate from 'menu-items/estimate';
+import getFinancials from 'menu-items/financials';
 
 import { useEffect } from 'react';
 
@@ -42,6 +43,7 @@ const MenuList = () => {
 
     if (roles.includes('ADMIN')) {
       dynamicMenus.push(getEmployee());
+      dynamicMenus.push(getFinancials());
     }
 
     return dynamicMenus;

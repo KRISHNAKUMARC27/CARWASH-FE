@@ -10,6 +10,7 @@ import getAttendance from './attendance';
 import getAppointment from './appointment';
 import getExpense from './expense';
 import getEstimate from './estimate';
+import getFinancials from './financials';
 //import other from './other';
 
 // ==============================|| MENU ITEMS ||============================== //
@@ -26,7 +27,8 @@ const menuItems = {
     getAttendance(),
     getAppointment(),
     getExpense(),
-    getEstimate()
+    getEstimate(),
+    getFinancials()
   ]
 };
 

@@ -412,7 +412,7 @@ const JobCardUpdate = () => {
                   <Edit />
                 </IconButton>
               </Tooltip>
-              <Tooltip arrow placement="right" title="Update Job Spares">
+              <Tooltip arrow placement="right" title="Update Job Service">
                 <IconButton
                   onClick={() => {
                     updateJobSparesInfo(row.original);
