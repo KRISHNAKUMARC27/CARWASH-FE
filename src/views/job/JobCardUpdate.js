@@ -15,11 +15,10 @@ import {
   TextField,
   Dialog,
   DialogActions,
-  DialogContent
+  DialogContent,
+  Box
 } from '@mui/material';
 import { Edit, Build } from '@mui/icons-material';
-import Box from '@mui/material/Box';
-import { gridSpacing } from 'store/constant';
 
 import JSZip from 'jszip';
 
@@ -384,87 +383,67 @@ const JobCardUpdate = () => {
   }
 
   return (
-    <div>
+    <Box>
+      {/* Table View */}
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}
           data={data}
-          //table={table}
           editingMode="modal"
           enableEditing
           muiTablePaperProps={{
-            elevation: 0, //change the mui box shadow
-            //customize paper styles
+            elevation: 0,
             sx: {
-              borderRadius: '0',
-              //backgroundColor: "#344767",
+              borderRadius: 0,
               background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
             }
           }}
           renderRowActions={({ row }) => (
             <Box sx={{ display: 'flex', gap: '1rem' }}>
               <Tooltip arrow placement="left" title="Update Job Info">
-                <IconButton
-                  onClick={() => {
-                    updateJobInfo(row.original);
-                  }}
-                >
+                <IconButton onClick={() => updateJobInfo(row.original)}>
                   <Edit />
                 </IconButton>
               </Tooltip>
               <Tooltip arrow placement="right" title="Update Job Service">
-                <IconButton
-                  onClick={() => {
-                    updateJobSparesInfo(row.original);
-                  }}
-                >
+                <IconButton onClick={() => updateJobSparesInfo(row.original)}>
                   <Build />
                 </IconButton>
               </Tooltip>
             </Box>
           )}
-        />{' '}
+        />
       </ThemeProvider>
-      <br></br>
-      <Dialog open={jobInfoUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          {' '}
-          <Grid container spacing={gridSpacing}>
+
+      {/* Dialog: Update Job Info */}
+      <Dialog open={jobInfoUpdateOpen} onClose={handleClose} fullWidth maxWidth="lg">
+        <DialogContent dividers sx={{ bgcolor: 'white', color: 'black' }}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Grid container spacing={gridSpacing}>
-                <Grid item xs={12}>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h2">
-                    {'Updating JobCard: ' + selectedRow.jobId + ' VehicleNo.: ' + selectedRow.vehicleRegNo}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <JobCarDetails
-                    data={selectedRow}
-                    updateData={setSelectedRow}
-                    photos={photos}
-                    updatePhotos={setPhotos}
-                    zipFile={zipFile}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <JobUserDetails data={selectedRow} updateData={setSelectedRow} />
-                </Grid>
-                <Grid item lg={3} md={6} sm={6} xs={12}>
-                  {isJobComplete() && (
-                    <Button variant="contained" color="error" onClick={submitJobCard}>
-                      Update JobCard
-                    </Button>
-                  )}
-                </Grid>
-                <Grid item lg={3} md={6} sm={6} xs={12}>
-                  <Button variant="contained" color="error" onClick={handleClose}>
-                    Cancel UpdateJobInfo
-                  </Button>
-                </Grid>
-              </Grid>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>
+                Updating JobCard: {selectedRow.jobId} &nbsp; Vehicle No.: {selectedRow.vehicleRegNo}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <JobCarDetails data={selectedRow} updateData={setSelectedRow} photos={photos} updatePhotos={setPhotos} zipFile={zipFile} />
+            </Grid>
+            <Grid item xs={12}>
+              <JobUserDetails data={selectedRow} updateData={setSelectedRow} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <Button variant="contained" color="error" fullWidth onClick={handleClose}>
+                Cancel Update
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              {isJobComplete() && (
+                <Button variant="contained" color="error" fullWidth onClick={submitJobCard}>
+                  Update JobCard
+                </Button>
+              )}
             </Grid>
           </Grid>
         </DialogContent>
@@ -472,99 +451,79 @@ const JobCardUpdate = () => {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <br></br>
-      <Dialog open={jobSparesUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="xl">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          {' '}
-          <Grid container spacing={gridSpacing}>
+
+      {/* Dialog: Update Spares */}
+      <Dialog open={jobSparesUpdateOpen} onClose={handleClose} fullWidth maxWidth="xl">
+        <DialogContent dividers sx={{ bgcolor: 'white', color: 'black' }}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Grid container spacing={gridSpacing}>
-                <Grid item xs={12}>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h2">
-                    {'Updating Spares for JobCard: ' + selectedRowJobCard.jobId + ' VehicleNo.: ' + selectedRowJobCard.vehicleRegNo}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} />
-                </Grid>
-                <Grid item xs={12}>
-                  <JobSparesUpdate data={jobSparesInfo} updateData={setJobSparesInfo} />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Total Service Value"
-                    required
-                    variant="outlined"
-                    value={jobSparesCost.totalServiceValue || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    //onChange={(e) => handleTotalLabourValueChange(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Total Spares Value"
-                    required
-                    variant="outlined"
-                    value={jobSparesCost.totalSparesValue || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    //onChange={(e) => handleTotalSparesValueChange(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    label="Grand Total"
-                    required
-                    variant="outlined"
-                    value={jobSparesCost.grandTotal || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                    //onChange={(e) => handleGrandTotalValueChange(e.target.value)}
-                  />
-                </Grid>
-                {/* <Grid item lg={3} md={6} sm={6} xs={12}>
-                  {isJobSparesUpdateComplete() && (
-                    <Button variant="contained" color="error" onClick={submitJobSpares}>
-                      Update JobSpares
-                    </Button>
-                  )}
-                </Grid>
-                <Grid item lg={3} md={6} sm={6} xs={12}>
-                  <Button variant="contained" color="error" onClick={handleJobSparesClose}>
-                    Cancel Update Spares
-                  </Button>
-                </Grid> */}
-              </Grid>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h5" gutterBottom>
+                Updating Spares for JobCard: {selectedRowJobCard.jobId} &nbsp; Vehicle No.: {selectedRowJobCard.vehicleRegNo}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} />
+            </Grid>
+            <Grid item xs={12}>
+              <JobSparesUpdate data={jobSparesInfo} updateData={setJobSparesInfo} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Total Service Value"
+                required
+                variant="outlined"
+                value={jobSparesCost.totalServiceValue || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                label="Total Spares Value"
+                required
+                variant="outlined"
+                value={jobSparesCost.totalSparesValue || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Grand Total"
+                required
+                variant="outlined"
+                value={jobSparesCost.grandTotal || ''}
+                InputProps={{ readOnly: true }}
+              />
             </Grid>
           </Grid>
         </DialogContent>
+
         <DialogActions>
-          {/* <Button onClick={handleClose}>Close</Button> */}
-          <Grid container spacing={gridSpacing}>
-            <Grid item lg={3} md={6} sm={6} xs={12}>
+          <Grid container spacing={2} sx={{ px: 2, pb: 2 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Button variant="contained" color="error" fullWidth onClick={handleClose}>
+                Cancel Update Spares
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
               {isJobSparesUpdateComplete() && (
-                <Button variant="contained" color="error" onClick={submitJobSpares}>
+                <Button variant="contained" color="error" fullWidth onClick={submitJobSpares}>
                   Update JobSpares
                 </Button>
               )}
             </Grid>
-            <Grid item lg={3} md={6} sm={6} xs={12}>
-              <Button variant="contained" color="error" onClick={handleClose}>
-                Cancel Update Spares
-              </Button>
-            </Grid>
           </Grid>
         </DialogActions>
       </Dialog>
+
+      {/* Alert Dialog */}
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 };
 

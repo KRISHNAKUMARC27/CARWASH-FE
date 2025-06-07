@@ -145,62 +145,56 @@ const AllEmployee = () => {
   const color2 = '#ab9ec4';
 
   return (
-    <div>
+    <Box sx={{ px: { xs: 1, sm: 2 }, py: 2 }}>
       <AppointmentCalendar appointments={data} setAppointment={setAppointment} setAppointmentUpdateOpen={setAppointmentUpdateOpen} />
-      <ThemeProvider theme={tableTheme}>
-        <MaterialReactTable
-          columns={columns}
-          data={data}
-          enableFacetedValues
-          editingMode="modal"
-          enableEditing
-          muiTablePaperProps={{
-            elevation: 0,
-            sx: {
-              borderRadius: '0',
-              //backgroundColor: "#344767",
-              background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
-            }
-          }}
-          renderRowActions={({ row }) => (
-            <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="left" title="Update Appointment Info">
-                <IconButton
-                  onClick={() => {
-                    setAppointmentUpdateOpen(false);
-                    console.log(row.original);
-                    setAppointment(row.original);
-                    setAppointmentUpdateOpen(true);
-                  }}
-                >
-                  <Edit />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          )}
-        />{' '}
-      </ThemeProvider>
-      <br></br>
-      <Dialog open={appointmentUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          {' '}
+
+      <Box sx={{ mt: 4 }}>
+        <ThemeProvider theme={tableTheme}>
+          <MaterialReactTable
+            columns={columns}
+            data={data}
+            enableFacetedValues
+            editingMode="modal"
+            enableEditing
+            muiTablePaperProps={{
+              elevation: 0,
+              sx: {
+                borderRadius: 0,
+                background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
+              }
+            }}
+            renderRowActions={({ row }) => (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Tooltip arrow placement="left" title="Update Appointment Info">
+                  <IconButton
+                    onClick={() => {
+                      setAppointmentUpdateOpen(false);
+                      setAppointment(row.original);
+                      setAppointmentUpdateOpen(true);
+                    }}
+                  >
+                    <Edit />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+          />
+        </ThemeProvider>
+      </Box>
+
+      <Dialog open={appointmentUpdateOpen} onClose={handleClose} fullWidth maxWidth="lg">
+        <DialogContent dividers sx={{ bgcolor: 'white', color: 'black' }}>
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12}>
-              <Grid container spacing={gridSpacing}>
-                <Grid item xs={12}>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h2">{'Updating Appointment: ' + appointment.customerName}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <AppointmentCreate
-                    data={appointment}
-                    setAppointmentUpdateOpen={setAppointmentUpdateOpen}
-                    fetchAllAppointmentData={fetchAllAppointmentData}
-                  />
-                </Grid>
-              </Grid>
+              <Divider sx={{ mb: 2 }} />
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                {'Updating Appointment: ' + appointment.customerName}
+              </Typography>
+              <AppointmentCreate
+                data={appointment}
+                setAppointmentUpdateOpen={setAppointmentUpdateOpen}
+                fetchAllAppointmentData={fetchAllAppointmentData}
+              />
             </Grid>
           </Grid>
         </DialogContent>
@@ -208,8 +202,7 @@ const AllEmployee = () => {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <br></br>
-    </div>
+    </Box>
   );
 };
 

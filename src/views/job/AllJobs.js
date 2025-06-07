@@ -6,9 +6,7 @@ import PropTypes from 'prop-types';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { DialogTitle, Button, FormControl, InputLabel, Select, MenuItem, IconButton, Tooltip } from '@mui/material';
-import Box from '@mui/material/Box';
-//import DataRowDialog from 'utils/DataRowDialog';
+import { DialogTitle, Button, FormControl, InputLabel, Select, MenuItem, IconButton, Tooltip, Box } from '@mui/material';
 import { OpenInNew, AddCircle, CurrencyRupee, RequestQuote } from '@mui/icons-material';
 //import Alert from 'views/utilities/Alert';
 import { lazy } from 'react';
@@ -354,7 +352,7 @@ const AllJobs = () => {
     color2 = '#71acda';
   }
   return (
-    <div>
+    <Box>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
 
       <ThemeProvider theme={tableTheme}>
@@ -363,101 +361,82 @@ const AllJobs = () => {
           data={data}
           editingMode="modal"
           enableEditing
-          initialState={{
-            pagination: { pageSize: 10 } // Set default rows per page to 5
-          }}
+          initialState={{ pagination: { pageSize: 10 } }}
           muiTablePaperProps={{
-            elevation: 0, //change the mui box shadow
-            //customize paper styles
+            elevation: 0,
             sx: {
-              borderRadius: '0',
+              borderRadius: 0,
               background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
             }
           }}
-          // muiTableBodyRowProps={({ row }) => ({
-          //   onClick: () => {
-          //     //console.log(JSON.stringify(row));
-          //     setSelectedRow(row.original);
-          //     setJobInfoOpen(true);
-          //   },
-          //   // sx: { cursor: 'pointer' }
-          // })}
           renderRowActions={({ row }) => (
-            <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="right" title="View Job Card">
-                <IconButton
-                  onClick={() => {
-                    setSelectedRow(row.original);
-                    setJobInfoOpen(true);
-                  }}
-                >
-                  <OpenInNew />
-                </IconButton>
-              </Tooltip>
-              <Tooltip arrow placement="right" title="Create Job Card">
-                <IconButton
-                  onClick={() => {
-                    setSelectedRow(row.original);
-                    setJobCardCreateOpen(true);
-                  }}
-                >
-                  <AddCircle />
-                </IconButton>
-              </Tooltip>
-              {isAuthorizedForInvoice && row.original.jobStatus === 'CLOSED' && (
-                <Tooltip arrow placement="right" title="Invoice">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {/* Row 1: View + Create */}
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Tooltip title="View Job Card" arrow placement="top">
                   <IconButton
                     onClick={() => {
                       setSelectedRow(row.original);
-                      prepareInitialInvoiceObject(row.original);
+                      setJobInfoOpen(true);
                     }}
                   >
-                    <CurrencyRupee />
+                    <OpenInNew />
                   </IconButton>
                 </Tooltip>
-              )}
-              {isAuthorizedForEstimate && row.original.jobStatus === 'CLOSED' && (
-                <Tooltip arrow placement="right" title="Estimate">
+                <Tooltip title="Create Job Card" arrow placement="top">
                   <IconButton
                     onClick={() => {
                       setSelectedRow(row.original);
-                      prepareInitialEstimateObject(row.original);
+                      setJobCardCreateOpen(true);
                     }}
                   >
-                    <RequestQuote />
+                    <AddCircle />
                   </IconButton>
                 </Tooltip>
-              )}
+              </Box>
+
+              {/* Row 2: Invoice + Estimate */}
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {isAuthorizedForInvoice && row.original.jobStatus === 'CLOSED' && (
+                  <Tooltip title="Invoice" arrow placement="top">
+                    <IconButton
+                      onClick={() => {
+                        setSelectedRow(row.original);
+                        prepareInitialInvoiceObject(row.original);
+                      }}
+                    >
+                      <CurrencyRupee />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {isAuthorizedForEstimate && row.original.jobStatus === 'CLOSED' && (
+                  <Tooltip title="Estimate" arrow placement="top">
+                    <IconButton
+                      onClick={() => {
+                        setSelectedRow(row.original);
+                        prepareInitialEstimateObject(row.original);
+                      }}
+                    >
+                      <RequestQuote />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Box>
             </Box>
           )}
-        />{' '}
+        />
       </ThemeProvider>
+
+      {/* Dialog: Update Job Status */}
       {jobStatusOpen && (
-        <Dialog
-          open={jobStatusOpen}
-          onClose={handleClose}
-          scroll={'paper'}
-          aria-labelledby="scroll-dialog-title"
-          aria-describedby="scroll-dialog-description"
-        >
-          <Box
-            sx={{
-              bgcolor: '#f44336',
-              color: '#FFFFFF',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0.75rem 1.25rem'
-            }}
-          >
-            <DialogTitle id="scroll-dialog-title" sx={{ flexGrow: 1, fontSize: '1.5rem', color: 'white' }}>
-              {selectedRow.vehicleRegNo}
-            </DialogTitle>
+        <Dialog open={jobStatusOpen} onClose={handleClose} scroll="paper" fullWidth maxWidth="sm">
+          <Box sx={{ bgcolor: '#f44336', color: '#fff', p: 2 }}>
+            <DialogTitle sx={{ fontSize: '1.5rem', color: 'white' }}>{selectedRow.vehicleRegNo}</DialogTitle>
           </Box>
-          <DialogContent dividers={scroll === 'paper'}>
-            <FormControl variant="outlined" style={{ margin: '1px 0' }}>
+          <DialogContent dividers>
+            <FormControl fullWidth margin="normal">
               <InputLabel>Job Status</InputLabel>
-              <Select value={selectedRow?.jobStatus || ''} onChange={handleJobStatusChange} label="Status">
+              <Select value={selectedRow?.jobStatus || ''} onChange={handleJobStatusChange} label="Job Status">
                 <MenuItem value="CLOSED">CLOSED</MenuItem>
                 <MenuItem value="OPEN">OPEN</MenuItem>
                 <MenuItem value="CANCELLED">CANCELLED</MenuItem>
@@ -474,31 +453,14 @@ const AllJobs = () => {
           </DialogActions>
         </Dialog>
       )}
+
+      {/* Dialog: Create JobCard */}
       {jobCardCreateOpen && (
-        <Dialog
-          open={jobCardCreateOpen}
-          onClose={handleClose}
-          scroll={'paper'}
-          aria-labelledby="scroll-dialog-title"
-          aria-describedby="scroll-dialog-description"
-          fullWidth
-          maxWidth="lg"
-        >
-          <Box
-            sx={{
-              bgcolor: '#f44336',
-              color: '#FFFFFF',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0.75rem 1.25rem'
-            }}
-          >
-            <DialogTitle id="scroll-dialog-title" sx={{ flexGrow: 1, fontSize: '1.5rem', color: 'white' }}>
-              New JobCard for {selectedRow.vehicleRegNo}
-            </DialogTitle>
+        <Dialog open={jobCardCreateOpen} onClose={handleClose} scroll="paper" fullWidth maxWidth="lg">
+          <Box sx={{ bgcolor: '#f44336', color: '#fff', p: 2 }}>
+            <DialogTitle sx={{ fontSize: '1.5rem', color: 'white' }}>New JobCard for {selectedRow.vehicleRegNo}</DialogTitle>
           </Box>
-          <DialogContent dividers={scroll === 'paper'}>
+          <DialogContent dividers>
             <JobCardCreate data={selectedRow} />
           </DialogContent>
           <DialogActions>
@@ -508,7 +470,11 @@ const AllJobs = () => {
           </DialogActions>
         </Dialog>
       )}
+
+      {/* Dialog: View Job Info */}
       {jobInfoOpen && <JobView open={jobInfoOpen} onClose={handleClose} job={selectedRow} />}
+
+      {/* Dialog: Create Invoice */}
       {invoiceCreateOpen && (
         <BillPayment
           invoice={invoice}
@@ -521,6 +487,8 @@ const AllJobs = () => {
           setAlertColor={setAlertColor}
         />
       )}
+
+      {/* Dialog: Create Estimate */}
       {estimateCreateOpen && (
         <BillPaymentEstimate
           estimate={estimate}
@@ -533,7 +501,7 @@ const AllJobs = () => {
           setAlertColor={setAlertColor}
         />
       )}
-    </div>
+    </Box>
   );
 };
 

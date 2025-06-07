@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { TextField, InputLabel, Select, MenuItem, Grid, Button } from '@mui/material';
+import { TextField, InputLabel, Select, MenuItem, Grid, Button, Box } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, postRequest } from 'utils/fetchRequest';
@@ -96,15 +95,17 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
   };
 
   return (
-    <div>
+    <Box>
       <MainCard title="Enter Service Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={3}>
-            <InputLabel id="demo-select-small" required>
+        <Grid container spacing={2}>
+          {/* Category Type */}
+          <Grid item xs={12} sm={6} md={4}>
+            <InputLabel id="category-type-label" required>
               Category Type
             </InputLabel>
             <Select
-              labelId="demo-select-small"
+              fullWidth
+              labelId="category-type-label"
               id="demo-select-small"
               value={serviceDetails.category || ''}
               label="Category Type"
@@ -117,8 +118,9 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
               ))}
             </Select>
           </Grid>
-          <Grid item xs={6}>
-            <br></br>
+
+          {/* Description */}
+          <Grid item xs={12} sm={12} md={8}>
             <TextField
               label="Service Description"
               required
@@ -128,36 +130,47 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
               onChange={handleDescChange}
             />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Amount" required variant="outlined" value={serviceDetails.amount || ''} onChange={handleAmountChange} />
+
+          {/* Amount, CGST, SGST */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Amount"
+              required
+              fullWidth
+              variant="outlined"
+              value={serviceDetails.amount || ''}
+              onChange={handleAmountChange}
+            />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="CGST" required variant="outlined" value={serviceDetails.cgst || ''} onChange={handleCGSTChange} />
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField label="CGST" required fullWidth variant="outlined" value={serviceDetails.cgst || ''} onChange={handleCGSTChange} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="SGST" required variant="outlined" value={serviceDetails.sgst || ''} onChange={handleSGSTChange} />
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField label="SGST" required fullWidth variant="outlined" value={serviceDetails.sgst || ''} onChange={handleSGSTChange} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="HSN Code" variant="outlined" value={serviceDetails.hsnCode || ''} onChange={handleHsnCodeChange} />
+
+          {/* HSN, Misc2, Misc3 */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField label="HSN Code" fullWidth variant="outlined" value={serviceDetails.hsnCode || ''} onChange={handleHsnCodeChange} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Misc2" variant="outlined" value={serviceDetails.misc2 || ''} onChange={handleMisc2Change} />
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField label="Misc2" fullWidth variant="outlined" value={serviceDetails.misc2 || ''} onChange={handleMisc2Change} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Misc3" variant="outlined" value={serviceDetails.misc3 || ''} onChange={handleMisc3Change} />
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField label="Misc3" fullWidth variant="outlined" value={serviceDetails.misc3 || ''} onChange={handleMisc3Change} />
           </Grid>
         </Grid>
       </MainCard>
-      <br></br>
-      <div className="content">
+      {/* Add/Update Button */}
+      <Box mt={2} textAlign="left">
         {isServiceComplete() && (
           <Button variant="contained" color="error" onClick={() => saveServiceInventory(serviceDetails)}>
             Add/Update Service
           </Button>
         )}
-      </div>
+      </Box>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

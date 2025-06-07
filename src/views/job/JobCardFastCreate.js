@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Grid, TextField, Button } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 import JobServiceUpdate from './JobServiceUpdate';
 import JobSparesUpdate from './JobSparesUpdate';
 import AlertDialog from 'views/utilities/AlertDialog';
@@ -80,79 +79,91 @@ const JobCardFastCreate = () => {
   return (
     <>
       <MainCard title="Job Card Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={3}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={3}>
             <TextField
               inputRef={ownerNameRef}
               label="Owner Name"
               required
               variant="outlined"
+              fullWidth
               value={fastJobCard.ownerName || ''}
               onChange={(e) => handleInputChange('ownerName', e.target.value)}
               onKeyDown={(e) => handleEnter(e, ownerPhoneRef)}
             />
           </Grid>
-          <Grid item xs={3}>
+
+          <Grid item xs={12} sm={6} md={3}>
             <TextField
               inputRef={ownerPhoneRef}
               label="Owner PhoneNumber"
               required
               variant="outlined"
+              fullWidth
               value={fastJobCard.ownerPhoneNumber || ''}
               onChange={(e) => handleInputChange('ownerPhoneNumber', e.target.value)}
               onKeyDown={(e) => handleEnter(e, ownerAddressRef)}
             />
           </Grid>
-          <Grid item xs={6}>
+
+          <Grid item xs={12} md={6}>
             <TextField
               inputRef={ownerAddressRef}
               label="Owner Address"
-              fullWidth
               variant="outlined"
+              fullWidth
               value={fastJobCard.ownerAddress || ''}
               onChange={(e) => handleInputChange('ownerAddress', e.target.value)}
               onKeyDown={(e) => handleEnter(e, vehicleRegNoRef)}
             />
           </Grid>
-          <Grid item xs={3}>
+
+          <Grid item xs={12} sm={6} md={3}>
             <TextField
               inputRef={vehicleRegNoRef}
               label="Vehicle Reg. No."
               required
               variant="outlined"
+              fullWidth
               value={fastJobCard.vehicleRegNo || ''}
               onChange={(e) => handleInputChange('vehicleRegNo', e.target.value)}
               onKeyDown={(e) => handleEnter(e, vehicleNameRef)}
             />
           </Grid>
-          <Grid item xs={3}>
+
+          <Grid item xs={12} sm={6} md={3}>
             <TextField
               inputRef={vehicleNameRef}
               label="Vehicle Name"
               required
               variant="outlined"
+              fullWidth
               value={fastJobCard.vehicleName || ''}
               onChange={(e) => handleInputChange('vehicleName', e.target.value)}
               onKeyDown={(e) => handleEnter(e, kiloMetersRef)}
             />
           </Grid>
-          <Grid item xs={3}>
+
+          <Grid item xs={12} md={3}>
             <TextField
               inputRef={kiloMetersRef}
               label="Vehicle K.Ms"
               variant="outlined"
+              fullWidth
               value={fastJobCard.kiloMeters || ''}
               onChange={(e) => handleInputChange('kiloMeters', e.target.value)}
-              onKeyDown={(e) => handleEnter(e, jobServiceFirstInputRef)} // No next field here
+              onKeyDown={(e) => handleEnter(e, jobServiceFirstInputRef)}
             />
           </Grid>
 
           <Grid item xs={12}>
             <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} firstInputRef={jobServiceFirstInputRef} />
           </Grid>
+
           <Grid item xs={12}>
             <JobSparesUpdate data={jobSparesInfo} updateData={setJobSparesInfo} />
           </Grid>
+
           {isJobComplete() && (
             <Grid item xs={12}>
               <Button variant="contained" color="error" onClick={submitFastJobCard}>
@@ -162,7 +173,6 @@ const JobCardFastCreate = () => {
           )}
         </Grid>
       </MainCard>
-
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </>
   );

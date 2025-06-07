@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip, Box } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from 'utils/fetchRequest';
 
@@ -116,32 +115,31 @@ function ExpenseCategory() {
   };
 
   return (
-    <div>
+    <Box>
       <MainCard title="Expense Category Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <br></br>
-            <TextField
-              label="Enter Expense Category"
-              required
-              variant="outlined"
-              value={expenseCategory.category || ''}
-              onChange={handleCategoryChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <br></br>
-            <div className="content">
+        <Box sx={{ p: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                fullWidth
+                label="Enter Expense Category"
+                required
+                variant="outlined"
+                value={expenseCategory.category || ''}
+                onChange={handleCategoryChange}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               {isExpenseCategoryComplete() && (
-                <Button variant="contained" color="error" onClick={() => submitExpenseCategory()}>
+                <Button variant="contained" color="error" onClick={submitExpenseCategory}>
                   Create Expense Category
                 </Button>
               )}
-            </div>
-          </Grid>
-          <Grid item xs={12}>
+            </Grid>
+
             <Grid item xs={12}>
-              <div style={{ overflowX: 'auto' }}>
+              <Box sx={{ overflowX: 'auto' }}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -152,30 +150,22 @@ function ExpenseCategory() {
                   <TableBody>
                     {expenseCategoryList.map((row, index) => (
                       <TableRow key={index}>
-                        {/* <TableCell>{row?.category}</TableCell> */}
                         <TableCell>
                           <TextField
                             variant="outlined"
+                            fullWidth
                             value={row?.category || ''}
                             onChange={(e) => handleInputChange(e.target.value, index, 'category')}
                           />
                         </TableCell>
                         <TableCell>
-                          <Tooltip arrow placement="right" title="Update">
-                            <IconButton
-                              onClick={() => {
-                                updateExpenseCategory();
-                              }}
-                            >
+                          <Tooltip title="Update" arrow placement="top">
+                            <IconButton onClick={updateExpenseCategory}>
                               <Edit />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip arrow placement="right" title="Delete">
-                            <IconButton
-                              onClick={() => {
-                                handleRowDelete(row.id);
-                              }}
-                            >
+                          <Tooltip title="Delete" arrow placement="top">
+                            <IconButton onClick={() => handleRowDelete(row.id)}>
                               <Delete />
                             </IconButton>
                           </Tooltip>
@@ -184,13 +174,14 @@ function ExpenseCategory() {
                     ))}
                   </TableBody>
                 </Table>
-              </div>
+              </Box>
             </Grid>
           </Grid>
-        </Grid>
+        </Box>
       </MainCard>
+
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

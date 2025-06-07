@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { Grid, TextField, Button, Typography, Box, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 import JSZip from 'jszip';
 import { getRequest } from 'utils/fetchRequest';
 
@@ -162,117 +161,130 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
   };
 
   return (
-    <>
-      <MainCard title="Job Card Vehicle Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <TextField
-              label="Vehicle Reg. No."
-              required
-              variant="outlined"
-              value={data.vehicleRegNo || ''}
-              onChange={handleVehicleRegNoChange}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField label="Vehicle Name" required variant="outlined" value={data.vehicleName || ''} onChange={handleVehicleNameChange} />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField label="Vehicle K.Ms" variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Take Photos</Typography>
-          </Grid>
+    <MainCard title="Job Card Vehicle Details">
+      <Grid container spacing={2}>
+        {/* Vehicle Info */}
+        <Grid item xs={12} md={4}>
+          <TextField
+            label="Vehicle Reg. No."
+            required
+            fullWidth
+            variant="outlined"
+            value={data.vehicleRegNo || ''}
+            onChange={handleVehicleRegNoChange}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TextField
+            label="Vehicle Name"
+            required
+            fullWidth
+            variant="outlined"
+            value={data.vehicleName || ''}
+            onChange={handleVehicleNameChange}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
+        </Grid>
 
-          <Grid item xs={12}>
-            {!isCapturing ? (
-              <Grid container direction="row" spacing={gridSpacing}>
-                <Grid item xs={6}>
-                  <Button variant="contained" color="primary" onClick={startCamera}>
-                    Start Camera
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      setLoadPhotos(true);
-                      console.log(loadPhotos);
-                    }}
-                  >
-                    Load photos
-                  </Button>
-                </Grid>
+        {/* Photo Section */}
+        <Grid item xs={12}>
+          <Typography variant="h6">Take Photos</Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          {!isCapturing ? (
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Button fullWidth variant="contained" color="primary" onClick={startCamera}>
+                  Start Camera
+                </Button>
               </Grid>
-            ) : (
-              <>
-                <video
-                  id="camera-preview"
-                  autoPlay
-                  playsInline
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    border: '1px solid #ccc'
+              <Grid item xs={12} sm={6}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setLoadPhotos(true);
+                    console.log(loadPhotos);
                   }}
-                  ref={(video) => {
-                    if (video && stream) video.srcObject = stream;
-                  }}
-                  // eslint-disable-next-line jsx-a11y/media-has-caption
-                />
-                <Button variant="contained" color="secondary" onClick={capturePhoto} style={{ margin: '10px' }}>
+                >
+                  Load Photos
+                </Button>
+              </Grid>
+            </Grid>
+          ) : (
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <video
+                id="camera-preview"
+                autoPlay
+                playsInline
+                ref={(video) => {
+                  if (video && stream) video.srcObject = stream;
+                }}
+                style={{
+                  width: '100%',
+                  maxHeight: '300px',
+                  border: '1px solid #ccc'
+                }}
+              />
+              <Box sx={{ mt: 2 }}>
+                <Button variant="contained" color="secondary" onClick={capturePhoto} sx={{ mr: 2 }}>
                   Capture Photo
                 </Button>
                 <Button variant="outlined" onClick={stopCamera}>
                   Stop Camera
                 </Button>
-              </>
-            )}
-          </Grid>
-
-          <Grid item xs={12}>
-            {photos.length > 0 && (
-              <Box>
-                <Typography variant="body1">{photos.length} photo(s) captured.</Typography>
-                <Grid container spacing={2}>
-                  {photos.map((photo, index) => (
-                    <Grid item key={index} xs={12} sm={6} md={4} style={{ textAlign: 'center' }}>
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Captured ${index + 1}`}
-                        style={{
-                          width: '100%',
-                          height: 'auto',
-                          maxHeight: '200px',
-                          objectFit: 'contain',
-                          border: '1px solid #ccc',
-                          marginBottom: '10px'
-                        }}
-                      />
-                      <IconButton color="error" onClick={() => deletePhoto(index)} aria-label="delete photo">
-                        <DeleteIcon />
-                      </IconButton>
-                    </Grid>
-                  ))}
-                </Grid>
               </Box>
-            )}
-          </Grid>
-
-          <Grid item xs={6}>
-            <Button variant="contained" color="primary" onClick={savePhotos} disabled={photos.length === 0}>
-              Save Photos Locally
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button variant="contained" color="primary" onClick={sendViaWhatsApp} disabled={photos.length === 0}>
-              Send via WhatsApp
-            </Button>
-          </Grid>
+            </Box>
+          )}
         </Grid>
-      </MainCard>
-    </>
+
+        {/* Captured Photos */}
+        {photos.length > 0 && (
+          <Grid item xs={12}>
+            <Box>
+              <Typography variant="body1">{photos.length} photo(s) captured.</Typography>
+              <Grid container spacing={2}>
+                {photos.map((photo, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index} sx={{ textAlign: 'center' }}>
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Captured ${index + 1}`}
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        maxHeight: '200px',
+                        objectFit: 'contain',
+                        border: '1px solid #ccc',
+                        marginBottom: '10px'
+                      }}
+                    />
+                    <IconButton color="error" onClick={() => deletePhoto(index)} aria-label="delete photo">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Grid>
+        )}
+
+        {/* Photo Actions */}
+        <Grid item xs={12} sm={6}>
+          <Button fullWidth variant="contained" color="primary" onClick={savePhotos} disabled={photos.length === 0}>
+            Save Photos Locally
+          </Button>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Button fullWidth variant="contained" color="primary" onClick={sendViaWhatsApp} disabled={photos.length === 0}>
+            Send via WhatsApp
+          </Button>
+        </Grid>
+      </Grid>
+    </MainCard>
   );
 };
 

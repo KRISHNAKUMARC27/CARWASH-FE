@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 // material-ui
-import { Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Button, MenuItem } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Button, MenuItem, Box } from '@mui/material';
 
-import { gridSpacing } from 'store/constant';
 import { postRequest } from 'utils/fetchRequest';
 
 const MultiSettle = ({ paymentModes, settleBillDialogOpen, selectedRows, handleClose, setAlertMess, setShowAlert }) => {
@@ -58,66 +57,70 @@ const MultiSettle = ({ paymentModes, settleBillDialogOpen, selectedRows, handleC
         <Dialog
           open={settleBillDialogOpen}
           onClose={handleClose}
-          scroll={'paper'}
-          aria-labelledby="scroll-dialog-title"
-          aria-describedby="scroll-dialog-description"
+          scroll="paper"
           fullWidth
           maxWidth="md"
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
         >
-          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1.0rem' }}>
+          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1rem' }}>
             Multiple Credit Settlement
           </DialogTitle>
 
-          <DialogContent dividers={scroll === 'paper'}>
-            <br></br>
-            <Grid container item spacing={gridSpacing} alignItems="center">
-              <Grid item xs={4}>
-                <TextField
-                  label="Credit Amount"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={multicredit.amount || 0}
-                  onChange={(e) => handleCreditPaymentChange('amount', parseFloat(e.target.value) || 0)}
-                  type="number"
-                />
+          <DialogContent dividers>
+            <Box sx={{ my: 2 }}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    label="Credit Amount"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    type="number"
+                    value={multicredit.amount || 0}
+                    onChange={(e) => handleCreditPaymentChange('amount', parseFloat(e.target.value) || 0)}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    select
+                    label="Payment Mode"
+                    variant="outlined"
+                    fullWidth
+                    required
+                    value={multicredit.paymentMode || ''}
+                    onChange={(e) => handleCreditPaymentChange('paymentMode', e.target.value)}
+                  >
+                    {paymentModes
+                      .filter((mode) => mode !== 'CREDIT')
+                      .map((mode) => (
+                        <MenuItem key={mode} value={mode}>
+                          {mode}
+                        </MenuItem>
+                      ))}
+                  </TextField>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    label="Comment"
+                    variant="outlined"
+                    fullWidth
+                    value={multicredit.comment || ''}
+                    onChange={(e) => handleCreditPaymentChange('comment', e.target.value)}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  select
-                  label="Payment Mode"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  value={multicredit.paymentMode || ''}
-                  onChange={(e) => handleCreditPaymentChange('paymentMode', e.target.value)}
-                >
-                  {paymentModes
-                    .filter((mode) => mode !== 'CREDIT') // Exclude "CREDIT"
-                    .map((mode) => (
-                      <MenuItem key={mode} value={mode}>
-                        {mode}
-                      </MenuItem>
-                    ))}
-                </TextField>
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  label="Comment"
-                  variant="outlined"
-                  fullWidth
-                  value={multicredit.comment || ''}
-                  onChange={(e) => handleCreditPaymentChange('comment', e.target.value)}
-                />
-              </Grid>
-            </Grid>
+            </Box>
           </DialogContent>
+
           <DialogActions>
-            <Button onClick={handleMultiPaymentSubmit} color="secondary">
-              Save
-            </Button>
             <Button onClick={handleClose} color="secondary">
               Close
+            </Button>
+            <Button onClick={handleMultiPaymentSubmit} color="secondary">
+              Save
             </Button>
           </DialogActions>
         </Dialog>

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip, Box } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from 'utils/fetchRequest';
@@ -118,85 +117,72 @@ function SparesCategory() {
   return (
     <div>
       <MainCard title="Spares Category Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <br></br>
+        <Grid container direction="row" spacing={2}>
+          <Grid item xs={12} md={4}>
             <TextField
+              fullWidth
               label="Enter Spares Category"
               required
               variant="outlined"
               value={sparesCategory.category || ''}
               onChange={handleCategoryChange}
+              sx={{ mt: 1 }}
             />
           </Grid>
+
           <Grid item xs={12}>
-            <br></br>
-            <div className="content">
+            <Box sx={{ mt: 2 }}>
               {isSparesCategoryComplete() && (
-                <Button variant="contained" color="error" onClick={() => submitSparesCategory()}>
+                <Button variant="contained" color="error" onClick={submitSparesCategory}>
                   Create Spares Category
                 </Button>
               )}
-            </div>
+            </Box>
           </Grid>
+
           <Grid item xs={12}>
-            <Grid item xs={12}>
-              <div style={{ overflowX: 'auto' }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Spares Category</TableCell>
-                      <TableCell>Spares Count</TableCell>
-                      <TableCell>Action</TableCell>
+            <Box sx={{ overflowX: 'auto', mt: 2 }}>
+              <Table sx={{ minWidth: 600 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Spares Category</TableCell>
+                    <TableCell>Spares Count</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sparesCategoryList.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <TextField
+                          variant="outlined"
+                          value={row?.category || ''}
+                          onChange={(e) => handleInputChange(e.target.value, index, 'category')}
+                          fullWidth
+                        />
+                      </TableCell>
+                      <TableCell>{row?.sparesCount}</TableCell>
+                      <TableCell>
+                        <Tooltip title="Update" arrow>
+                          <IconButton onClick={() => updateSparesCategory()}>
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete" arrow>
+                          <IconButton onClick={() => handleRowDelete(row.id)}>
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sparesCategoryList.map((row, index) => (
-                      <TableRow key={index}>
-                        {/* <TableCell>{row?.category}</TableCell> */}
-                        <TableCell>
-                          <TextField
-                            variant="outlined"
-                            value={row?.category || ''}
-                            onChange={(e) => handleInputChange(e.target.value, index, 'category')}
-                          />
-                        </TableCell>
-                        <TableCell>{row?.sparesCount}</TableCell>
-                        <TableCell>
-                          {/* <Button variant="contained" color="error" onClick={() => handleRowDelete(row.id)}>
-                            Delete
-                          </Button>
-                          <Button variant="contained" color="error" onClick={() => updateSparesCategory()}>
-                            Update
-                          </Button> */}
-                          <Tooltip arrow placement="right" title="Update">
-                            <IconButton
-                              onClick={() => {
-                                updateSparesCategory();
-                              }}
-                            >
-                              <Edit />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip arrow placement="right" title="Delete">
-                            <IconButton
-                              onClick={() => {
-                                handleRowDelete(row.id);
-                              }}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </Grid>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
           </Grid>
         </Grid>
       </MainCard>
+
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </div>
   );

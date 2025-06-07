@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { TextField, InputLabel, Select, MenuItem, Grid, Button } from '@mui/material';
+import { TextField, InputLabel, Select, MenuItem, Grid, Button, Box } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 
@@ -74,85 +73,84 @@ function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
   };
 
   return (
-    <div>
+    <Box>
       <MainCard title="Enter Expense Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <InputLabel id="demo-select-small" required>
-              Expense Category
-            </InputLabel>
-            <Select
-              labelId="demo-select-small"
-              id="demo-select-small"
-              value={expenseDetails.type || ''}
-              label="Category Type"
-              onChange={(e) => handleInputChange('type', e.target.value)}
-            >
-              {expenseCategoryList.map((option) => (
-                <MenuItem key={option.id} value={option.category}>
-                  {option.category}
-                </MenuItem>
-              ))}
-            </Select>
+        <Box sx={{ p: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4}>
+              <InputLabel required>Expense Category</InputLabel>
+              <Select fullWidth value={expenseDetails.type || ''} onChange={(e) => handleInputChange('type', e.target.value)}>
+                {expenseCategoryList.map((option) => (
+                  <MenuItem key={option.id} value={option.category}>
+                    {option.category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                label="Desc"
+                required
+                variant="standard"
+                fullWidth
+                value={expenseDetails.desc || ''}
+                onChange={(e) => handleInputChange('desc', e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <InputLabel required>Payment Mode</InputLabel>
+              <TextField
+                select
+                variant="outlined"
+                fullWidth
+                required
+                value={expenseDetails.paymentMode}
+                onChange={(e) => handleInputChange('paymentMode', e.target.value)}
+              >
+                {paymentMode.map((mode) => (
+                  <MenuItem key={mode} value={mode}>
+                    {mode}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                label="Amount"
+                required
+                fullWidth
+                variant="outlined"
+                type="number"
+                value={expenseDetails.expenseAmount || ''}
+                onChange={(e) => handleInputChange('expenseAmount', parseFloat(e.target.value) || 0)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                label="Comment"
+                variant="standard"
+                fullWidth
+                value={expenseDetails.comment || ''}
+                onChange={(e) => handleInputChange('comment', e.target.value)}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <br></br>
-            <TextField
-              label="Desc"
-              required
-              variant="standard"
-              value={expenseDetails.desc || ''}
-              onChange={(e) => handleInputChange('desc', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <InputLabel id="demo-select-small" required>
-              Payment Mode
-            </InputLabel>
-            <TextField
-              select
-              variant="outlined"
-              required
-              value={expenseDetails.paymentMode}
-              onChange={(e) => handleInputChange('paymentMode', e.target.value)}
-            >
-              {paymentMode.map((mode) => (
-                <MenuItem key={mode} value={mode}>
-                  {mode}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Amount"
-              required
-              variant="outlined"
-              value={expenseDetails.expenseAmount || ''}
-              onChange={(e) => handleInputChange('expenseAmount', parseFloat(e.target.value) || 0)}
-              type="number"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Comment"
-              variant="standard"
-              value={expenseDetails.comment || ''}
-              onChange={(e) => handleInputChange('comment', e.target.value)}
-            />
-          </Grid>
-        </Grid>
+        </Box>
       </MainCard>
-      <br></br>
-      <div className="content">
+
+      <Box sx={{ p: 2 }}>
         {isExpenseComplete() && (
           <Button variant="contained" color="error" onClick={() => saveExpense(expenseDetails)}>
             Add/Update Expense
           </Button>
         )}
-      </div>
+      </Box>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

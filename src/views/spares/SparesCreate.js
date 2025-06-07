@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { TextField, InputLabel, Select, MenuItem, Grid, Button } from '@mui/material';
+import { TextField, InputLabel, Select, MenuItem, Grid, Button, Box } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, postRequest } from 'utils/fetchRequest';
@@ -145,18 +144,19 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
   };
 
   return (
-    <div>
+    <Box>
       <MainCard title="Enter Spares Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={3}>
-            <InputLabel id="demo-select-small" required>
+        <Grid container spacing={2}>
+          {/* Category Type */}
+          <Grid item xs={12} sm={6} md={4}>
+            <InputLabel id="category-type-label" required>
               Category Type
             </InputLabel>
             <Select
-              labelId="demo-select-small"
+              fullWidth
+              labelId="category-type-label"
               id="demo-select-small"
               value={sparesDetails.category || ''}
-              label="Category Type"
               onChange={handleCategoryChange}
             >
               {sparesCategoryList.map((option) => (
@@ -166,9 +166,11 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
               ))}
             </Select>
           </Grid>
-          <Grid item xs={3}>
-            <br></br>
+
+          {/* Part Number */}
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
+              fullWidth
               label="PartNo./Type"
               required
               variant="outlined"
@@ -176,22 +178,26 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
               onChange={handlePartNumberChange}
             />
           </Grid>
-          <Grid item xs={6}>
-            <br></br>
+
+          {/* Description */}
+          <Grid item xs={12} md={4}>
             <TextField
+              fullWidth
               label="Spares Description"
               required
               variant="standard"
-              fullWidth
               value={sparesDetails.desc || ''}
               onChange={handleDescChange}
             />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Quantity" required variant="outlined" value={sparesDetails.qty || ''} onChange={handleQtyChange} />
+
+          {/* Quantity, Threshold, Purchase Rate */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="Quantity" required variant="outlined" value={sparesDetails.qty || ''} onChange={handleQtyChange} />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
+              fullWidth
               label="Minimum Threshold"
               required
               variant="outlined"
@@ -199,8 +205,9 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
               onChange={handleMinThreshChange}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
+              fullWidth
               label="Purchase Rate"
               required
               variant="outlined"
@@ -208,49 +215,55 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
               onChange={handlePurchaseRateChange}
             />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Sell Rate" required variant="outlined" value={sparesDetails.sellRate || ''} onChange={handleSellRateChange} />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField label="CGST" required variant="outlined" value={sparesDetails.cgst || ''} onChange={handleCGSTChange} />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField label="SGST" required variant="outlined" value={sparesDetails.sgst || ''} onChange={handleSGSTChange} />
-          </Grid>
-          <Grid item xs={4}>
+
+          {/* Sell Rate, CGST, SGST */}
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
-              label="Amount"
-              variant="standard"
-              value={sparesDetails.amount || ''}
-              InputProps={{
-                readOnly: true
-              }}
+              fullWidth
+              label="Sell Rate"
+              required
+              variant="outlined"
+              value={sparesDetails.sellRate || ''}
+              onChange={handleSellRateChange}
             />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Rack/Bin" variant="standard" fullWidth value={sparesDetails.rack || ''} onChange={handleRackChange} />
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="CGST" required variant="outlined" value={sparesDetails.cgst || ''} onChange={handleCGSTChange} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Misc 1" variant="standard" fullWidth value={sparesDetails.misc1 || ''} onChange={handleMisc1Change} />
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="SGST" required variant="outlined" value={sparesDetails.sgst || ''} onChange={handleSGSTChange} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="Units" variant="standard" fullWidth value={sparesDetails.misc2 || ''} onChange={handleMisc2Change} />
+
+          {/* Readonly Amount */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="Amount" variant="standard" value={sparesDetails.amount || ''} InputProps={{ readOnly: true }} />
           </Grid>
-          <Grid item xs={4}>
-            <TextField label="MRP" variant="standard" fullWidth value={sparesDetails.misc3 || ''} onChange={handleMisc3Change} />
+
+          {/* Rack, Misc Fields */}
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="Rack/Bin" variant="standard" value={sparesDetails.rack || ''} onChange={handleRackChange} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="Misc 1" variant="standard" value={sparesDetails.misc1 || ''} onChange={handleMisc1Change} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="Units" variant="standard" value={sparesDetails.misc2 || ''} onChange={handleMisc2Change} />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField fullWidth label="MRP" variant="standard" value={sparesDetails.misc3 || ''} onChange={handleMisc3Change} />
           </Grid>
         </Grid>
       </MainCard>
       <br></br>
-      <div className="content">
+      <Box mt={2} textAlign="left">
         {isSparesComplete() && (
           <Button variant="contained" color="error" onClick={() => saveSparesInventory(sparesDetails)}>
             Add/Update Spares
           </Button>
         )}
-      </div>
+      </Box>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

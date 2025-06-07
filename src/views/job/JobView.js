@@ -12,6 +12,7 @@ import {
   createTheme,
   ThemeProvider,
   useTheme,
+  Box,
   //IconButton,
   Tooltip
 } from '@mui/material';
@@ -20,7 +21,6 @@ import { MaterialReactTable } from 'material-react-table';
 
 import AlertDialog from 'views/utilities/AlertDialog';
 import PropTypes from 'prop-types';
-import { gridSpacing } from 'store/constant';
 import { getRequest, getBlobRequest } from 'utils/fetchRequest';
 
 function JobView({ open, onClose, job }) {
@@ -157,106 +157,79 @@ function JobView({ open, onClose, job }) {
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
-        <DialogTitle id="data-row-dialog-title">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <Typography variant="h4">{'JobCard: ' + job.jobId + ' VehicleNo.: ' + job.vehicleRegNo}</Typography>
-            {/* <Tooltip title="Download Jobcard">
-              <Button onClick={downloadJobCardPDF}>Print Jobcard</Button>
-            </Tooltip> */}
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg">
+        <DialogTitle>
+          <Box
+            display="flex"
+            flexDirection={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            gap={1}
+          >
+            <Typography variant="h5" fontWeight={600}>
+              {`JobCard: ${job.jobId} Vehicle No.: ${job.vehicleRegNo}`}
+            </Typography>
             <Tooltip title="Print Bill">
-              {/* <IconButton onClick={printBillPDF} color="primary">
-              <DownloadIcon />
-            </IconButton> */}
-              <Button onClick={printBillPDF}>Print Bill</Button>
+              <Button onClick={printBillPDF} variant="outlined" size="small">
+                Print Bill
+              </Button>
             </Tooltip>
-          </div>
+          </Box>
         </DialogTitle>
 
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          {' '}
-          <Grid container direction="row" spacing={gridSpacing}>
-            <Grid item xs={12}>
-              <Grid container direction="row" spacing={gridSpacing}>
-                <Grid item xs={6}>
-                  <TextField
-                    label="Owner Name"
-                    variant="outlined"
-                    value={job.ownerName || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    label="Owner PhoneNumber"
-                    variant="outlined"
-                    value={job.ownerPhoneNumber || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={8}>
-                  <TextField
-                    label="Owner Address"
-                    fullWidth
-                    margin="dense"
-                    multiline
-                    variant="outlined"
-                    value={job.ownerAddress || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-              </Grid>
+        <DialogContent dividers sx={{ bgcolor: 'white', color: 'black' }}>
+          <Grid container spacing={2}>
+            {/* Owner Details */}
+            <Grid item xs={12} sm={6}>
+              <TextField label="Owner Name" fullWidth variant="outlined" value={job.ownerName || ''} InputProps={{ readOnly: true }} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Owner PhoneNumber"
+                fullWidth
+                variant="outlined"
+                value={job.ownerPhoneNumber || ''}
+                InputProps={{ readOnly: true }}
+              />
             </Grid>
             <Grid item xs={12}>
-              <Divider />
-            </Grid>
-            <Grid item xs={12}>
-              <Grid container direction="row" spacing={gridSpacing}>
-                <Grid item xs={4}>
-                  <TextField
-                    label="Vehicle Reg. No."
-                    variant="outlined"
-                    value={job.vehicleRegNo || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    label="Vehicle Name"
-                    variant="outlined"
-                    value={job.vehicleName || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    label="Vehicle K.Ms"
-                    variant="outlined"
-                    value={job.kiloMeters || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Divider />
+              <TextField
+                label="Owner Address"
+                fullWidth
+                multiline
+                minRows={2}
+                variant="outlined"
+                value={job.ownerAddress || ''}
+                InputProps={{ readOnly: true }}
+              />
             </Grid>
 
             <Grid item xs={12}>
               <Divider />
             </Grid>
+
+            {/* Vehicle Details */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Vehicle Reg. No."
+                fullWidth
+                variant="outlined"
+                value={job.vehicleRegNo || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField label="Vehicle Name" fullWidth variant="outlined" value={job.vehicleName || ''} InputProps={{ readOnly: true }} />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={job.kiloMeters || ''} InputProps={{ readOnly: true }} />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+
+            {/* Job Spares Table */}
             <Grid item xs={12}>
               <ThemeProvider theme={tableTheme}>
                 <MaterialReactTable
@@ -265,19 +238,19 @@ function JobView({ open, onClose, job }) {
                   muiTablePaperProps={{
                     elevation: 0,
                     sx: {
-                      borderRadius: '0',
+                      borderRadius: 0,
                       background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
                     }
                   }}
                 />
               </ThemeProvider>
             </Grid>
+
             <Grid item xs={12}>
               <Divider />
             </Grid>
-            <Grid item xs={12}>
-              <Divider />
-            </Grid>
+
+            {/* Job Services Table */}
             <Grid item xs={12}>
               <ThemeProvider theme={tableTheme}>
                 <MaterialReactTable
@@ -286,61 +259,54 @@ function JobView({ open, onClose, job }) {
                   muiTablePaperProps={{
                     elevation: 0,
                     sx: {
-                      borderRadius: '0',
+                      borderRadius: 0,
                       background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
                     }
                   }}
                 />
               </ThemeProvider>
             </Grid>
+
             <Grid item xs={12}>
               <Divider />
             </Grid>
-            <Grid item xs={12}>
-              <Divider />
+
+            {/* Totals */}
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Total Spares Value"
+                fullWidth
+                variant="outlined"
+                value={jobSpares.totalSparesValue || ''}
+                InputProps={{ readOnly: true }}
+              />
             </Grid>
-            <Grid item xs={12}>
-              <Grid container direction="row" spacing={gridSpacing}>
-                <Grid item xs={4}>
-                  <TextField
-                    label="Total Spares Value"
-                    variant="outlined"
-                    value={jobSpares.totalSparesValue || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={4}>
-                  <TextField
-                    label="Total Service Value"
-                    variant="outlined"
-                    value={jobSpares.totalServiceValue || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={4}>
-                  <TextField
-                    label="Grand Total"
-                    variant="outlined"
-                    value={jobSpares.grandTotal || ''}
-                    InputProps={{
-                      readOnly: true
-                    }}
-                  />
-                </Grid>
-              </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Total Service Value"
+                fullWidth
+                variant="outlined"
+                value={jobSpares.totalServiceValue || ''}
+                InputProps={{ readOnly: true }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Grand Total"
+                fullWidth
+                variant="outlined"
+                value={jobSpares.grandTotal || ''}
+                InputProps={{ readOnly: true }}
+              />
             </Grid>
           </Grid>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={onClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={'info'} alertMess={alertMess} />}
     </>
   );

@@ -12,11 +12,11 @@ import {
   Button,
   MenuItem,
   IconButton,
-  Typography
+  Typography,
+  Box
 } from '@mui/material';
 import {} from '@mui/material';
 
-import { gridSpacing } from 'store/constant';
 import { postRequest } from 'utils/fetchRequest';
 import { AddCircle, RemoveCircle } from '@mui/icons-material';
 
@@ -272,157 +272,152 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
   return (
     <>
       {invoiceCreateOpen && (
-        <Dialog
-          open={invoiceCreateOpen}
-          onClose={handleClose}
-          scroll={'paper'}
-          aria-labelledby="scroll-dialog-title"
-          aria-describedby="scroll-dialog-description"
-          fullWidth
-          maxWidth="lg"
-        >
-          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1.0rem' }}>
+        <Dialog open={invoiceCreateOpen} onClose={handleClose} scroll="paper" fullWidth maxWidth="lg" aria-labelledby="scroll-dialog-title">
+          <DialogTitle id="scroll-dialog-title" sx={{ fontSize: '1rem' }}>
             Invoice Generation for {invoice.vehicleRegNo}
           </DialogTitle>
 
-          <DialogContent dividers={scroll === 'paper'}>
-            <br></br>
-            <Grid container direction="row" spacing={gridSpacing}>
-              <Grid item xs={6}>
-                <TextField label="Grand Total" required variant="outlined" value={invoice?.grandTotal || 0} />
-              </Grid>
-              {invoice.paymentSplitList
-                .filter((split) => split.flag !== 'DELETE')
-                .map((split, index) => (
-                  <Grid container item spacing={gridSpacing} key={index} alignItems="center">
-                    <Grid item xs={5}>
-                      <TextField
-                        label="Payment Amount"
-                        variant="outlined"
-                        fullWidth
-                        required
-                        value={split.paymentAmount}
-                        onChange={(e) => handlePaymentSplitChange(index, 'paymentAmount', parseFloat(e.target.value) || 0)}
-                        type="number"
-                        disabled={!!split.paymentDate}
-                      />
-                    </Grid>
-                    <Grid item xs={5}>
-                      <TextField
-                        select
-                        label="Payment Mode"
-                        variant="outlined"
-                        fullWidth
-                        required
-                        value={split.paymentMode || 'CASH'}
-                        disabled={!!split.paymentDate}
-                        onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
-                      >
-                        {paymentModes.map((mode) => (
-                          <MenuItem key={mode} value={mode}>
-                            {mode}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    </Grid>
-                    <Grid item xs={2}>
-                      {index === 0 ? (
-                        <IconButton onClick={addPaymentSplitRow} color="primary" disabled={!!split.paymentDate}>
-                          <AddCircle />
-                        </IconButton>
-                      ) : (
-                        <IconButton onClick={() => removePaymentSplitRow(index)} color="secondary" disabled={!!split.paymentDate}>
-                          <RemoveCircle />
-                        </IconButton>
-                      )}
-                    </Grid>
-                  </Grid>
-                ))}
-            </Grid>
-            <br></br>
-            {invoice.creditFlag && (
-              <Grid container direction="row" spacing={gridSpacing}>
-                <Grid item xs={4}>
-                  <Typography variant="h4">Credit Payment</Typography>
+          <DialogContent dividers>
+            <Box sx={{ my: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Grand Total" required variant="outlined" value={invoice?.grandTotal || 0} />
                 </Grid>
-                {(invoice.creditPaymentList || [])
-                  .filter((credit) => credit.flag !== 'DELETE')
-                  .map((credit, index) => (
-                    <Grid container item spacing={gridSpacing} key={index} alignItems="center">
-                      <Grid item xs={4}>
+
+                {invoice.paymentSplitList
+                  .filter((split) => split.flag !== 'DELETE')
+                  .map((split, index) => (
+                    <Grid container item spacing={2} key={index} alignItems="center" sx={{ mt: 1 }}>
+                      <Grid item xs={12} sm={5}>
                         <TextField
-                          label="Credit Amount"
-                          variant="outlined"
                           fullWidth
-                          required
-                          value={credit.amount}
-                          onChange={(e) => handleCreditPaymentChange(index, 'amount', parseFloat(e.target.value) || 0)}
+                          label="Payment Amount"
+                          variant="outlined"
                           type="number"
-                          disabled={!!credit.creditDate}
+                          required
+                          value={split.paymentAmount}
+                          onChange={(e) => handlePaymentSplitChange(index, 'paymentAmount', parseFloat(e.target.value) || 0)}
+                          disabled={!!split.paymentDate}
                         />
                       </Grid>
-                      <Grid item xs={3}>
+                      <Grid item xs={12} sm={5}>
                         <TextField
                           select
                           label="Payment Mode"
                           variant="outlined"
                           fullWidth
                           required
-                          value={credit.paymentMode || 'CASH'}
-                          disabled={!!credit.creditDate}
-                          onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
+                          value={split.paymentMode || 'CASH'}
+                          onChange={(e) => handlePaymentSplitChange(index, 'paymentMode', e.target.value)}
+                          disabled={!!split.paymentDate}
                         >
-                          {paymentModes
-                            .filter((mode) => mode !== 'CREDIT') // Exclude "CREDIT"
-                            .map((mode) => (
-                              <MenuItem key={mode} value={mode}>
-                                {mode}
-                              </MenuItem>
-                            ))}
+                          {paymentModes.map((mode) => (
+                            <MenuItem key={mode} value={mode}>
+                              {mode}
+                            </MenuItem>
+                          ))}
                         </TextField>
                       </Grid>
-                      <Grid item xs={4}>
-                        <TextField
-                          label="Comment"
-                          variant="outlined"
-                          fullWidth
-                          value={credit.comment || ''}
-                          disabled={!!credit.creditDate}
-                          onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
-                        />
-                      </Grid>
-                      <Grid item xs={1}>
-                        <IconButton onClick={() => removeCreditPaymentRow(index)} color="secondary" disabled={!!credit.creditDate}>
-                          <RemoveCircle />
-                        </IconButton>
+                      <Grid item xs={12} sm={2}>
+                        {index === 0 ? (
+                          <IconButton onClick={addPaymentSplitRow} disabled={!!split.paymentDate}>
+                            <AddCircle />
+                          </IconButton>
+                        ) : (
+                          <IconButton onClick={() => removePaymentSplitRow(index)} color="error" disabled={!!split.paymentDate}>
+                            <RemoveCircle />
+                          </IconButton>
+                        )}
                       </Grid>
                     </Grid>
                   ))}
-                <Grid item xs={12}>
-                  <Button onClick={addCreditPaymentRow} color="primary" startIcon={<AddCircle />}>
-                    Add Credit Payment
-                  </Button>
-                </Grid>
+
+                {invoice.creditFlag && (
+                  <>
+                    <Grid item xs={12}>
+                      <Typography variant="h5" sx={{ mt: 3 }}>
+                        Credit Payment
+                      </Typography>
+                    </Grid>
+                    {(invoice.creditPaymentList || [])
+                      .filter((credit) => credit.flag !== 'DELETE')
+                      .map((credit, index) => (
+                        <Grid container item spacing={2} key={index} alignItems="center" sx={{ mt: 1 }}>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              fullWidth
+                              label="Credit Amount"
+                              variant="outlined"
+                              type="number"
+                              required
+                              value={credit.amount}
+                              onChange={(e) => handleCreditPaymentChange(index, 'amount', parseFloat(e.target.value) || 0)}
+                              disabled={!!credit.creditDate}
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={3}>
+                            <TextField
+                              select
+                              fullWidth
+                              label="Payment Mode"
+                              variant="outlined"
+                              value={credit.paymentMode || 'CASH'}
+                              onChange={(e) => handleCreditPaymentChange(index, 'paymentMode', e.target.value)}
+                              disabled={!!credit.creditDate}
+                            >
+                              {paymentModes
+                                .filter((mode) => mode !== 'CREDIT')
+                                .map((mode) => (
+                                  <MenuItem key={mode} value={mode}>
+                                    {mode}
+                                  </MenuItem>
+                                ))}
+                            </TextField>
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField
+                              fullWidth
+                              label="Comment"
+                              variant="outlined"
+                              value={credit.comment || ''}
+                              onChange={(e) => handleCreditPaymentChange(index, 'comment', e.target.value)}
+                              disabled={!!credit.creditDate}
+                            />
+                          </Grid>
+                          <Grid item xs={12} sm={1}>
+                            <IconButton onClick={() => removeCreditPaymentRow(index)} color="error" disabled={!!credit.creditDate}>
+                              <RemoveCircle />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      ))}
+                    <Grid item xs={12}>
+                      <Button onClick={addCreditPaymentRow} startIcon={<AddCircle />} sx={{ mt: 1 }}>
+                        Add Credit Payment
+                      </Button>
+                    </Grid>
+                  </>
+                )}
               </Grid>
-            )}
+            </Box>
           </DialogContent>
+
           <DialogActions>
-            <Button onClick={handleClose} color="secondary">
-              Close
-            </Button>
-            <Button onClick={handleInvoiceSave} color="secondary">
+            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={handleInvoiceSave} variant="contained" color="error">
               Save
             </Button>
           </DialogActions>
         </Dialog>
       )}
+
       {confirmDialogOpen && (
         <Dialog open={confirmDialogOpen} onClose={handleCloseConfirmDialog}>
           <DialogTitle>Confirm Remaining Amount</DialogTitle>
           <DialogContent>
-            <p>
+            <Typography>
               The remaining amount of <b>{remainingAmount}</b> will be added as CREDIT. Do you want to proceed?
-            </p>
+            </Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleConfirmAddCredit} color="primary">

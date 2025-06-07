@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { TextField, InputLabel, Select, MenuItem, Grid, Button, Autocomplete } from '@mui/material';
+import { TextField, InputLabel, Select, MenuItem, Grid, Button, Autocomplete, Box } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 import dayjs from 'dayjs';
@@ -109,113 +108,101 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
   };
 
   return (
-    <div>
+    <Box>
       <MainCard title="Enter Appointment Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <br></br>
-            <TextField
-              label="Customer Name"
-              required
-              variant="standard"
-              value={appointment.customerName || ''}
-              onChange={(e) => handleInputChange('customerName', e.target.value)}
-            />
+        <Box sx={{ px: { xs: 1, sm: 2, md: 3 }, py: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                label="Customer Name"
+                required
+                variant="standard"
+                fullWidth
+                value={appointment.customerName || ''}
+                onChange={(e) => handleInputChange('customerName', e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                label="Phone"
+                required
+                variant="outlined"
+                fullWidth
+                value={appointment.phone || ''}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField
+                label="Vehicle Registration No"
+                required
+                variant="outlined"
+                fullWidth
+                value={appointment.vehicleRegNo || ''}
+                onChange={(e) => handleInputChange('vehicleRegNo', e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Autocomplete
+                options={serviceList}
+                getOptionLabel={(option) => option.desc}
+                value={serviceList.find((option) => option.desc === appointment.service) || null}
+                onChange={(event, newValue) => handleInputChange('service', newValue ? newValue.desc : '')}
+                renderInput={(params) => <TextField {...params} label="Select Service" variant="outlined" fullWidth />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <DateTimePicker
+                label="Appointment Date & Time"
+                value={appointment.appointmentDateTime}
+                onChange={handleDateTimeChange}
+                shouldDisableDate={(date) => date.day() === 0}
+                renderInput={(params) => <TextField {...params} fullWidth />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <InputLabel>Status</InputLabel>
+              <Select fullWidth value={appointment.status || 'SCHEDULED'} onChange={(e) => handleInputChange('status', e.target.value)}>
+                {['SCHEDULED', 'IN-PROGRESS', 'COMPLETED', 'CANCELLED'].map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <InputLabel>Staff</InputLabel>
+              <Select fullWidth value={appointment.staffName || ''} onChange={(e) => handleInputChange('staffName', e.target.value)}>
+                {employeeList.map((emp) => (
+                  <MenuItem key={emp.id} value={emp.name}>
+                    {emp.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+            <Grid item xs={12} sm={12} md={8}>
+              <TextField
+                label="Description"
+                multiline
+                fullWidth
+                variant="standard"
+                value={appointment.description || ''}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Phone"
-              required
-              variant="outlined"
-              value={appointment.phone || ''}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Vehicle Registration No"
-              required
-              variant="outlined"
-              value={appointment.vehicleRegNo || ''}
-              onChange={(e) => handleInputChange('vehicleRegNo', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Autocomplete
-              options={serviceList}
-              getOptionLabel={(option) => option.desc}
-              value={serviceList.find((option) => option.desc === appointment.service) || null} // Set initial value
-              onChange={(event, newValue) => {
-                handleInputChange('service', newValue ? newValue.desc : ''); // Store `desc` in state
-              }}
-              renderInput={(params) => <TextField {...params} label="Select Service" variant="outlined" fullWidth />}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <DateTimePicker
-              label="Appointment Date & Time"
-              value={appointment.appointmentDateTime}
-              onChange={handleDateTimeChange}
-              shouldDisableDate={(date) => date.day() === 0}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-          </Grid>
-
-          <Grid item xs={4}>
-            <InputLabel id="demo-select-small">Status</InputLabel>
-            <Select
-              labelId="demo-select-small"
-              id="demo-select-small"
-              value={appointment.status || 'SCHEDULED'}
-              label="Status"
-              onChange={(e) => handleInputChange('status', e.target.value)}
-            >
-              {['SCHEDULED', 'IN-PROGRESS', 'COMPLETED', 'CANCELLED'].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-
-          <Grid item xs={2}>
-            <InputLabel id="demo-select-small">Staff</InputLabel>
-            <Select
-              labelId="demo-select-small"
-              id="demo-select-small"
-              value={appointment.staffName || ''}
-              label="Staff"
-              onChange={(e) => handleInputChange('staffName', e.target.value)}
-            >
-              {employeeList.map((option) => (
-                <MenuItem key={option.id} value={option.name}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          <Grid item xs={10}>
-            <TextField
-              label="Description"
-              variant="standard" // Optional: "standard" works, but "outlined" improves visibility
-              multiline
-              fullWidth
-              value={appointment.description || ''}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-            />
-          </Grid>
-        </Grid>
+        </Box>
       </MainCard>
-      <br></br>
-      <div className="content">
+
+      <Box sx={{ p: 2 }}>
         {isAppointmentComplete() && (
           <Button variant="contained" color="error" onClick={() => saveAppointment(appointment)}>
             Add/Update Appointment
           </Button>
         )}
-      </div>
+      </Box>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

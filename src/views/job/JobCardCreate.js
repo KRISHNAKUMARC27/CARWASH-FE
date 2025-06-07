@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Breadcrumbs, Link } from '@mui/material';
+import { Breadcrumbs, Link, Box, useTheme } from '@mui/material';
 import { lazy } from 'react';
 import PropTypes from 'prop-types';
 
@@ -38,6 +38,7 @@ function JobCardCreate({ data }) {
     nextServiceKms: null
   };
 
+  const theme = useTheme();
   const [activeComponent, setActiveComponent] = useState('UserDetails');
   const [userDetails, setUserDetails] = useState(job || {});
   //const [carDetails, setCarDetails] = useState(job || {});
@@ -124,58 +125,66 @@ function JobCardCreate({ data }) {
   };
 
   return (
-    <div>
-      <Breadcrumbs aria-label="breadcrumb">
+    <Box>
+      <Breadcrumbs aria-label="breadcrumb" sx={{ flexWrap: 'wrap', display: 'flex' }}>
         <Link
           sx={{
-            padding: '5px 15px',
+            display: 'flex',
+            alignItems: 'center',
+            px: 2,
+            py: 1,
             cursor: 'pointer',
             textDecoration: 'none',
-            color: (theme) => theme.palette.text.primary,
+            color: theme.palette.text.primary,
             borderBottom: isUserDetailsComplete() ? '3px solid green' : '3px solid orange',
             '&:hover': {
-              color: (theme) => theme.palette.secondary.main
+              color: theme.palette.secondary.main
             }
           }}
           onClick={() => setActiveComponent('UserDetails')}
         >
-          <Person4Icon sx={{ verticalAlign: 'middle', marginRight: '5px' }} />
+          <Person4Icon sx={{ mr: 1 }} />
           User Details
         </Link>
+
         <Link
           sx={{
-            padding: '5px 15px',
+            display: 'flex',
+            alignItems: 'center',
+            px: 2,
+            py: 1,
             cursor: 'pointer',
             textDecoration: 'none',
-            color: (theme) => theme.palette.text.primary,
+            color: theme.palette.text.primary,
             borderBottom: isCarDetailsComplete() ? '3px solid green' : '3px solid orange',
             '&:hover': {
-              color: (theme) => theme.palette.secondary.main
+              color: theme.palette.secondary.main
             }
           }}
           onClick={() => setActiveComponent('CarDetails')}
         >
-          <CarIcon sx={{ verticalAlign: 'middle', marginRight: '5px' }} />
+          <CarIcon sx={{ mr: 1 }} />
           Car Details
         </Link>
       </Breadcrumbs>
 
-      <div className="content">
+      <Box className="content" sx={{ mt: 2 }}>
         {activeComponent === 'CarDetails' && (
           <JobCarDetails data={userDetails} updateData={setUserDetails} photos={photos} updatePhotos={setPhotos} />
         )}
         {activeComponent === 'UserDetails' && <JobUserDetails data={userDetails} updateData={setUserDetails} />}
-      </div>
-      <br></br>
-      <div className="content">
+      </Box>
+
+      <Box className="content" sx={{ mt: 3 }}>
         {isJobComplete() && (
           <Button variant="contained" color="error" onClick={submitJobCard}>
             Submit JobCard
           </Button>
         )}
-      </div>
+      </Box>
+
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

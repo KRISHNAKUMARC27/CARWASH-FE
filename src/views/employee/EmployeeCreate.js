@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { TextField, InputLabel, Select, MenuItem, Grid, Button } from '@mui/material';
+import { TextField, InputLabel, Select, MenuItem, Grid, Button, Box } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
 import AlertDialog from 'views/utilities/AlertDialog';
@@ -78,20 +78,12 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
   };
 
   return (
-    <div>
+    <Box>
       <MainCard title="Enter Employee Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <InputLabel id="demo-select-small" required>
-              Department
-            </InputLabel>
-            <Select
-              labelId="demo-select-small"
-              id="demo-select-small"
-              value={employeeDetails.department || ''}
-              label="Category Type"
-              onChange={(e) => handleInputChange('department', e.target.value)}
-            >
+        <Grid container spacing={gridSpacing}>
+          <Grid item xs={12} sm={6} md={4}>
+            <InputLabel required>Department</InputLabel>
+            <Select value={employeeDetails.department || ''} onChange={(e) => handleInputChange('department', e.target.value)} fullWidth>
               {departmentList.map((option) => (
                 <MenuItem key={option.id} value={option.departmentName}>
                   {option.departmentName}
@@ -99,40 +91,45 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
               ))}
             </Select>
           </Grid>
-          <Grid item xs={4}>
-            <br></br>
+
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Employee Name"
               required
               variant="standard"
+              fullWidth
               value={employeeDetails.name || ''}
               onChange={(e) => handleInputChange('name', e.target.value)}
             />
           </Grid>
-          <Grid item xs={4}>
+
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Phone"
               required
               variant="outlined"
+              fullWidth
               value={employeeDetails.phone || ''}
               onChange={(e) => handleInputChange('phone', e.target.value)}
             />
           </Grid>
-          <Grid item xs={4}>
+
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Designation"
               variant="outlined"
+              fullWidth
               value={employeeDetails.designation || ''}
               onChange={(e) => handleInputChange('designation', e.target.value)}
             />
           </Grid>
-          <Grid item xs={3}>
-            <InputLabel id="demo-select-small" required>
-              Salary Type
-            </InputLabel>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <InputLabel required>Salary Type</InputLabel>
             <TextField
               select
               variant="outlined"
+              fullWidth
               required
               value={employeeDetails.salaryType || ''}
               onChange={(e) => handleInputChange('salaryType', e.target.value)}
@@ -144,13 +141,13 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
               ))}
             </TextField>
           </Grid>
-          <Grid item xs={3}>
-            <InputLabel id="demo-select-small" required>
-              Salary Settlement Type
-            </InputLabel>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <InputLabel required>Salary Settlement Type</InputLabel>
             <TextField
               select
               variant="outlined"
+              fullWidth
               required
               value={employeeDetails.salarySettlementType || ''}
               onChange={(e) => handleInputChange('salarySettlementType', e.target.value)}
@@ -164,24 +161,26 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
                 ))}
             </TextField>
           </Grid>
-          <Grid item xs={4}>
+
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
               label="Salary"
               required
               variant="outlined"
-              value={employeeDetails.salary || ''}
-              onChange={(e) => handleInputChange('salary', parseFloat(e.target.value) || 0)}
+              fullWidth
               type="number"
               inputProps={{ min: 0 }}
+              value={employeeDetails.salary || ''}
+              onChange={(e) => handleInputChange('salary', parseFloat(e.target.value) || 0)}
             />
           </Grid>
-          <Grid item xs={3}>
-            <InputLabel id="demo-select-small" required>
-              Employement Status
-            </InputLabel>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <InputLabel required>Employment Status</InputLabel>
             <TextField
               select
               variant="outlined"
+              fullWidth
               required
               value={employeeDetails.status || ''}
               onChange={(e) => handleInputChange('status', e.target.value)}
@@ -195,16 +194,16 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
           </Grid>
         </Grid>
       </MainCard>
-      <br></br>
-      <div className="content">
+
+      <Box sx={{ p: 2 }}>
         {isDepartmentComplete() && (
           <Button variant="contained" color="error" onClick={() => saveEmployee(employeeDetails)}>
             Add/Update Employee
           </Button>
         )}
-      </div>
+      </Box>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 

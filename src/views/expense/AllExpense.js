@@ -16,7 +16,6 @@ import {
   Button
 } from '@mui/material';
 import { Edit } from '@mui/icons-material';
-import { gridSpacing } from 'store/constant';
 import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
 
@@ -134,7 +133,7 @@ const AllExpense = () => {
   const color2 = '#4f4563';
 
   return (
-    <div>
+    <Box sx={{ width: '100%', px: { xs: 1, sm: 2, md: 3 } }}>
       <ThemeProvider theme={tableTheme}>
         <MaterialReactTable
           columns={columns}
@@ -145,13 +144,12 @@ const AllExpense = () => {
           muiTablePaperProps={{
             elevation: 0,
             sx: {
-              borderRadius: '0',
-              //backgroundColor: "#344767",
+              borderRadius: 0,
               background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
             }
           }}
           renderRowActions={({ row }) => (
-            <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Box sx={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <Tooltip arrow placement="left" title="Update Expense Info">
                 <IconButton
                   onClick={() => {
@@ -159,45 +157,39 @@ const AllExpense = () => {
                     setExpenseDetails(row.original);
                     setExpenseUpdateOpen(true);
                   }}
+                  size="small"
                 >
-                  <Edit />
+                  <Edit fontSize="small" />
                 </IconButton>
               </Tooltip>
             </Box>
           )}
-        />{' '}
+        />
       </ThemeProvider>
-      <br></br>
 
-      <Dialog open={expenseUpdateOpen} onClose={handleClose} aria-labelledby="data-row-dialog-title" fullWidth maxWidth="lg">
-        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
-          {' '}
-          <Grid container spacing={gridSpacing}>
+      <Dialog open={expenseUpdateOpen} onClose={handleClose} fullWidth maxWidth="lg">
+        <DialogContent dividers sx={{ bgcolor: 'background.paper', color: 'text.primary' }}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Grid container spacing={gridSpacing}>
-                <Grid item xs={12}>
-                  <Divider />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h2">{'Updating Expense: ' + expenseDetails.desc}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <ExpenseCreate
-                    data={expenseDetails}
-                    setExpenseUpdateOpen={setExpenseUpdateOpen}
-                    fetchAllExpenseData={fetchAllExpenseData}
-                  />
-                </Grid>
-              </Grid>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6" component="div">
+                {'Updating Expense: ' + expenseDetails.desc}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <ExpenseCreate data={expenseDetails} setExpenseUpdateOpen={setExpenseUpdateOpen} fetchAllExpenseData={fetchAllExpenseData} />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={handleClose} color="secondary">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
-      <br></br>
-    </div>
+    </Box>
   );
 };
 

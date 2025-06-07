@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip, Box } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from 'utils/fetchRequest';
@@ -119,10 +118,11 @@ function ServiceCategory() {
   return (
     <div>
       <MainCard title="Service Category Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <br></br>
+        <Grid container spacing={2}>
+          {/* Input Field */}
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
+              fullWidth
               label="Enter Service Category"
               required
               variant="outlined"
@@ -130,71 +130,58 @@ function ServiceCategory() {
               onChange={handleCategoryChange}
             />
           </Grid>
+
+          {/* Create Button */}
           <Grid item xs={12}>
-            <br></br>
-            <div className="content">
-              {isServiceCategoryComplete() && (
-                <Button variant="contained" color="error" onClick={() => submitServiceCategory()}>
+            {isServiceCategoryComplete() && (
+              <Box mt={1}>
+                <Button variant="contained" color="error" onClick={submitServiceCategory}>
                   Create Service Category
                 </Button>
-              )}
-            </div>
+              </Box>
+            )}
           </Grid>
+
+          {/* Table */}
           <Grid item xs={12}>
-            <Grid item xs={12}>
-              <div style={{ overflowX: 'auto' }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Service Category</TableCell>
-                      <TableCell>Service Count</TableCell>
-                      <TableCell>Action</TableCell>
+            <Box sx={{ overflowX: 'auto' }}>
+              <Table sx={{ minWidth: 600 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Service Category</TableCell>
+                    <TableCell>Service Count</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {serviceCategoryList.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          value={row?.category || ''}
+                          onChange={(e) => handleInputChange(e.target.value, index, 'category')}
+                        />
+                      </TableCell>
+                      <TableCell>{row?.count}</TableCell>
+                      <TableCell>
+                        <Tooltip arrow placement="top" title="Update">
+                          <IconButton onClick={() => updateServiceCategory()}>
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip arrow placement="top" title="Delete">
+                          <IconButton onClick={() => handleRowDelete(row.id)}>
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {serviceCategoryList.map((row, index) => (
-                      <TableRow key={index}>
-                        {/* <TableCell>{row?.category}</TableCell> */}
-                        <TableCell>
-                          <TextField
-                            variant="outlined"
-                            value={row?.category || ''}
-                            onChange={(e) => handleInputChange(e.target.value, index, 'category')}
-                          />
-                        </TableCell>
-                        <TableCell>{row?.count}</TableCell>
-                        <TableCell>
-                          {/* <Button variant="contained" color="error" onClick={() => handleRowDelete(row.id)}>
-                            Delete
-                          </Button>
-                          <Button variant="contained" color="error" onClick={() => updateServiceCategory()}>
-                            Update
-                          </Button> */}
-                          <Tooltip arrow placement="right" title="Update">
-                            <IconButton
-                              onClick={() => {
-                                updateServiceCategory();
-                              }}
-                            >
-                              <Edit />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip arrow placement="right" title="Delete">
-                            <IconButton
-                              onClick={() => {
-                                handleRowDelete(row.id);
-                              }}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </Grid>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
           </Grid>
         </Grid>
       </MainCard>
