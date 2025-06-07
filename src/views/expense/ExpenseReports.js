@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { getRequest } from 'utils/fetchRequest';
-import { Tabs, Tab, Typography, Grid, Button } from '@mui/material';
+import { Tabs, Tab, Typography, Grid, Button, Box } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -125,28 +125,25 @@ const ExpenseReports = () => {
   return (
     <MainCard title="Expense Report">
       <Grid container spacing={2}>
-        {/* Date Range Picker */}
-        <Grid item lg={5} md={5} sm={5} xs={5}>
-          <DatePicker label="Start Date" value={startDate} onChange={(newValue) => setStartDate(newValue)} />
+        {/* Date Range Pickers and Button */}
+        <Grid item xs={12} sm={6} md={4}>
+          <DatePicker label="Start Date" value={startDate} onChange={(newValue) => setStartDate(newValue)} fullWidth />
         </Grid>
-        <Grid item lg={5} md={5} sm={5} xs={5}>
-          <DatePicker label="End Date" value={endDate} onChange={(newValue) => setEndDate(newValue)} />
+        <Grid item xs={12} sm={6} md={4}>
+          <DatePicker label="End Date" value={endDate} onChange={(newValue) => setEndDate(newValue)} fullWidth />
         </Grid>
-        <Grid item lg={2} md={2} sm={2} xs={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              fetchDateRangeData();
-            }}
-          >
+        <Grid item xs={12} md={4}>
+          <Button fullWidth variant="contained" color="primary" onClick={() => fetchDateRangeData()}>
             Get Expense
           </Button>
         </Grid>
-        {/* Tabs for predefined filters */}
-        <Grid item lg={12} md={12} sm={12} xs={12}>
-          <Typography variant="h2">Expense</Typography>
-          <Tabs value={tabValue} onChange={handleTabChange}>
+
+        {/* Tabs */}
+        <Grid item xs={12}>
+          <Typography variant="h5" gutterBottom>
+            Expense
+          </Typography>
+          <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
             <Tab label="Daily" />
             <Tab label="Weekly" />
             <Tab label="Monthly" />
@@ -154,18 +151,24 @@ const ExpenseReports = () => {
           </Tabs>
         </Grid>
 
-        {/* Chart */}
+        {/* Charts */}
         <Grid item xs={12} md={4}>
           <Typography variant="h6">Total Expense</Typography>
-          <Doughnut data={generateTotalExpenseChart()} />
+          <Box sx={{ overflowX: 'auto' }}>
+            <Doughnut data={generateTotalExpenseChart()} />
+          </Box>
         </Grid>
         <Grid item xs={12} md={8}>
           <Typography variant="h6">By Payment Mode</Typography>
-          <Bar data={generateByPaymentModeChart()} />
+          <Box sx={{ overflowX: 'auto' }}>
+            <Bar data={generateByPaymentModeChart()} />
+          </Box>
         </Grid>
-        <Grid item xs={12} md={12}>
+        <Grid item xs={12}>
           <Typography variant="h6">By Type</Typography>
-          <Bar data={generateByTypeChart()} />
+          <Box sx={{ overflowX: 'auto' }}>
+            <Bar data={generateByTypeChart()} />
+          </Box>
         </Grid>
       </Grid>
     </MainCard>

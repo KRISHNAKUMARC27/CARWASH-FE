@@ -166,14 +166,14 @@ const Dashboard = () => {
                 <Grid item lg={4} md={12} sm={12} xs={12}></Grid>
               </Grid>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <Grid container spacing={gridSpacing}>
                 <Grid item xs={12} md={12}>
                   <TotalJobRevenueSplitBarChart yearArray={yearArray} />
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} md={6}>
               <Grid container spacing={gridSpacing}>
                 <Grid item xs={12} md={12}>
                   <TotalJobCardRevenueBarChart yearArray={yearArray} />

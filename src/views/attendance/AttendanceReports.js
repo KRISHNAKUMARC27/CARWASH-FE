@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { getRequest } from 'utils/fetchRequest';
-import { Tabs, Tab, Typography, Grid, Button } from '@mui/material';
+import { Tabs, Tab, Typography, Grid, Button, Box } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -17,8 +17,8 @@ const AttendanceReports = () => {
   const [workingDaysData, setWorkingDaysData] = useState({});
 
   const [tabValue, setTabValue] = useState(0);
-  const [leaveTabValue, setLeaveTabValue] = useState(0);
-  const [workingDaysTabValue, setWorkingDaysTabValue] = useState(0);
+  // const [leaveTabValue, setLeaveTabValue] = useState(0);
+  // const [workingDaysTabValue, setWorkingDaysTabValue] = useState(0);
 
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'day')); // Default: Last 7 days
   const [endDate, setEndDate] = useState(dayjs()); // Default: Today
@@ -123,67 +123,69 @@ const AttendanceReports = () => {
     }
 
     fetchAttendanceData(newValue === 0 ? 'daily' : newValue === 1 ? 'weekly' : newValue === 2 ? 'monthly' : 'yearly', param);
-  };
-
-  const handleLeaveTabChange = (event, newValue) => {
-    setLeaveTabValue(newValue);
-
-    let param;
-    const today = dayjs();
-    const year = today.year();
-    const month = today.month() + 1;
-    const date = today.format('YYYY-MM-DD');
-    const week = today.isoWeek();
-
-    switch (newValue) {
-      case 0:
-        param = date;
-        break;
-      case 1:
-        param = `${year}/${week}`;
-        break;
-      case 2:
-        param = `${year}/${month}`;
-        break;
-      case 3:
-        param = `${year}`;
-        break;
-      default:
-        return;
-    }
-
     fetchLeaveData(newValue === 0 ? 'daily' : newValue === 1 ? 'weekly' : newValue === 2 ? 'monthly' : 'yearly', param);
-  };
-
-  const handleWorkingDaysTabChange = (event, newValue) => {
-    setWorkingDaysTabValue(newValue);
-
-    let param;
-    const today = dayjs();
-    const year = today.year();
-    const month = today.month() + 1;
-    const date = today.format('YYYY-MM-DD');
-    const week = today.isoWeek();
-
-    switch (newValue) {
-      case 0:
-        param = date;
-        break;
-      case 1:
-        param = `${year}/${week}`;
-        break;
-      case 2:
-        param = `${year}/${month}`;
-        break;
-      case 3:
-        param = `${year}`;
-        break;
-      default:
-        return;
-    }
-
     fetchWorkingDaysData(newValue === 0 ? 'daily' : newValue === 1 ? 'weekly' : newValue === 2 ? 'monthly' : 'yearly', param);
   };
+
+  // const handleLeaveTabChange = (event, newValue) => {
+  //   setLeaveTabValue(newValue);
+
+  //   let param;
+  //   const today = dayjs();
+  //   const year = today.year();
+  //   const month = today.month() + 1;
+  //   const date = today.format('YYYY-MM-DD');
+  //   const week = today.isoWeek();
+
+  //   switch (newValue) {
+  //     case 0:
+  //       param = date;
+  //       break;
+  //     case 1:
+  //       param = `${year}/${week}`;
+  //       break;
+  //     case 2:
+  //       param = `${year}/${month}`;
+  //       break;
+  //     case 3:
+  //       param = `${year}`;
+  //       break;
+  //     default:
+  //       return;
+  //   }
+
+  //   fetchLeaveData(newValue === 0 ? 'daily' : newValue === 1 ? 'weekly' : newValue === 2 ? 'monthly' : 'yearly', param);
+  // };
+
+  // const handleWorkingDaysTabChange = (event, newValue) => {
+  //   setWorkingDaysTabValue(newValue);
+
+  //   let param;
+  //   const today = dayjs();
+  //   const year = today.year();
+  //   const month = today.month() + 1;
+  //   const date = today.format('YYYY-MM-DD');
+  //   const week = today.isoWeek();
+
+  //   switch (newValue) {
+  //     case 0:
+  //       param = date;
+  //       break;
+  //     case 1:
+  //       param = `${year}/${week}`;
+  //       break;
+  //     case 2:
+  //       param = `${year}/${month}`;
+  //       break;
+  //     case 3:
+  //       param = `${year}`;
+  //       break;
+  //     default:
+  //       return;
+  //   }
+
+  //   fetchWorkingDaysData(newValue === 0 ? 'daily' : newValue === 1 ? 'weekly' : newValue === 2 ? 'monthly' : 'yearly', param);
+  // };
 
   const generateChartData = () => {
     const labels = Object.keys(attendanceData.workingHours || {});
@@ -241,17 +243,18 @@ const AttendanceReports = () => {
 
   return (
     <MainCard title="Attendance/Leave Report">
-      <Grid container spacing={2}>
-        {/* Attendance Section */}
-        <Grid container item spacing={2} lg={12} md={12} sm={12} xs={12}>
-          <Grid item xs={4}>
-            <DatePicker label="Start Date" value={startDate} onChange={(newValue) => setStartDate(newValue)} />
+      <Grid container spacing={4}>
+        {/* Date Range Controls */}
+        <Grid container item spacing={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            <DatePicker label="Start Date" value={startDate} onChange={(newValue) => setStartDate(newValue)} fullWidth />
           </Grid>
-          <Grid item xs={4}>
-            <DatePicker label="End Date" value={endDate} onChange={(newValue) => setEndDate(newValue)} />
+          <Grid item xs={12} sm={6} md={4}>
+            <DatePicker label="End Date" value={endDate} onChange={(newValue) => setEndDate(newValue)} fullWidth />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} md={4}>
             <Button
+              fullWidth
               variant="contained"
               color="primary"
               onClick={() => {
@@ -263,61 +266,61 @@ const AttendanceReports = () => {
               Fetch Range Data
             </Button>
           </Grid>
-          <Grid item xs={8}>
-            <Typography variant="h2">Attendance</Typography>
-            <Tabs value={tabValue} onChange={handleTabChange}>
-              <Tab label="Daily" />
-              <Tab label="Weekly" />
-              <Tab label="Monthly" />
-              <Tab label="Yearly" />
-            </Tabs>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Total Present: {attendanceData.totalPresent || 0}</Typography>
-            <Typography variant="h6">Total Absent: {attendanceData.totalAbsent || 0}</Typography>
-          </Grid>
-          <Grid item xs={12}>
+        </Grid>
+
+        {/* Attendance Section */}
+        <Grid item xs={12}>
+          <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
+            <Tab label="Daily" />
+            <Tab label="Weekly" />
+            <Tab label="Monthly" />
+            <Tab label="Yearly" />
+          </Tabs>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="h2" gutterBottom>
+            Attendance
+          </Typography>
+          <Typography variant="h6">Total Present: {attendanceData.totalPresent || 0}</Typography>
+          <Typography variant="h6">Total Absent: {attendanceData.totalAbsent || 0}</Typography>
+          <Box sx={{ overflowX: 'auto' }}>
             <Bar data={generateChartData()} />
-          </Grid>
+          </Box>
         </Grid>
 
         {/* Leave Section */}
-        <Grid container item spacing={2} lg={12} md={12} sm={12} xs={12}>
-          <Grid item xs={12}>
-            <Typography variant="h2">Leave</Typography>
-            <Tabs value={leaveTabValue} onChange={handleLeaveTabChange}>
-              <Tab label="Daily" />
-              <Tab label="Weekly" />
-              <Tab label="Monthly" />
-              <Tab label="Yearly" />
-            </Tabs>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Total Absent: {leaveData.totalAbsent || 0}</Typography>
-          </Grid>
-          <Grid item xs={12}>
+        <Grid item xs={12}>
+          <Typography variant="h2" gutterBottom>
+            Leave
+          </Typography>
+          {/* <Tabs value={leaveTabValue} onChange={handleLeaveTabChange} variant="scrollable" scrollButtons="auto">
+            <Tab label="Daily" />
+            <Tab label="Weekly" />
+            <Tab label="Monthly" />
+            <Tab label="Yearly" />
+          </Tabs> */}
+          <Typography variant="h6">Total Absent: {leaveData.totalAbsent || 0}</Typography>
+          <Box sx={{ overflowX: 'auto' }}>
             <Bar data={generateLeaveChartData()} />
-          </Grid>
+          </Box>
         </Grid>
 
         {/* Working Days Section */}
-        <Grid container item spacing={2} lg={12} md={12} sm={12} xs={12}>
-          <Grid item xs={12}>
-            <Typography variant="h2">Working Days</Typography>
-            <Tabs value={workingDaysTabValue} onChange={handleWorkingDaysTabChange}>
-              <Tab label="Daily" />
-              <Tab label="Weekly" />
-              <Tab label="Monthly" />
-              <Tab label="Yearly" />
-            </Tabs>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">Total Present: {workingDaysData.totalPresent || 0}</Typography>
-            <Typography variant="h6">Total Absent: {workingDaysData.totalAbsent || 0}</Typography>
-          </Grid>
-          <Grid item xs={12}>
+        <Grid item xs={12}>
+          <Typography variant="h2" gutterBottom>
+            Working Days
+          </Typography>
+          {/* <Tabs value={workingDaysTabValue} onChange={handleWorkingDaysTabChange} variant="scrollable" scrollButtons="auto">
+            <Tab label="Daily" />
+            <Tab label="Weekly" />
+            <Tab label="Monthly" />
+            <Tab label="Yearly" />
+          </Tabs> */}
+          <Typography variant="h6">Total Present: {workingDaysData.totalPresent || 0}</Typography>
+          <Typography variant="h6">Total Absent: {workingDaysData.totalAbsent || 0}</Typography>
+          <Box sx={{ overflowX: 'auto' }}>
             <Bar data={generateWorkingDaysChartData()} />
-          </Grid>
+          </Box>
         </Grid>
       </Grid>
     </MainCard>
