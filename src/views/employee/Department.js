@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Button, TextField, Grid, IconButton, Tooltip, Box } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
-import { gridSpacing } from 'store/constant';
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest, postRequest, putRequestNotStringify } from 'utils/fetchRequest';
 
@@ -116,12 +115,13 @@ function Department() {
   };
 
   return (
-    <div>
+    <Box p={2}>
       <MainCard title="Department Details">
-        <Grid container direction="row" spacing={gridSpacing}>
-          <Grid item xs={4}>
-            <br></br>
+        <Grid container spacing={2}>
+          {/* Input Field */}
+          <Grid item xs={12} sm={6} md={4}>
             <TextField
+              fullWidth
               label="Department Name"
               required
               variant="outlined"
@@ -129,76 +129,64 @@ function Department() {
               onChange={handleDepartmentChange}
             />
           </Grid>
+
+          {/* Create Button */}
           <Grid item xs={12}>
-            <br></br>
-            <div className="content">
-              {isDepartmentComplete() && (
-                <Button variant="contained" color="error" onClick={() => submitDepartment()}>
+            {isDepartmentComplete() && (
+              <Box mt={1}>
+                <Button variant="contained" color="error" onClick={submitDepartment}>
                   Create New Department
                 </Button>
-              )}
-            </div>
+              </Box>
+            )}
           </Grid>
+
+          {/* Table */}
           <Grid item xs={12}>
-            <Grid item xs={12}>
-              <div style={{ overflowX: 'auto' }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Department</TableCell>
-                      <TableCell>Department Count</TableCell>
-                      <TableCell>Action</TableCell>
+            <Box sx={{ overflowX: 'auto' }}>
+              <Table sx={{ minWidth: 600 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Department</TableCell>
+                    <TableCell>Department Count</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {departmentList.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          value={row?.departmentName || ''}
+                          onChange={(e) => handleInputChange(e.target.value, index, 'departmentName')}
+                        />
+                      </TableCell>
+                      <TableCell>{row?.laborCount}</TableCell>
+                      <TableCell>
+                        <Tooltip arrow placement="top" title="Update">
+                          <IconButton onClick={() => updateDepartment()}>
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip arrow placement="top" title="Delete">
+                          <IconButton onClick={() => handleRowDelete(row.id)}>
+                            <Delete />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {departmentList.map((row, index) => (
-                      <TableRow key={index}>
-                        {/* <TableCell>{row?.category}</TableCell> */}
-                        <TableCell>
-                          <TextField
-                            variant="outlined"
-                            value={row?.departmentName || ''}
-                            onChange={(e) => handleInputChange(e.target.value, index, 'departmentName')}
-                          />
-                        </TableCell>
-                        <TableCell>{row?.laborCount}</TableCell>
-                        <TableCell>
-                          {/* <Button variant="contained" color="error" onClick={() => handleRowDelete(row.id)}>
-                            Delete
-                          </Button>
-                          <Button variant="contained" color="error" onClick={() => updateLaborCategory()}>
-                            Update
-                          </Button> */}
-                          <Tooltip arrow placement="right" title="Update">
-                            <IconButton
-                              onClick={() => {
-                                updateDepartment();
-                              }}
-                            >
-                              <Edit />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip arrow placement="right" title="Delete">
-                            <IconButton
-                              onClick={() => {
-                                handleRowDelete(row.id);
-                              }}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </Grid>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
           </Grid>
         </Grid>
       </MainCard>
+
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </Box>
   );
 }
 
