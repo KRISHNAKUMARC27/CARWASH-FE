@@ -60,12 +60,12 @@ const Customization = () => {
     case `'Inter', sans-serif`:
       initialFont = 'Inter';
       break;
-    case `'Poppins', sans-serif`:
-      initialFont = 'Poppins';
+    case `'Neue Montreal', sans-serif`:
+      initialFont = 'Neue Montreal';
       break;
-    case `'Roboto', sans-serif`:
+    case `'Poppins', sans-serif`:
     default:
-      initialFont = 'Roboto';
+      initialFont = 'Poppins';
       break;
   }
 
@@ -77,12 +77,12 @@ const Customization = () => {
       case 'Inter':
         newFont = `'Inter', sans-serif`;
         break;
-      case 'Poppins':
-        newFont = `'Poppins', sans-serif`;
+      case 'Neue Montreal':
+        newFont = `'Neue Montreal', sans-serif`;
         break;
-      case 'Roboto':
+      case 'Poppins':
       default:
-        newFont = `'Roboto', sans-serif`;
+        newFont = `'Poppins', sans-serif`;
         break;
     }
     dispatch({ type: SET_FONT_FAMILY, fontFamily: newFont });
@@ -141,9 +141,9 @@ const Customization = () => {
                     name="row-radio-buttons-group"
                   >
                     <FormControlLabel
-                      value="Roboto"
+                      value="Neue Montreal"
                       control={<Radio />}
-                      label="Roboto"
+                      label="Neue Montreal"
                       sx={{
                         '& .MuiSvgIcon-root': { fontSize: 28 },
                         '& .MuiFormControlLabel-label': { color: theme.palette.grey[900] }

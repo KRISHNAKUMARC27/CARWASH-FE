@@ -166,7 +166,7 @@ const JobCardFastCreate = () => {
 
           {isJobComplete() && (
             <Grid item xs={12}>
-              <Button variant="contained" color="error" onClick={submitFastJobCard}>
+              <Button variant="contained" color="success" onClick={submitFastJobCard}>
                 Save JobCard
               </Button>
             </Grid>

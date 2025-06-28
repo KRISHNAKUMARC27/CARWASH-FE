@@ -279,7 +279,7 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
           </Button>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Button fullWidth variant="contained" color="primary" onClick={sendViaWhatsApp} disabled={photos.length === 0}>
+          <Button fullWidth variant="contained" color="secondary" onClick={sendViaWhatsApp} disabled={photos.length === 0}>
             Send via WhatsApp
           </Button>
         </Grid>

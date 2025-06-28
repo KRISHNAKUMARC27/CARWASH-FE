@@ -1,10 +1,10 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconTool, IconTableExport, IconTextPlus } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
-  IconIdBadge2,
+  IconTool,
   IconTableExport,
   IconTextPlus
 };
@@ -25,7 +25,7 @@ const getUtilities = () => {
           id: 'spares',
           title: 'Spares Inventory',
           type: 'collapse',
-          icon: icons.IconIdBadge2,
+          icon: icons.IconTool,
           children: [
             {
               id: 'allSpares',

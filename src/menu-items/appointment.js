@@ -1,10 +1,10 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus, IconUserCheck } from '@tabler/icons';
+import { IconKey, IconCalendar, IconTableExport, IconTextPlus, IconUserCheck } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
-  IconIdBadge2,
+  IconCalendar,
   IconTableExport,
   IconTextPlus,
   IconUserCheck
@@ -26,7 +26,7 @@ const getAppointment = () => {
           id: 'appointment',
           title: 'Appointment',
           type: 'collapse',
-          icon: icons.IconIdBadge2,
+          icon: icons.IconCalendar,
           children: [
             {
               id: 'createAppointment',

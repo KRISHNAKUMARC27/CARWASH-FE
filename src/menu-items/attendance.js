@@ -1,9 +1,9 @@
 // assets
-import { IconIdBadge2, IconTableExport, IconChartHistogram, IconUserCheck } from '@tabler/icons';
+import { IconUsers, IconTableExport, IconChartHistogram, IconUserCheck } from '@tabler/icons';
 
 // constant
 const icons = {
-  IconIdBadge2,
+  IconUsers,
   IconTableExport,
   IconChartHistogram,
   IconUserCheck
@@ -25,7 +25,7 @@ const getAttendance = () => {
           id: 'attendance',
           title: 'Attendance',
           type: 'collapse',
-          icon: icons.IconIdBadge2,
+          icon: icons.IconUsers,
           children: [
             {
               id: 'markAttendance',

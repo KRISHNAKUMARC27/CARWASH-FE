@@ -165,7 +165,7 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
       {/* Add/Update Button */}
       <Box mt={2} textAlign="left">
         {isServiceComplete() && (
-          <Button variant="contained" color="error" onClick={() => saveServiceInventory(serviceDetails)}>
+          <Button variant="contained" color="success" onClick={() => saveServiceInventory(serviceDetails)}>
             Add/Update Service
           </Button>
         )}

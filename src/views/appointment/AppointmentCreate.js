@@ -196,7 +196,7 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
 
       <Box sx={{ p: 2 }}>
         {isAppointmentComplete() && (
-          <Button variant="contained" color="error" onClick={() => saveAppointment(appointment)}>
+          <Button variant="contained" color="success" onClick={() => saveAppointment(appointment)}>
             Add/Update Appointment
           </Button>
         )}

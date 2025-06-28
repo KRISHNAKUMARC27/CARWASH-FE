@@ -356,7 +356,7 @@ const ProfileSection = () => {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <Button variant="contained" color="error" onClick={handlePassChange}>
+                  <Button variant="contained" color="success" onClick={handlePassChange}>
                     Change Password
                   </Button>
                 </Grid>
@@ -449,7 +449,7 @@ const ProfileSection = () => {
                   </Grid>
                   {isUserComplete() && (
                     <Grid item xs={12}>
-                      <Button variant="contained" color="error" onClick={handleCreateNewUser}>
+                      <Button variant="contained" color="success" onClick={handleCreateNewUser}>
                         Add User
                       </Button>
                     </Grid>

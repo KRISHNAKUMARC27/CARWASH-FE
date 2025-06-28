@@ -404,7 +404,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
           <DialogActions>
             <Button onClick={handleClose}>Close</Button>
-            <Button onClick={handleInvoiceSave} variant="contained" color="error">
+            <Button onClick={handleInvoiceSave} variant="contained" color="success">
               Save
             </Button>
           </DialogActions>

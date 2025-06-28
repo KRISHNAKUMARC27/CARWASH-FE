@@ -134,7 +134,7 @@ function Department() {
           <Grid item xs={12}>
             {isDepartmentComplete() && (
               <Box mt={1}>
-                <Button variant="contained" color="error" onClick={submitDepartment}>
+                <Button variant="contained" color="success" onClick={submitDepartment}>
                   Create New Department
                 </Button>
               </Box>

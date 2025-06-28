@@ -177,7 +177,7 @@ function JobCardCreate({ data }) {
 
       <Box className="content" sx={{ mt: 3 }}>
         {isJobComplete() && (
-          <Button variant="contained" color="error" onClick={submitJobCard}>
+          <Button variant="contained" color="success" onClick={submitJobCard}>
             Submit JobCard
           </Button>
         )}

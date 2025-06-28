@@ -131,7 +131,7 @@ function ExternalWorkCategory() {
             <br></br>
             <div className="content">
               {isExternalWorkCategoryComplete() && (
-                <Button variant="contained" color="error" onClick={() => submitExternalWorkCategory()}>
+                <Button variant="contained" color="success" onClick={() => submitExternalWorkCategory()}>
                   Create ExternalWork Category
                 </Button>
               )}
@@ -171,7 +171,7 @@ function ExternalWorkCategory() {
                           {/* <Button variant="contained" color="error" onClick={() => handleRowDelete(row.id)}>
                             Delete
                           </Button>
-                          <Button variant="contained" color="error" onClick={() => updateExternalWorkCategory()}>
+                          <Button variant="contained" color="success" onClick={() => updateExternalWorkCategory()}>
                             Update
                           </Button> */}
                           <Tooltip arrow placement="right" title="Update">

@@ -257,7 +257,7 @@ function SparesCreate({ data, setSparesUpdateOpen, fetchAllSparesData }) {
       <br></br>
       <Box mt={2} textAlign="left">
         {isSparesComplete() && (
-          <Button variant="contained" color="error" onClick={() => saveSparesInventory(sparesDetails)}>
+          <Button variant="contained" color="success" onClick={() => saveSparesInventory(sparesDetails)}>
             Add/Update Spares
           </Button>
         )}

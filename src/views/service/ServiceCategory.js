@@ -135,7 +135,7 @@ function ServiceCategory() {
           <Grid item xs={12}>
             {isServiceCategoryComplete() && (
               <Box mt={1}>
-                <Button variant="contained" color="error" onClick={submitServiceCategory}>
+                <Button variant="contained" color="success" onClick={submitServiceCategory}>
                   Create Service Category
                 </Button>
               </Box>

@@ -256,7 +256,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
         <br />
         <Button
           variant="contained"
-          color="error"
+          color="secondary"
           onClick={addAdditionalRows}
           ref={firstInputRef} // 👈 ref to allow focus from kiloMeters field
         >

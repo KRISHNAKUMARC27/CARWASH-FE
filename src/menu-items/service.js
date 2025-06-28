@@ -1,10 +1,10 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconCar, IconTableExport, IconTextPlus } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
-  IconIdBadge2,
+  IconCar,
   IconTableExport,
   IconTextPlus
 };
@@ -20,7 +20,7 @@ const service = {
       id: 'service',
       title: 'Service',
       type: 'collapse',
-      icon: icons.IconIdBadge2,
+      icon: icons.IconCar,
 
       children: [
         {

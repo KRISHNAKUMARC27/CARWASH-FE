@@ -440,7 +440,7 @@ const JobCardUpdate = () => {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               {isJobComplete() && (
-                <Button variant="contained" color="error" fullWidth onClick={submitJobCard}>
+                <Button variant="contained" color="success" fullWidth onClick={submitJobCard}>
                   Update JobCard
                 </Button>
               )}
@@ -512,7 +512,7 @@ const JobCardUpdate = () => {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               {isJobSparesUpdateComplete() && (
-                <Button variant="contained" color="error" fullWidth onClick={submitJobSpares}>
+                <Button variant="contained" color="success" fullWidth onClick={submitJobSpares}>
                   Update JobSpares
                 </Button>
               )}

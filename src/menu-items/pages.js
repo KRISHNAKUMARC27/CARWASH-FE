@@ -1,10 +1,10 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconClipboard, IconTableExport, IconTextPlus } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
-  IconIdBadge2,
+  IconClipboard,
   IconTableExport,
   IconTextPlus
 };
@@ -21,7 +21,7 @@ const pages = {
       id: 'job',
       title: 'Job Card',
       type: 'collapse',
-      icon: icons.IconIdBadge2,
+      icon: icons.IconClipboard,
 
       children: [
         {

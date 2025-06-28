@@ -100,7 +100,7 @@ const Receipt = ({ receipt, setReceipt, paymentModes, receiptDialogOpen, selecte
 
           <DialogActions>
             <Button onClick={handleClose}>Close</Button>
-            <Button onClick={handleReceiptSubmit} variant="contained" color="error">
+            <Button onClick={handleReceiptSubmit} variant="contained" color="success">
               Save
             </Button>
           </DialogActions>

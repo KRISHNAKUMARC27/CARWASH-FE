@@ -194,7 +194,7 @@ const JobLaborUpdate = ({ data, updateData }) => {
             </div>
             <Grid item xs={12}>
               <br></br>
-              <Button variant="contained" color="error" onClick={addAdditionalRows}>
+              <Button variant="contained" color="secondary" onClick={addAdditionalRows}>
                 Add Row
               </Button>
             </Grid>

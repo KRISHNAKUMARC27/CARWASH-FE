@@ -132,7 +132,7 @@ function ExpenseCategory() {
 
             <Grid item xs={12}>
               {isExpenseCategoryComplete() && (
-                <Button variant="contained" color="error" onClick={submitExpenseCategory}>
+                <Button variant="contained" color="success" onClick={submitExpenseCategory}>
                   Create Expense Category
                 </Button>
               )}

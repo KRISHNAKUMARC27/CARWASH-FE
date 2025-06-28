@@ -66,7 +66,7 @@ const LoginPage = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" color="error" onClick={handleLogin}>
+            <Button variant="contained" color="secondary" onClick={handleLogin}>
               Login
             </Button>
           </Grid>

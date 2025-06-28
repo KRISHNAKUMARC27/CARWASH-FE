@@ -144,7 +144,7 @@ function ExpenseCreate({ data, setExpenseUpdateOpen, fetchAllExpenseData }) {
 
       <Box sx={{ p: 2 }}>
         {isExpenseComplete() && (
-          <Button variant="contained" color="error" onClick={() => saveExpense(expenseDetails)}>
+          <Button variant="contained" color="success" onClick={() => saveExpense(expenseDetails)}>
             Add/Update Expense
           </Button>
         )}

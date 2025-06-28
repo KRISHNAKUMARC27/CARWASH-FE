@@ -133,7 +133,7 @@ function SparesCategory() {
           <Grid item xs={12}>
             <Box sx={{ mt: 2 }}>
               {isSparesCategoryComplete() && (
-                <Button variant="contained" color="error" onClick={submitSparesCategory}>
+                <Button variant="contained" color="success" onClick={submitSparesCategory}>
                   Create Spares Category
                 </Button>
               )}

@@ -121,7 +121,7 @@ function ExternalWorkCreate({ data, setExternalWorkUpdateOpen, fetchAllExternalW
       <br></br>
       <div className="content">
         {isExternalWorkComplete() && (
-          <Button variant="contained" color="error" onClick={() => saveExternalWorkInventory(externalworkDetails)}>
+          <Button variant="contained" color="success" onClick={() => saveExternalWorkInventory(externalworkDetails)}>
             Add/Update ExternalWork
           </Button>
         )}

@@ -197,7 +197,7 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
 
       <Box sx={{ p: 2 }}>
         {isDepartmentComplete() && (
-          <Button variant="contained" color="error" onClick={() => saveEmployee(employeeDetails)}>
+          <Button variant="contained" color="success" onClick={() => saveEmployee(employeeDetails)}>
             Add/Update Employee
           </Button>
         )}

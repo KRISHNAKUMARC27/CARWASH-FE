@@ -1,10 +1,10 @@
 // assets
-import { IconKey, IconIdBadge2, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
+import { IconKey, IconFileInvoice, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
-  IconIdBadge2,
+  IconFileInvoice,
   IconTableExport,
   IconTextPlus,
   IconChartHistogram
@@ -26,7 +26,7 @@ const getInvoice = () => {
           id: 'invoice',
           title: 'Invoice',
           type: 'collapse',
-          icon: icons.IconIdBadge2,
+          icon: icons.IconFileInvoice,
           children: [
             {
               id: 'allInvoice',

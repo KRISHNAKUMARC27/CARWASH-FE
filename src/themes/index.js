@@ -29,8 +29,8 @@ export const theme = (customization) => {
   // Apply role-specific color overrides
   switch (userRole) {
     case 'INVOICE':
-      color.errorDark = color.primary800; // light orange
-      color.errorMain = color.primaryMain; // purple
+      color.secondary800 = color.errorDark; // light orange
+      color.secondary200 = color.errorMain; // purple
       break;
     // Add more role-specific overrides if needed
     default:
@@ -40,15 +40,15 @@ export const theme = (customization) => {
 
   const themeOption = {
     colors: color,
-    heading: color.errorMain,
+    heading: color.primaryMain,
     paper: color.paper,
-    backgroundDefault: color.grey300,
-    background: color.primaryLight,
+    backgroundDefault: color.grey100,
+    background: color.grey200,
     darkTextPrimary: color.grey900,
     darkTextSecondary: color.grey500,
     textDark: color.grey900,
-    menuSelected: color.errorDark,
-    menuSelectedBack: color.errorLight,
+    menuSelected: color.secondary800,
+    menuSelectedBack: color.secondary200,
     divider: color.grey200,
     customization
   };

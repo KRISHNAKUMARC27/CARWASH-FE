@@ -86,11 +86,11 @@ const MobileSearch = ({ value, setValue, popupState }) => {
                 sx={{
                   ...theme.typography.commonAvatar,
                   ...theme.typography.mediumAvatar,
-                  background: theme.palette.orange.light,
-                  color: theme.palette.orange.dark,
+                  background: theme.palette.secondary.light,
+                  color: theme.palette.secondary.dark,
                   '&:hover': {
-                    background: theme.palette.orange.dark,
-                    color: theme.palette.orange.light
+                    background: theme.palette.secondary.dark,
+                    color: theme.palette.secondary.light
                   }
                 }}
                 {...bindToggle(popupState)}
