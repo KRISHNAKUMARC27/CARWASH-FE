@@ -303,7 +303,9 @@ function JobView({ open, onClose, job }) {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose} color="error">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
 

@@ -116,10 +116,10 @@ const MultiSettle = ({ paymentModes, settleBillDialogOpen, selectedRows, handleC
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={handleClose} color="secondary">
+            <Button onClick={handleClose} color="error">
               Close
             </Button>
-            <Button onClick={handleMultiPaymentSubmit} color="secondary">
+            <Button onClick={handleMultiPaymentSubmit} color="success">
               Save
             </Button>
           </DialogActions>

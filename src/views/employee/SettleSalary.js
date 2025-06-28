@@ -310,8 +310,10 @@ const SettleSalary = () => {
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={handleSubmitSalary}>
+          <Button onClick={handleDialogClose} color="error">
+            Cancel
+          </Button>
+          <Button variant="contained" color="success" onClick={handleSubmitSalary}>
             Submit
           </Button>
         </DialogActions>
@@ -348,8 +350,10 @@ const SettleSalary = () => {
           <TextField fullWidth margin="dense" label="Comment" name="comment" value={expense.comment} onChange={handleExpenseChange} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={handleSubmitAdvance}>
+          <Button onClick={handleDialogClose} color="error">
+            Cancel
+          </Button>
+          <Button variant="contained" color="success" onClick={handleSubmitAdvance}>
             Submit
           </Button>
         </DialogActions>

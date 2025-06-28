@@ -412,10 +412,10 @@ const BillPayment = ({
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={handleClose} color="secondary">
+            <Button onClick={handleClose} color="error">
               Close
             </Button>
-            <Button onClick={handleEstimateSave} color="secondary">
+            <Button onClick={handleEstimateSave} color="success">
               Save
             </Button>
           </DialogActions>
@@ -431,10 +431,10 @@ const BillPayment = ({
             </p>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleConfirmAddCredit} color="primary">
+            <Button onClick={handleConfirmAddCredit} color="success">
               Yes
             </Button>
-            <Button onClick={handleCloseConfirmDialog} color="secondary">
+            <Button onClick={handleCloseConfirmDialog} color="error">
               No
             </Button>
           </DialogActions>

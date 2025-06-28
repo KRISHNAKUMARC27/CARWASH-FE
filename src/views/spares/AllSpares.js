@@ -240,7 +240,9 @@ const AllSpares = () => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
+          <Button onClick={handleClose} color="error">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </>

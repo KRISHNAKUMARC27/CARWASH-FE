@@ -184,7 +184,7 @@ const AllExpense = () => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">
+          <Button onClick={handleClose} color="error">
             Close
           </Button>
         </DialogActions>

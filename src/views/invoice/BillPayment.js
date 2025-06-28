@@ -403,7 +403,9 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={handleClose} color="error">
+              Close
+            </Button>
             <Button onClick={handleInvoiceSave} variant="contained" color="success">
               Save
             </Button>
@@ -420,10 +422,10 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleConfirmAddCredit} color="primary">
+            <Button onClick={handleConfirmAddCredit} color="success">
               Yes
             </Button>
-            <Button onClick={handleCloseConfirmDialog} color="secondary">
+            <Button onClick={handleCloseConfirmDialog} color="error">
               No
             </Button>
           </DialogActions>

@@ -427,7 +427,7 @@ const AllJobs = () => {
             <Button onClick={handleClose} color="error">
               Close
             </Button>
-            <Button onClick={handleSave} color="primary">
+            <Button onClick={handleSave} color="success">
               Save
             </Button>
           </DialogActions>
