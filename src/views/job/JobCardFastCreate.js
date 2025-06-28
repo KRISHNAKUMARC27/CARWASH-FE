@@ -1,18 +1,20 @@
-import React, { useState, useRef } from 'react';
-import { Grid, TextField, Button } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import { Grid, TextField, Button, MenuItem, Typography, Dialog, DialogContent, DialogActions } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import JobServiceUpdate from './JobServiceUpdate';
 import JobSparesUpdate from './JobSparesUpdate';
 import AlertDialog from 'views/utilities/AlertDialog';
-import { postRequest } from 'utils/fetchRequest';
+import { postRequest, getBlobRequest, getRequest } from 'utils/fetchRequest';
 
 const JobCardFastCreate = () => {
-  const [fastJobCard, setFastJobCard] = useState({});
+  const [fastJobCard, setFastJobCard] = useState({ billType: 'ESTIMATE', paymentMode: 'CASH' });
   const [jobServiceInfo, setJobServiceInfo] = useState([]);
   const [jobSparesInfo, setJobSparesInfo] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
   const [alertColor, setAlertColor] = useState('');
+  const [paymentModes, setPaymentModes] = useState([]);
+  const [openPrintBillMsg, setOpenPrintBillMsg] = useState(false);
 
   // Refs for each field
   const ownerNameRef = useRef();
@@ -22,6 +24,23 @@ const JobCardFastCreate = () => {
   const vehicleNameRef = useRef();
   const kiloMetersRef = useRef();
   const jobServiceFirstInputRef = useRef();
+
+  useEffect(() => {
+    getPaymentModes();
+
+    return () => {
+      setPaymentModes([]);
+    };
+  }, []);
+
+  const getPaymentModes = async () => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/config/paymentmodes');
+      setPaymentModes(data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     if (field === 'ownerPhoneNumber') {
@@ -43,6 +62,7 @@ const JobCardFastCreate = () => {
     setFastJobCard({});
     setJobSparesInfo([]);
     setJobServiceInfo([]);
+    setOpenPrintBillMsg(false);
   };
 
   const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerPhoneNumber;
@@ -67,11 +87,13 @@ const JobCardFastCreate = () => {
       jobSparesInfo
     };
     try {
-      await postRequest(process.env.REACT_APP_API_URL + '/jobCard/fastjobCard', payload);
-      handleClose();
-      setAlertMess('Jobcard created for ' + payload.vehicleRegNo);
-      setAlertColor('success');
-      setShowAlert(true);
+      const data = await postRequest(process.env.REACT_APP_API_URL + '/jobCard/fastjobCard', payload);
+      // setAlertMess('Jobcard created for ' + payload.vehicleRegNo + ' Print Bill ');
+      // setAlertColor('success');
+      // setShowAlert(true);
+      setFastJobCard(data);
+      setOpenPrintBillMsg(true);
+      //handleClose();
     } catch (err) {
       console.log(err.message);
       handleClose();
@@ -81,10 +103,29 @@ const JobCardFastCreate = () => {
     }
   };
 
+  const printBillPDF = async () => {
+    try {
+      const blob = await getBlobRequest(process.env.REACT_APP_API_URL + '/jobCard/billPdf/' + fastJobCard.id);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', 'Bill_' + fastJobCard.jobId + '_' + fastJobCard.vehicleRegNo + '.pdf');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      handleClose();
+    } catch (err) {
+      handleClose();
+      console.log(err.message);
+      setAlertMess(err.message);
+      setShowAlert(true);
+    }
+  };
+
   return (
     <>
       <MainCard title="Job Card Details">
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               inputRef={ownerNameRef}
@@ -115,7 +156,7 @@ const JobCardFastCreate = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={3}>
             <TextField
               inputRef={ownerAddressRef}
               label="Owner Address"
@@ -165,6 +206,40 @@ const JobCardFastCreate = () => {
             />
           </Grid>
 
+          <Grid item xs={12} md={3}>
+            <TextField
+              select
+              label="Payment Mode"
+              variant="outlined"
+              fullWidth
+              required
+              value={fastJobCard.paymentMode}
+              onChange={(e) => handleInputChange('paymentMode', e.target.value)}
+            >
+              {paymentModes
+                .filter((mode) => mode !== 'CREDIT')
+                .map((mode) => (
+                  <MenuItem key={mode} value={mode}>
+                    {mode}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12} md={3}>
+            <TextField
+              select
+              label="Bill Type"
+              variant="outlined"
+              fullWidth
+              required
+              value={fastJobCard?.billType || ''}
+              onChange={(e) => handleInputChange('billType', e.target.value)}
+            >
+              <MenuItem value="ESTIMATE">ESTIMATE</MenuItem>
+              <MenuItem value="INVOICE">INVOICE</MenuItem>
+            </TextField>
+          </Grid>
           <Grid item xs={12}>
             <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} firstInputRef={jobServiceFirstInputRef} />
           </Grid>
@@ -183,6 +258,28 @@ const JobCardFastCreate = () => {
         </Grid>
       </MainCard>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
+
+      <Dialog
+        open={openPrintBillMsg}
+        onClose={() => setOpenPrintBillMsg(false)}
+        aria-labelledby="data-row-dialog-title"
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogContent dividers style={{ backgroundColor: 'white', color: 'black' }}>
+          <Typography variant="h3" textAlign="center">
+            Jobcard created for {fastJobCard.vehicleRegNo} .Proceed with Printing Bill ?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="error">
+            No
+          </Button>
+          <Button onClick={printBillPDF} color="success">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

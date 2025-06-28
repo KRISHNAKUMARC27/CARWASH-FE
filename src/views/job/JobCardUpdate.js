@@ -507,13 +507,13 @@ const JobCardUpdate = () => {
           <Grid container spacing={2} sx={{ px: 2, pb: 2 }}>
             <Grid item xs={12} sm={6} md={3}>
               <Button variant="contained" color="error" fullWidth onClick={handleClose}>
-                Cancel Update Spares
+                Cancel
               </Button>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               {isJobSparesUpdateComplete() && (
                 <Button variant="contained" color="success" fullWidth onClick={submitJobSpares}>
-                  Update JobSpares
+                  Update ServiceInfo
                 </Button>
               )}
             </Grid>

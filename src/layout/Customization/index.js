@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -16,7 +17,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { IconSettings } from '@tabler/icons';
+import { IconSettings, IconClipboard } from '@tabler/icons';
 
 // third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -38,11 +39,15 @@ const Customization = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const customization = useSelector((state) => state.customization);
-
+  const navigate = useNavigate();
   // drawer on/off
   const [open, setOpen] = useState(false);
   const handleToggle = () => {
     setOpen(!open);
+  };
+
+  const handleOpenFastJobCardToggle = () => {
+    navigate('/card/createFastCard', { replace: true });
   };
 
   // state - border radius
@@ -113,6 +118,33 @@ const Customization = () => {
           <AnimateButton type="rotate">
             <IconButton color="inherit" size="large" disableRipple>
               <IconSettings />
+            </IconButton>
+          </AnimateButton>
+        </Fab>
+      </Tooltip>
+
+      <Tooltip title="Fast JobCard">
+        <Fab
+          component="div"
+          onClick={handleOpenFastJobCardToggle}
+          size="medium"
+          variant="circular"
+          color="error"
+          sx={{
+            borderRadius: 0,
+            borderTopLeftRadius: '50%',
+            borderBottomLeftRadius: '50%',
+            borderTopRightRadius: '50%',
+            borderBottomRightRadius: '4px',
+            top: '75%',
+            position: 'fixed',
+            right: 10,
+            zIndex: theme.zIndex.speedDial
+          }}
+        >
+          <AnimateButton type="rotate">
+            <IconButton color="inherit" size="large" disableRipple>
+              <IconClipboard />
             </IconButton>
           </AnimateButton>
         </Fab>

@@ -59,7 +59,7 @@ const MainRoutes = {
       path: '/',
       element: (
         <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'JOBCARD', 'INVOICE', 'ESTIMATE']}>
-          <JobCardUpdate />
+          <AllJobs />
         </PrivateRoute>
       )
     },
