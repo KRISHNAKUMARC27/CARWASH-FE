@@ -74,6 +74,11 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
   };
 
   const handleInputChange = (field, value) => {
+    if (field === 'phone') {
+      if (!/^\d*$/.test(value)) return; // only digits
+      if (value.length > 10) return; // max 10 digits
+      if (/^(\d)\1{9}$/.test(value)) return; // block 0000000000, 1111111111, etc.
+    }
     const updatedData = { ...employeeDetails, [field]: value };
     setEmployeeDetails(updatedData);
   };
@@ -112,6 +117,8 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
               fullWidth
               value={employeeDetails.phone || ''}
               onChange={(e) => handleInputChange('phone', e.target.value)}
+              error={employeeDetails.phone && employeeDetails.phone.length !== 10}
+              helperText={employeeDetails.phone && employeeDetails.phone.length !== 10 ? 'Phone number must be 10 digits' : ' '}
             />
           </Grid>
 

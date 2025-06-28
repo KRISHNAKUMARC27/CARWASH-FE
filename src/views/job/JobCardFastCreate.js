@@ -24,6 +24,11 @@ const JobCardFastCreate = () => {
   const jobServiceFirstInputRef = useRef();
 
   const handleInputChange = (field, value) => {
+    if (field === 'ownerPhoneNumber') {
+      if (!/^\d*$/.test(value)) return; // only digits
+      if (value.length > 10) return; // max 10 digits
+      if (/^(\d)\1{9}$/.test(value)) return; // block 0000000000, 1111111111, etc.
+    }
     setFastJobCard({ ...fastJobCard, [field]: value });
   };
 
@@ -103,6 +108,10 @@ const JobCardFastCreate = () => {
               value={fastJobCard.ownerPhoneNumber || ''}
               onChange={(e) => handleInputChange('ownerPhoneNumber', e.target.value)}
               onKeyDown={(e) => handleEnter(e, ownerAddressRef)}
+              error={fastJobCard.ownerPhoneNumber && fastJobCard.ownerPhoneNumber.length !== 10}
+              helperText={
+                fastJobCard.ownerPhoneNumber && fastJobCard.ownerPhoneNumber.length !== 10 ? 'Phone number must be 10 digits' : ' '
+              }
             />
           </Grid>
 

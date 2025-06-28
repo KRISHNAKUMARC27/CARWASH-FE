@@ -14,6 +14,9 @@ const JobUserDetails = ({ data, updateData }) => {
     updateData(updatedData);
   };
   const handleOwnerPhoneNumberChange = (event) => {
+    if (!/^\d*$/.test(event.target.value)) return; // only digits
+    if (event.target.value.length > 10) return; // max 10 digits
+    if (/^(\d)\1{9}$/.test(event.target.value)) return; // block 0000000000, 1111111111, etc.
     const updatedData = { ...data, ownerPhoneNumber: event.target.value };
     updateData(updatedData);
   };
@@ -41,6 +44,8 @@ const JobUserDetails = ({ data, updateData }) => {
               variant="outlined"
               value={data.ownerPhoneNumber || ''}
               onChange={handleOwnerPhoneNumberChange}
+              error={data.ownerPhoneNumber && data.ownerPhoneNumber.length !== 10}
+              helperText={data.ownerPhoneNumber && data.ownerPhoneNumber.length !== 10 ? 'Phone number must be 10 digits' : ' '}
             />
           </Grid>
 
