@@ -52,6 +52,7 @@ function ServiceCreate({ data, setServiceUpdateOpen, fetchAllServiceData }) {
       setAlertMess(data.desc + ' added successfully ');
       setAlertColor('success');
       setShowAlert(true);
+      setServiceDetails({});
       console.log(data);
     } catch (err) {
       console.log(err.message);

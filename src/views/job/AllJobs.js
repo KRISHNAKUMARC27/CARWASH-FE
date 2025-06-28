@@ -101,6 +101,7 @@ const AllJobs = () => {
   };
 
   const handleClose = () => {
+    fetchAllJobsData();
     setSelectedRow({});
     setJobStatusOpen(false);
     setJobInfoOpen(false);
@@ -109,13 +110,10 @@ const AllJobs = () => {
     setEstimateCreateOpen(false);
     setInvoice({});
     setEstimate({});
-    fetchAllJobsData();
   };
 
   const handleSave = () => {
     updateJobCard(selectedRow);
-    fetchAllJobsData();
-    handleClose();
   };
 
   const updateJobCard = async (payload) => {
@@ -129,16 +127,13 @@ const AllJobs = () => {
     }
     try {
       await putRequest(process.env.REACT_APP_API_URL + '/jobCard/jobStatus', payload);
-      setSelectedRow({});
-      setJobStatusOpen(false);
-      fetchAllJobsData();
+      handleClose();
     } catch (err) {
       console.log(err.message);
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
-      setSelectedRow({});
-      setJobStatusOpen(false);
+      handleClose();
     }
   };
 
