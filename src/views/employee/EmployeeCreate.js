@@ -60,6 +60,7 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
       if (setEmployeeUpdateOpen) {
         setEmployeeUpdateOpen(false);
       }
+      setEmployeeDetails({});
       setAlertMess(data.name + ' added successfully ');
       setAlertColor('success');
       setShowAlert(true);
@@ -174,7 +175,17 @@ function EmployeeCreate({ data, setEmployeeUpdateOpen, fetchAllEmployeeData }) {
               onChange={(e) => handleInputChange('salary', parseFloat(e.target.value) || 0)}
             />
           </Grid>
-
+          <Grid item xs={12} sm={6} md={4}>
+            <TextField
+              label="Salary Advance"
+              variant="outlined"
+              fullWidth
+              type="number"
+              inputProps={{ min: 0 }}
+              value={employeeDetails.salaryAdvance || ''}
+              onChange={(e) => handleInputChange('salaryAdvance', parseFloat(e.target.value) || 0)}
+            />
+          </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <InputLabel required>Employment Status</InputLabel>
             <TextField
