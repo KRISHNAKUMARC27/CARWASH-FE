@@ -36,6 +36,8 @@ import { getRequest } from 'utils/fetchRequest';
 import Loadable from 'ui-component/Loadable';
 import { lazy } from 'react';
 import TotalExpenseLineChartCard from './TotalExpenseLineChartCard';
+import TotalBalance from './TotalBalance';
+import CustomerStatsTable from './CustomerStatsTable';
 const AppointmentCreate = Loadable(lazy(() => import('views/appointment/AppointmentCreate')));
 
 const currentYear = dayjs().year();
@@ -163,7 +165,9 @@ const Dashboard = () => {
                 <Grid item lg={4} md={12} sm={12} xs={12}>
                   <TotalExpenseLineChartCard />
                 </Grid>
-                <Grid item lg={4} md={12} sm={12} xs={12}></Grid>
+                <Grid item lg={4} md={12} sm={12} xs={12}>
+                  <TotalBalance />
+                </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -186,6 +190,13 @@ const Dashboard = () => {
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12} md={12}>
               <TotalJobCardBarChart yearArray={yearArray} />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid container spacing={gridSpacing}>
+            <Grid item xs={12} md={12}>
+              <CustomerStatsTable />
             </Grid>
           </Grid>
         </Grid>

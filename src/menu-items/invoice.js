@@ -1,5 +1,5 @@
 // assets
-import { IconKey, IconFileInvoice, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
+import { IconKey, IconFileInvoice, IconTableExport, IconTextPlus, IconChartHistogram, IconCards } from '@tabler/icons';
 
 // constant
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   IconFileInvoice,
   IconTableExport,
   IconTextPlus,
-  IconChartHistogram
+  IconChartHistogram,
+  IconCards
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -40,7 +41,7 @@ const getInvoice = () => {
               title: 'Credit Invoice',
               type: 'item',
               url: '/invoice/creditInvoice',
-              icon: icons.IconTextPlus
+              icon: icons.IconCards
             },
             {
               id: 'receipts',

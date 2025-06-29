@@ -1,5 +1,5 @@
 // assets
-import { IconKey, IconReceipt, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
+import { IconKey, IconReceipt, IconTableExport, IconTextPlus, IconChartHistogram, IconCards } from '@tabler/icons';
 
 // constant
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   IconReceipt,
   IconTableExport,
   IconTextPlus,
-  IconChartHistogram
+  IconChartHistogram,
+  IconCards
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -40,7 +41,7 @@ const getEstimate = () => {
               title: 'Credit Estimate',
               type: 'item',
               url: '/estimate/creditEstimate',
-              icon: icons.IconTextPlus
+              icon: icons.IconCards
             },
             {
               id: 'receipts',

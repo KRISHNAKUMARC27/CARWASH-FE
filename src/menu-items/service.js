@@ -1,5 +1,5 @@
 // assets
-import { IconKey, IconCar, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
+import { IconKey, IconCar, IconTableExport, IconTextPlus, IconChartHistogram, IconCategory } from '@tabler/icons';
 
 // constant
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   IconCar,
   IconTableExport,
   IconTextPlus,
-  IconChartHistogram
+  IconChartHistogram,
+  IconCategory
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -45,7 +46,7 @@ const service = {
           title: 'Service Category',
           type: 'item',
           url: '/service/serviceCategory',
-          icon: icons.IconTextPlus
+          icon: icons.IconCategory
           //target: true
         },
         {

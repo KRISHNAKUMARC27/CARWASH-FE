@@ -59,7 +59,7 @@ const JobCardFastCreate = () => {
   };
 
   const handleClose = () => {
-    setFastJobCard({});
+    setFastJobCard({ billType: 'ESTIMATE', paymentMode: 'CASH' });
     setJobSparesInfo([]);
     setJobServiceInfo([]);
     setOpenPrintBillMsg(false);

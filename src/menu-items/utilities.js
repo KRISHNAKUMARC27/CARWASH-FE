@@ -1,12 +1,13 @@
 // assets
-import { IconKey, IconTool, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconTool, IconTableExport, IconTextPlus, IconCategory } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
   IconTool,
   IconTableExport,
-  IconTextPlus
+  IconTextPlus,
+  IconCategory
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -46,7 +47,7 @@ const getUtilities = () => {
               title: 'Spares Category',
               type: 'item',
               url: '/spares/sparesCategory',
-              icon: icons.IconTextPlus
+              icon: icons.IconCategory
             }
           ]
         }

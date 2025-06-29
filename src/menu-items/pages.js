@@ -1,12 +1,13 @@
 // assets
-import { IconKey, IconClipboard, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconClipboard, IconTableExport, IconClipboardPlus, IconEdit } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
   IconClipboard,
   IconTableExport,
-  IconTextPlus
+  IconClipboardPlus,
+  IconEdit
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -37,7 +38,7 @@ const pages = {
           title: 'Create Fast Card',
           type: 'item',
           url: '/card/createFastCard',
-          icon: icons.IconTextPlus
+          icon: icons.IconClipboard
           //target: true
         },
         {
@@ -45,7 +46,7 @@ const pages = {
           title: 'Create New Card',
           type: 'item',
           url: '/card/createCard',
-          icon: icons.IconTextPlus
+          icon: icons.IconClipboardPlus
           //target: true
         },
         {
@@ -53,7 +54,7 @@ const pages = {
           title: 'Update Job Card',
           type: 'item',
           url: '/card/updateCard',
-          icon: icons.IconTextPlus
+          icon: icons.IconEdit
           //target: true
         }
       ]
