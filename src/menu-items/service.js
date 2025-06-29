@@ -1,12 +1,13 @@
 // assets
-import { IconKey, IconCar, IconTableExport, IconTextPlus } from '@tabler/icons';
+import { IconKey, IconCar, IconTableExport, IconTextPlus, IconChartHistogram } from '@tabler/icons';
 
 // constant
 const icons = {
   IconKey,
   IconCar,
   IconTableExport,
-  IconTextPlus
+  IconTextPlus,
+  IconChartHistogram
 };
 
 // ==============================|| UTILITIES MENU ITEMS ||============================== //
@@ -46,6 +47,13 @@ const service = {
           url: '/service/serviceCategory',
           icon: icons.IconTextPlus
           //target: true
+        },
+        {
+          id: 'reports',
+          title: 'Service Reports',
+          type: 'item',
+          url: '/service/reports',
+          icon: icons.IconChartHistogram
         }
       ]
     }

@@ -67,7 +67,7 @@ const JobCardFastCreate = () => {
 
   const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerPhoneNumber;
 
-  const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName;
+  const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName && fastJobCard.paymentMode && fastJobCard.billType;
 
   const isJobComplete = () => isUserDetailsComplete() && isCarDetailsComplete();
 
