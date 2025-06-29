@@ -16,6 +16,7 @@ const JobCardFastCreate = Loadable(lazy(() => import('views/job/JobCardFastCreat
 const AllSpares = Loadable(lazy(() => import('views/spares/AllSpares')));
 const CreateSpares = Loadable(lazy(() => import('views/spares/SparesCreate')));
 const SparesCategory = Loadable(lazy(() => import('views/spares/SparesCategory')));
+const SparesStatsReports = Loadable(lazy(() => import('views/spares/SparesStatsReports')));
 
 const AllService = Loadable(lazy(() => import('views/service/AllService')));
 const CreateService = Loadable(lazy(() => import('views/service/ServiceCreate')));
@@ -125,6 +126,14 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'SPARES']}>
           <SparesCategory />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'spares/reports',
+      element: (
+        <PrivateRoute allowedRoles={['MANAGER', 'ADMIN', 'SPARES']}>
+          <SparesStatsReports />
         </PrivateRoute>
       )
     },

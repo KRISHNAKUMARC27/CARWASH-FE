@@ -13,8 +13,8 @@ dayjs.extend(isoWeek);
 
 ChartJS.register(CategoryScale, ArcElement, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const ServiceStatsReports = () => {
-  const [jobServiceStatsData, setjobServiceStatsData] = useState({});
+const SparesStatsReports = () => {
+  const [jobSparesStatsData, setjobSparesStatsData] = useState({});
 
   const [tabValue, setTabValue] = useState(0);
 
@@ -27,23 +27,23 @@ const ServiceStatsReports = () => {
 
   const fetchJobServiceStatsData = async (type, param) => {
     try {
-      const url = `${process.env.REACT_APP_API_URL}/jobStats/service/report/${type}/${param}`;
+      const url = `${process.env.REACT_APP_API_URL}/jobStats/spares/report/${type}/${param}`;
       const data = await getRequest(url);
-      setjobServiceStatsData(data);
+      setjobSparesStatsData(data);
     } catch (err) {
-      console.error('Error fetching jobServiceStats data:', err);
+      console.error('Error fetching jobSparesStats data:', err);
     }
   };
 
   const fetchDateRangeData = async () => {
     try {
-      const url = `${process.env.REACT_APP_API_URL}/jobStats/service/report/daterange?startDate=${startDate.format(
+      const url = `${process.env.REACT_APP_API_URL}/jobStats/spares/report/daterange?startDate=${startDate.format(
         'YYYY-MM-DD'
       )}&endDate=${endDate.format('YYYY-MM-DD')}`;
       const data = await getRequest(url);
-      setjobServiceStatsData(data);
+      setjobSparesStatsData(data);
     } catch (err) {
-      console.error('Error fetching jobServiceStats data:', err);
+      console.error('Error fetching jobSparesStats data:', err);
     }
   };
 
@@ -78,7 +78,7 @@ const ServiceStatsReports = () => {
   };
 
   const generateCategoryToAmountChart = () => {
-    const categoryToAmount = jobServiceStatsData.categoryToAmount || {};
+    const categoryToAmount = jobSparesStatsData.categoryToAmount || {};
     const labels = Object.keys(categoryToAmount);
     const values = Object.values(categoryToAmount);
     const colors = generateColors(labels.length);
@@ -96,7 +96,7 @@ const ServiceStatsReports = () => {
   };
 
   const generateCategoryToQtyChart = () => {
-    const categoryToQty = jobServiceStatsData.categoryToQty || {};
+    const categoryToQty = jobSparesStatsData.categoryToQty || {};
     const labels = Object.keys(categoryToQty);
     const values = Object.values(categoryToQty);
     const colors = generateColors(labels.length);
@@ -113,7 +113,7 @@ const ServiceStatsReports = () => {
   };
 
   const generateSparesLabourToAmountChart = () => {
-    const sparesLabourToAmount = jobServiceStatsData.sparesLabourToAmount || {};
+    const sparesLabourToAmount = jobSparesStatsData.sparesLabourToAmount || {};
     const labels = Object.keys(sparesLabourToAmount);
     const values = Object.values(sparesLabourToAmount);
     const colors = generateColors(labels.length);
@@ -131,7 +131,7 @@ const ServiceStatsReports = () => {
   };
 
   const generateSparesLabourToQtyChart = () => {
-    const sparesLabourToQty = jobServiceStatsData.sparesLabourToQty || {};
+    const sparesLabourToQty = jobSparesStatsData.sparesLabourToQty || {};
     const labels = Object.keys(sparesLabourToQty);
     const values = Object.values(sparesLabourToQty);
     const colors = generateColors(labels.length);
@@ -148,7 +148,7 @@ const ServiceStatsReports = () => {
   };
 
   return (
-    <MainCard title="Revenue from Service Report">
+    <MainCard title="Revenue from Spares Report">
       <Grid container spacing={2}>
         {/* Date Range Pickers and Button */}
         <Grid item xs={12} sm={6} md={4}>
@@ -175,16 +175,16 @@ const ServiceStatsReports = () => {
         <Grid item xs={12} md={6}>
           <CategoryAccordion
             title="Max Qty by Category"
-            jobTitle="Service"
-            data={jobServiceStatsData.maxQtyByCategory || {}}
+            jobTitle="Spares"
+            data={jobSparesStatsData.maxQtyByCategory || {}}
             valueKey="qty"
           />
         </Grid>
         <Grid item xs={12} md={6}>
           <CategoryAccordion
             title="Max Amount by Category"
-            jobTitle="Service"
-            data={jobServiceStatsData.maxAmountByCategory || {}}
+            jobTitle="Spares"
+            data={jobSparesStatsData.maxAmountByCategory || {}}
             valueKey="amount"
           />
         </Grid>
@@ -204,13 +204,13 @@ const ServiceStatsReports = () => {
           </Box>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Typography variant="h6">Qty by Service</Typography>
+          <Typography variant="h6">Qty by Spares</Typography>
           <Box sx={{ overflowX: 'auto' }}>
             <Doughnut data={generateSparesLabourToQtyChart()} />
           </Box>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Typography variant="h6">Revenue by Serivce</Typography>
+          <Typography variant="h6">Revenue by Spares</Typography>
           <Box sx={{ overflowX: 'auto' }}>
             <Doughnut data={generateSparesLabourToAmountChart()} />
           </Box>
@@ -220,4 +220,4 @@ const ServiceStatsReports = () => {
   );
 };
 
-export default ServiceStatsReports;
+export default SparesStatsReports;
