@@ -79,15 +79,15 @@ const SparesStatsReports = () => {
 
   const generateCategoryToAmountChart = () => {
     const categoryToAmount = jobSparesStatsData.categoryToAmount || {};
-    const labels = Object.keys(categoryToAmount);
-    const values = Object.values(categoryToAmount);
+    const labels = Object.keys(categoryToAmount).slice(0, 10);
+    const values = Object.values(categoryToAmount).slice(0, 10);
     const colors = generateColors(labels.length);
 
     return {
       labels,
       datasets: [
         {
-          label: 'Revenue by Category',
+          label: 'Top 10 Revenue by Category',
           data: values,
           backgroundColor: colors
         }
@@ -97,14 +97,14 @@ const SparesStatsReports = () => {
 
   const generateCategoryToQtyChart = () => {
     const categoryToQty = jobSparesStatsData.categoryToQty || {};
-    const labels = Object.keys(categoryToQty);
-    const values = Object.values(categoryToQty);
+    const labels = Object.keys(categoryToQty).slice(0, 10);
+    const values = Object.values(categoryToQty).slice(0, 10);
     const colors = generateColors(labels.length);
     return {
       labels,
       datasets: [
         {
-          label: 'Qty by Category',
+          label: 'Top 10 Qty by Category',
           data: values,
           backgroundColor: colors
         }
@@ -114,15 +114,15 @@ const SparesStatsReports = () => {
 
   const generateSparesLabourToAmountChart = () => {
     const sparesLabourToAmount = jobSparesStatsData.sparesLabourToAmount || {};
-    const labels = Object.keys(sparesLabourToAmount);
-    const values = Object.values(sparesLabourToAmount);
+    const labels = Object.keys(sparesLabourToAmount).slice(0, 10);
+    const values = Object.values(sparesLabourToAmount).slice(0, 10);
     const colors = generateColors(labels.length);
 
     return {
       labels,
       datasets: [
         {
-          label: 'Revenue by Category',
+          label: 'Top 10 Revenue by Category',
           data: values,
           backgroundColor: colors
         }
@@ -132,14 +132,14 @@ const SparesStatsReports = () => {
 
   const generateSparesLabourToQtyChart = () => {
     const sparesLabourToQty = jobSparesStatsData.sparesLabourToQty || {};
-    const labels = Object.keys(sparesLabourToQty);
-    const values = Object.values(sparesLabourToQty);
+    const labels = Object.keys(sparesLabourToQty).slice(0, 10);
+    const values = Object.values(sparesLabourToQty).slice(0, 10);
     const colors = generateColors(labels.length);
     return {
       labels,
       datasets: [
         {
-          label: 'Qty by Category',
+          label: 'Top 10 Qty by Category',
           data: values,
           backgroundColor: colors
         }
@@ -172,24 +172,7 @@ const SparesStatsReports = () => {
             <Tab label="Yearly" />
           </Tabs>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <CategoryAccordion
-            title="Max Qty by Category"
-            jobTitle="Spares"
-            data={jobSparesStatsData.maxQtyByCategory || {}}
-            valueKey="qty"
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <CategoryAccordion
-            title="Max Amount by Category"
-            jobTitle="Spares"
-            data={jobSparesStatsData.maxAmountByCategory || {}}
-            valueKey="amount"
-          />
-        </Grid>
-        <Divider />
-        <Divider />
+
         {/* Charts */}
         <Grid item xs={12} md={3}>
           <Typography variant="h6">Qty by Category</Typography>
@@ -214,6 +197,24 @@ const SparesStatsReports = () => {
           <Box sx={{ overflowX: 'auto' }}>
             <Doughnut data={generateSparesLabourToAmountChart()} />
           </Box>
+        </Grid>
+        <Divider />
+        <Divider />
+        <Grid item xs={12} md={6}>
+          <CategoryAccordion
+            title="Max Qty by Category"
+            jobTitle="Spares"
+            data={jobSparesStatsData.maxQtyByCategory || {}}
+            valueKey="qty"
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <CategoryAccordion
+            title="Max Amount by Category"
+            jobTitle="Spares"
+            data={jobSparesStatsData.maxAmountByCategory || {}}
+            valueKey="amount"
+          />
         </Grid>
       </Grid>
     </MainCard>
