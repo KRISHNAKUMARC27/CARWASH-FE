@@ -1,13 +1,18 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, MenuItem, Button, Box, Typography } from '@mui/material';
+import JSZip from 'jszip';
+
 //import { gridSpacing } from 'store/constant';
-import { getRequest, putRequest } from 'utils/fetchRequest';
+import { getRequest, getRequestMultiPart, putRequest } from 'utils/fetchRequest';
 
 const AllAttendance = () => {
   const [data, setData] = useState([]);
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
   const isAuthorizedForAttendanceEdit = roles.some((role) => ['ADMIN'].includes(role));
+
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const [photoList, setPhotoList] = useState([]);
 
   useEffect(() => {
     fetchAllAttendanceData();
@@ -47,6 +52,33 @@ const AllAttendance = () => {
       exitEditingMode(); // required to exit editing mode after save
     } catch (err) {
       console.error(err.message);
+    }
+  };
+
+  const handleRowClick = async (row) => {
+    const attendanceId = row.original.id;
+    setPhotoList([]); // Clear current photo list
+
+    try {
+      const zipBlob = await getRequestMultiPart(`${process.env.REACT_APP_API_URL}/employee/attendance/getPhotos/${attendanceId}`);
+
+      if (!(zipBlob instanceof Blob)) {
+        throw new Error('Invalid ZIP blob received');
+      }
+
+      const jszip = new JSZip();
+      const zip = await jszip.loadAsync(zipBlob);
+
+      const filePromises = Object.keys(zip.files).map(async (filename) => {
+        const fileBlob = await zip.files[filename].async('blob');
+        return new File([fileBlob], filename, { type: 'image/jpeg' });
+      });
+
+      const files = await Promise.all(filePromises);
+      setPhotoList(files);
+      setPhotoDialogOpen(true);
+    } catch (err) {
+      console.error('Failed to fetch photos:', err.message);
     }
   };
 
@@ -171,8 +203,42 @@ const AllAttendance = () => {
         //   }
         // }}
         onEditingRowSave={handleSaveRow}
+        muiTableBodyRowProps={({ row }) => ({
+          onClick: () => handleRowClick(row),
+          sx: { cursor: 'pointer' } // optional: makes row look clickable
+        })}
       />
       {/* </ThemeProvider> */}
+      <Dialog open={photoDialogOpen} onClose={() => setPhotoDialogOpen(false)} maxWidth="lg" fullWidth>
+        <DialogTitle>Captured Attendance Photos</DialogTitle>
+        <DialogContent dividers>
+          {photoList.length === 0 ? (
+            <Typography>No photos found.</Typography>
+          ) : (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              {photoList.map((file, index) => (
+                <Box key={index} sx={{ position: 'relative' }}>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Attendance ${index + 1}`}
+                    style={{
+                      width: 200,
+                      height: 'auto', // Let it grow based on aspect ratio
+                      maxHeight: 300, // Prevent overflow
+                      objectFit: 'contain', // Show full image, no crop
+                      border: '1px solid #ccc',
+                      borderRadius: 4
+                    }}
+                  />
+                </Box>
+              ))}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPhotoDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
