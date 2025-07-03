@@ -14,6 +14,8 @@ const MultiSettle = Loadable(lazy(() => import('views/estimate/MultiSettle')));
 const CreditEstimate = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
+  const [alertColor, setAlertColor] = useState('info');
+
   const [data, setData] = useState([]);
   const [estimate, setEstimate] = useState();
   const [estimateCreateOpen, setEstimateCreateOpen] = useState(false);
@@ -240,6 +242,7 @@ const CreditEstimate = () => {
           handleClose={handleClose}
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
         />
       )}
       {settleBillDialogOpen && (

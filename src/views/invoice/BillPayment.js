@@ -23,6 +23,7 @@ import { AddCircle, RemoveCircle } from '@mui/icons-material';
 const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, handleClose, setAlertMess, setShowAlert, setAlertColor }) => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [remainingAmount, setRemainingAmount] = useState(0); // To store remaining amount dynamically
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -209,6 +210,8 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
   };
 
   const handleInvoiceSave = async () => {
+    if (saving) return; // Prevent multiple triggers
+
     if (invoice.grandTotal <= 0) {
       alert('Grand total is 0. Cannot generate bill');
       return;
@@ -256,6 +259,7 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
     };
 
     try {
+      setSaving(true);
       const data = await postRequest(process.env.REACT_APP_API_URL + '/invoice', updatedInvoice);
       setAlertMess('Bill id ' + data.invoiceId + ' saved successfully');
       setAlertColor('success');
@@ -266,6 +270,8 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
       setAlertColor('info');
       setShowAlert(true);
       handleClose();
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -406,8 +412,8 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
             <Button onClick={handleClose} color="error">
               Close
             </Button>
-            <Button onClick={handleInvoiceSave} variant="contained" color="success">
-              Save
+            <Button onClick={handleInvoiceSave} color="success" disabled={saving}>
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -422,11 +428,11 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleConfirmAddCredit} color="success">
-              Yes
-            </Button>
             <Button onClick={handleCloseConfirmDialog} color="error">
               No
+            </Button>
+            <Button onClick={handleConfirmAddCredit} color="success">
+              Yes
             </Button>
           </DialogActions>
         </Dialog>

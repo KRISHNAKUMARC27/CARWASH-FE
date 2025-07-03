@@ -31,6 +31,7 @@ const BillPayment = ({
 }) => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [remainingAmount, setRemainingAmount] = useState(0); // To store remaining amount dynamically
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -218,6 +219,8 @@ const BillPayment = ({
   };
 
   const handleEstimateSave = async () => {
+    if (saving) return; // Prevent multiple triggers
+
     if (estimate.grandTotal <= 0) {
       alert('Grand total is 0. Cannot generate bill');
       return;
@@ -265,6 +268,7 @@ const BillPayment = ({
     };
 
     try {
+      setSaving(true);
       const data = await postRequest(process.env.REACT_APP_API_URL + '/estimate', updatedEstimate);
       setAlertMess('Bill id ' + data.estimateId + ' saved successfully');
       setAlertColor('success');
@@ -275,6 +279,8 @@ const BillPayment = ({
       setAlertColor('info');
       setShowAlert(true);
       handleClose();
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -415,8 +421,8 @@ const BillPayment = ({
             <Button onClick={handleClose} color="error">
               Close
             </Button>
-            <Button onClick={handleEstimateSave} color="success">
-              Save
+            <Button onClick={handleEstimateSave} color="success" disabled={saving}>
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -431,11 +437,11 @@ const BillPayment = ({
             </p>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleConfirmAddCredit} color="success">
-              Yes
-            </Button>
             <Button onClick={handleCloseConfirmDialog} color="error">
               No
+            </Button>
+            <Button onClick={handleConfirmAddCredit} color="success">
+              Yes
             </Button>
           </DialogActions>
         </Dialog>

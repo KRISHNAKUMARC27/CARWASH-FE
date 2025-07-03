@@ -14,6 +14,7 @@ const MultiSettle = Loadable(lazy(() => import('views/invoice/MultiSettle')));
 const CreditInvoice = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMess, setAlertMess] = useState('');
+  const [alertColor, setAlertColor] = useState('info');
   const [data, setData] = useState([]);
   const [invoice, setInvoice] = useState();
   const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
@@ -244,6 +245,7 @@ const CreditInvoice = () => {
           handleClose={handleClose}
           setAlertMess={setAlertMess}
           setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
         />
       )}
       {settleBillDialogOpen && (
