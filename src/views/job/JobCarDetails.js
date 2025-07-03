@@ -32,6 +32,18 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
     }
   }, [zipFile, updatePhotos]);
 
+  useEffect(() => {
+    return () => {
+      if (stream && stream.active) {
+        stream.getTracks().forEach((track) => {
+          if (track.readyState === 'live') {
+            track.stop();
+          }
+        });
+      }
+    };
+  }, [stream]);
+
   const startCamera = async () => {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -164,30 +176,33 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
     <MainCard title="Job Card Vehicle Details">
       <Grid container spacing={2}>
         {/* Vehicle Info */}
-        <Grid item xs={12} md={4}>
-          <TextField
-            label="Vehicle Reg. No."
-            required
-            fullWidth
-            variant="outlined"
-            value={data.vehicleRegNo || ''}
-            onChange={handleVehicleRegNoChange}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <TextField
-            label="Vehicle Name"
-            required
-            fullWidth
-            variant="outlined"
-            value={data.vehicleName || ''}
-            onChange={handleVehicleNameChange}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
-        </Grid>
-
+        {!isCapturing && (
+          <>
+            <Grid item xs={12} md={4}>
+              <TextField
+                label="Vehicle Reg. No."
+                required
+                fullWidth
+                variant="outlined"
+                value={data.vehicleRegNo || ''}
+                onChange={handleVehicleRegNoChange}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                label="Vehicle Name"
+                required
+                fullWidth
+                variant="outlined"
+                value={data.vehicleName || ''}
+                onChange={handleVehicleNameChange}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
+            </Grid>
+          </>
+        )}
         {/* Photo Section */}
         <Grid item xs={12}>
           <Typography variant="h6">Take Photos</Typography>
@@ -217,21 +232,38 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
             </Grid>
           ) : (
             <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <video
-                id="camera-preview"
-                autoPlay
-                playsInline
-                ref={(video) => {
-                  if (video && stream) video.srcObject = stream;
-                }}
-                style={{
+              <Box
+                sx={{
+                  position: 'relative',
                   width: '100%',
-                  maxHeight: '300px',
-                  border: '1px solid #ccc'
+                  // paddingTop: '56.25%', // 16:9 aspect ratio
+                  height: { xs: '60vh', sm: '70vh', md: '75vh' },
+                  border: '2px solid #ccc',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  backgroundColor: '#000'
                 }}
-              />
-              <Box sx={{ mt: 2 }}>
-                <Button variant="contained" color="secondary" onClick={capturePhoto} sx={{ mr: 2 }}>
+              >
+                <video
+                  id="camera-preview"
+                  autoPlay
+                  playsInline
+                  ref={(video) => {
+                    if (video && stream) video.srcObject = stream;
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </Box>
+
+              <Box sx={{ mt: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
+                <Button variant="contained" color="secondary" onClick={capturePhoto}>
                   Capture Photo
                 </Button>
                 <Button variant="outlined" onClick={stopCamera}>
