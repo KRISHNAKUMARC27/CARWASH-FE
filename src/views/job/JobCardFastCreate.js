@@ -7,7 +7,11 @@ import AlertDialog from 'views/utilities/AlertDialog';
 import { postRequest, getBlobRequest, getRequest } from 'utils/fetchRequest';
 
 const JobCardFastCreate = () => {
-  const [fastJobCard, setFastJobCard] = useState({ billType: 'ESTIMATE', paymentMode: 'CASH' });
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
+  const [fastJobCard, setFastJobCard] = useState({
+    billType: roles.includes('INVOICE') ? 'INVOICE' : 'ESTIMATE',
+    paymentMode: 'CASH'
+  });
   const [jobServiceInfo, setJobServiceInfo] = useState([]);
   const [jobSparesInfo, setJobSparesInfo] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
@@ -59,7 +63,10 @@ const JobCardFastCreate = () => {
   };
 
   const handleClose = () => {
-    setFastJobCard({ billType: 'ESTIMATE', paymentMode: 'CASH' });
+    setFastJobCard({
+      billType: roles.includes('INVOICE') ? 'INVOICE' : 'ESTIMATE',
+      paymentMode: 'CASH'
+    });
     setJobSparesInfo([]);
     setJobServiceInfo([]);
     setOpenPrintBillMsg(false);
@@ -69,7 +76,7 @@ const JobCardFastCreate = () => {
 
   const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName && fastJobCard.paymentMode && fastJobCard.billType;
 
-  const isJobComplete = () => isUserDetailsComplete() && isCarDetailsComplete();
+  const isJobComplete = () => isUserDetailsComplete() && isCarDetailsComplete() && (jobServiceInfo.length > 0 || jobSparesInfo.length > 0);
 
   const hasEmptyRow = (rows) =>
     rows.some(
@@ -233,11 +240,11 @@ const JobCardFastCreate = () => {
               variant="outlined"
               fullWidth
               required
-              value={fastJobCard?.billType || ''}
+              value={fastJobCard.billType || 'ESTIMATE'}
               onChange={(e) => handleInputChange('billType', e.target.value)}
             >
-              <MenuItem value="ESTIMATE">ESTIMATE</MenuItem>
               <MenuItem value="INVOICE">INVOICE</MenuItem>
+              {!roles.includes('INVOICE') && <MenuItem value="ESTIMATE">ESTIMATE</MenuItem>}
             </TextField>
           </Grid>
           <Grid item xs={12}>

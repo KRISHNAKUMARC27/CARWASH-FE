@@ -17,38 +17,34 @@ export const theme = (customization) => {
   let color = { ...colors };
 
   // Get the role from localStorage (you stored it as a JSON string)
-  let userRoles;
-  try {
-    userRoles = JSON.parse(localStorage.getItem('roles'));
-  } catch {
-    userRoles = [];
-  }
+  const roles = JSON.parse(localStorage.getItem('roles')) || [];
 
-  const userRole = Array.isArray(userRoles) ? userRoles[0] : null; // You can enhance this logic
+  // const userRole = Array.isArray(userRoles) ? userRoles[0] : null; // You can enhance this logic
 
-  // Apply role-specific color overrides
-  switch (userRole) {
-    case 'INVOICE':
-      color.secondary800 = color.errorDark; // light orange
-      color.secondary200 = color.errorMain; // purple
-      break;
-    // Add more role-specific overrides if needed
-    default:
-      // Keep default colors
-      break;
-  }
+  // // Apply role-specific color overrides
+  // switch (userRole) {
+  //   case 'INVOICE':
+  //     color.secondary800 = color.errorDark;
+  //     color.secondary200 = color.errorLight;
+  //     color.grey100 = color.secondaryLight;
+  //     break;
+  //   // Add more role-specific overrides if needed
+  //   default:
+  //     // Keep default colors
+  //     break;
+  // }
 
   const themeOption = {
     colors: color,
     heading: color.primaryMain,
     paper: color.paper,
-    backgroundDefault: color.grey100,
+    backgroundDefault: roles.includes('INVOICE') ? color.secondaryLight : color.grey100,
     background: color.grey200,
     darkTextPrimary: color.grey900,
     darkTextSecondary: color.grey500,
     textDark: color.grey900,
-    menuSelected: color.secondary800,
-    menuSelectedBack: color.secondary200,
+    menuSelected: roles.includes('INVOICE') ? color.errorDark : color.secondary800,
+    menuSelectedBack: roles.includes('INVOICE') ? color.errorLight : color.secondary200,
     divider: color.grey200,
     customization
   };

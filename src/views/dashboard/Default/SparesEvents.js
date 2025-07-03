@@ -1,40 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Grid, IconButton, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Grid, IconButton, Tooltip, TablePagination } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
 import AlertDialog from 'views/utilities/AlertDialog';
 import { getRequest, deleteRequest } from 'utils/fetchRequest';
-
-const CardWrapper = styled(MainCard)(({ theme }) => ({
-  overflow: 'hidden',
-  position: 'relative',
-  '&:after': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: `linear-gradient(210.04deg, ${theme.palette.success.dark} -50.94%, rgba(144, 202, 249, 0) 83.49%)`,
-    borderRadius: '50%',
-    top: -30,
-    right: -180
-  },
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    width: 210,
-    height: 210,
-    background: `linear-gradient(140.9deg, ${theme.palette.success.dark} -14.02%, rgba(144, 202, 249, 0) 70.50%)`,
-    borderRadius: '50%',
-    top: -160,
-    right: -130
-  }
-}));
+import CardWrapper from 'views/utilities/CardWrapper';
 
 function SparesEvents() {
   const [sparesEventsList, setSparesEventsList] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMess, setAlertMess] = React.useState('');
@@ -71,8 +48,17 @@ function SparesEvents() {
     }
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
-    <div>
+    <>
       <CardWrapper border={false} content={false}>
         <MainCard title="Spares Inventory Shortage">
           <Grid container direction="row" spacing={gridSpacing}>
@@ -88,17 +74,13 @@ function SparesEvents() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {sparesEventsList.map((row, index) => (
+                      {sparesEventsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                         <TableRow key={index}>
                           <TableCell>{row?.notif}</TableCell>
                           <TableCell>{row?.time}</TableCell>
                           <TableCell>
                             <Tooltip arrow placement="right" title="Delete">
-                              <IconButton
-                                onClick={() => {
-                                  handleRowDelete(row.id);
-                                }}
-                              >
+                              <IconButton onClick={() => handleRowDelete(row.id)}>
                                 <Delete />
                               </IconButton>
                             </Tooltip>
@@ -107,6 +89,15 @@ function SparesEvents() {
                       ))}
                     </TableBody>
                   </Table>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={sparesEventsList.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
                 </div>
               </Grid>
             </Grid>
@@ -114,7 +105,7 @@ function SparesEvents() {
         </MainCard>
       </CardWrapper>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-    </div>
+    </>
   );
 }
 

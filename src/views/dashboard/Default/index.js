@@ -18,6 +18,8 @@ import {
   Divider
 } from '@mui/material';
 import dayjs from 'dayjs';
+import MainCard from 'ui-component/cards/MainCard';
+import CardWrapper from 'views/utilities/CardWrapper';
 
 // project imports
 //import EarningCard from './EarningCard';
@@ -93,30 +95,34 @@ const Dashboard = () => {
   };
 
   const renderAppointmentsTable = () => (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Appointment Date & Time</TableCell>
-            <TableCell>Customer Name</TableCell>
-            <TableCell>Phone</TableCell>
-            <TableCell>Service</TableCell>
-            <TableCell>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {upcomingAppointments.map((appointment) => (
-            <TableRow key={appointment.id} onClick={() => handleRowClick(appointment)} style={{ cursor: 'pointer' }}>
-              <TableCell>{appointment.appointmentDateTime}</TableCell>
-              <TableCell>{appointment.customerName}</TableCell>
-              <TableCell>{appointment.phone}</TableCell>
-              <TableCell>{appointment.service}</TableCell>
-              <TableCell>{appointment.status}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <CardWrapper border={false} content={false}>
+      <MainCard title="Upcoming appointments">
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Appointment Date & Time</TableCell>
+                <TableCell>Customer Name</TableCell>
+                <TableCell>Phone</TableCell>
+                <TableCell>Service</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {upcomingAppointments.map((appointment) => (
+                <TableRow key={appointment.id} onClick={() => handleRowClick(appointment)} style={{ cursor: 'pointer' }}>
+                  <TableCell>{appointment.appointmentDateTime}</TableCell>
+                  <TableCell>{appointment.customerName}</TableCell>
+                  <TableCell>{appointment.phone}</TableCell>
+                  <TableCell>{appointment.service}</TableCell>
+                  <TableCell>{appointment.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </MainCard>
+    </CardWrapper>
   );
 
   return (
@@ -124,12 +130,14 @@ const Dashboard = () => {
       <Grid container spacing={gridSpacing}>
         {upcomingAppointments.length > 0 && (
           <Grid item xs={12}>
-            <Typography variant="h4">Upcoming Appointments</Typography>
             {renderAppointmentsTable()}
           </Grid>
         )}
         <Grid item xs={12}>
           <Grid container spacing={gridSpacing}>
+            <Grid item xs={12} md={12}>
+              <SparesEvents />
+            </Grid>
             <Grid item lg={4} md={12} sm={12} xs={12}>
               <TotalJobsLineChartCard />
             </Grid>
@@ -197,24 +205,6 @@ const Dashboard = () => {
           <Grid container spacing={gridSpacing}>
             <Grid item xs={12} md={12}>
               <CustomerStatsTable />
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={gridSpacing}>
-            <Grid item xs={12} md={12}>
-              {/* <TotalGrowthBarChart isLoading={isLoading} /> */}
-              <SparesEvents></SparesEvents>
-            </Grid>
-            {/* <Grid item xs={12} md={4}>
-            <PopularCard isLoading={isLoading} />
-          </Grid> */}
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={gridSpacing}>
-            <Grid item xs={12} md={12}>
-              {renderAppointmentsTable()}
             </Grid>
           </Grid>
         </Grid>

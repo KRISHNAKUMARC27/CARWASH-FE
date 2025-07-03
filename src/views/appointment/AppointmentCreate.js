@@ -64,7 +64,11 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
 
   function isAppointmentComplete() {
     return (
-      appointment.customerName && appointment.phone && appointment.vehicleRegNo && appointment.service && appointment.appointmentDateTime
+      appointment.customerName &&
+      appointment.phone &&
+      appointment.vehicleRegNo &&
+      Array.isArray(appointment.service) &&
+      appointment.appointmentDateTime
     );
   }
 
@@ -83,12 +87,13 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
       if (setAppointmentUpdateOpen) {
         setAppointmentUpdateOpen(false);
       }
+      setAppointment({});
       setAlertMess('Created appointment for ' + data.customerName);
       setAlertColor('success');
       setShowAlert(true);
-      console.log(data);
     } catch (err) {
       console.log(err.message);
+      setAppointment({});
       setAlertMess(err.message);
       setAlertColor('info');
       setShowAlert(true);
@@ -96,6 +101,11 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
   };
 
   const handleInputChange = (field, value) => {
+    if (field === 'phone') {
+      if (!/^\d*$/.test(value)) return; // only digits
+      if (value.length > 10) return; // max 10 digits
+      if (/^(\d)\1{9}$/.test(value)) return; // block 0000000000, 1111111111, etc.
+    }
     const updatedData = { ...appointment, [field]: value };
     setAppointment(updatedData);
   };
@@ -130,6 +140,8 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
                 fullWidth
                 value={appointment.phone || ''}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
+                error={appointment.phone && appointment.phone.length !== 10}
+                helperText={appointment.phone && appointment.phone.length !== 10 ? 'Phone number must be 10 digits' : ' '}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -144,13 +156,20 @@ function AppointmentCreate({ data, setAppointmentUpdateOpen, fetchAllAppointment
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Autocomplete
+                multiple
                 options={serviceList}
                 getOptionLabel={(option) => option.desc}
-                value={serviceList.find((option) => option.desc === appointment.service) || null}
-                onChange={(event, newValue) => handleInputChange('service', newValue ? newValue.desc : '')}
-                renderInput={(params) => <TextField {...params} label="Select Service" variant="outlined" fullWidth />}
+                value={serviceList.filter((option) => appointment.service?.includes(option.desc))}
+                onChange={(event, newValue) =>
+                  handleInputChange(
+                    'service',
+                    newValue.map((item) => item.desc)
+                  )
+                }
+                renderInput={(params) => <TextField {...params} label="Select Services" variant="outlined" fullWidth />}
               />
             </Grid>
+
             <Grid item xs={12} sm={6} md={4}>
               <DateTimePicker
                 label="Appointment Date & Time"

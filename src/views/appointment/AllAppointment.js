@@ -74,7 +74,8 @@ const AllEmployee = () => {
       {
         accessorKey: 'service',
         header: 'Service',
-        size: 150
+        size: 150,
+        Cell: ({ cell }) => (Array.isArray(cell.getValue()) ? cell.getValue().join(', ') : '')
       },
       {
         accessorKey: 'description',
