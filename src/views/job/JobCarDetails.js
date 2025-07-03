@@ -71,9 +71,8 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
   };
 
   const capturePhoto = async () => {
-    if (!stream) {
-      return;
-    }
+    if (!stream) return;
+
     const videoElement = document.querySelector('#camera-preview');
     const canvas = document.createElement('canvas');
     canvas.width = videoElement.videoWidth;
@@ -82,7 +81,25 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
     const context = canvas.getContext('2d');
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-    // Convert canvas to Blob and store in state
+    // === ✅ Add timestamp overlay ===
+    const now = new Date();
+    const timestamp = now.toLocaleString(); // e.g., "7/3/2025, 2:15:42 PM"
+    context.font = `${Math.floor(canvas.height * 0.03)}px Arial`;
+    context.fillStyle = 'white';
+    context.strokeStyle = 'black';
+    context.lineWidth = 2;
+
+    const padding = 16;
+    const x = canvas.width - padding;
+    const y = canvas.height - padding;
+
+    context.textAlign = 'right';
+    context.textBaseline = 'bottom';
+
+    context.strokeText(timestamp, x, y); // outline for readability
+    context.fillText(timestamp, x, y); // white text
+
+    // === Convert canvas to blob and store ===
     const photoBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
 
     updatePhotos((prevPhotos) => [
