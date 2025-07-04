@@ -95,7 +95,7 @@ const InvoiceReports = () => {
       datasets: [
         {
           label: 'Credit',
-          data: [invoiceData.byCredit || 0],
+          data: [invoiceData.pending || 0],
           backgroundColor: ['#8e5ea2']
         }
       ]

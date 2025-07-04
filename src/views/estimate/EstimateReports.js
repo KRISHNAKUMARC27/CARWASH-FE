@@ -95,7 +95,7 @@ const EstimateReports = () => {
       datasets: [
         {
           label: 'Credit',
-          data: [estimateData.byCredit || 0],
+          data: [estimateData.pending || 0],
           backgroundColor: ['#8e5ea2']
         }
       ]
