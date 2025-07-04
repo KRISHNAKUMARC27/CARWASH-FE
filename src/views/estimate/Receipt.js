@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 // material-ui
 import { Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Button, MenuItem, Box } from '@mui/material';
 
-import { postRequest } from 'utils/fetchRequest';
+import { postRequest, getBlobRequest } from 'utils/fetchRequest';
 
 const Receipt = ({ receipt, setReceipt, paymentModes, receiptDialogOpen, selectedRows, handleClose, setAlertMess, setShowAlert }) => {
   const handleReceiptChange = (field, value) => {
@@ -24,8 +24,21 @@ const Receipt = ({ receipt, setReceipt, paymentModes, receiptDialogOpen, selecte
 
     try {
       const data = await postRequest(process.env.REACT_APP_API_URL + '/estimate/receipt', receipt);
-      setAlertMess('Receipt No.' + data.id + ' is generated');
+      setAlertMess('Receipt No.' + data.id + ' is generated. Check downloads.');
       setShowAlert(true);
+      try {
+        const blob = await getBlobRequest(process.env.REACT_APP_API_URL + '/estimate/receiptPdf/' + data.id);
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', 'Receipt_' + data.receiptId + '.pdf'); // Use the filename you wish
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } catch (err) {
+        console.log(err.message);
+        throw new Error(err.message);
+      }
       handleClose();
     } catch (err) {
       setAlertMess(err.message);
