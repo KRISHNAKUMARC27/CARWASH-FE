@@ -1,10 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, lazy } from 'react';
 import { Grid, TextField, Button, MenuItem, Typography, Dialog, DialogContent, DialogActions } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 import JobServiceUpdate from './JobServiceUpdate';
 import JobSparesUpdate from './JobSparesUpdate';
 import AlertDialog from 'views/utilities/AlertDialog';
 import { postRequest, getBlobRequest, getRequest } from 'utils/fetchRequest';
+import Loadable from 'ui-component/Loadable';
+
+const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
+const BillPaymentEstimate = Loadable(lazy(() => import('views/estimate/BillPayment')));
 
 const JobCardFastCreate = () => {
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
@@ -19,6 +23,12 @@ const JobCardFastCreate = () => {
   const [alertColor, setAlertColor] = useState('');
   const [paymentModes, setPaymentModes] = useState([]);
   const [openPrintBillMsg, setOpenPrintBillMsg] = useState(false);
+
+  const [invoiceCreateOpen, setInvoiceCreateOpen] = useState(false);
+  const [invoice, setInvoice] = useState();
+
+  const [estimateCreateOpen, setEstimateCreateOpen] = useState(false);
+  const [estimate, setEstimate] = useState();
 
   // Refs for each field
   const ownerNameRef = useRef();
@@ -69,7 +79,19 @@ const JobCardFastCreate = () => {
     });
     setJobSparesInfo([]);
     setJobServiceInfo([]);
+    setInvoiceCreateOpen(false);
+    setEstimateCreateOpen(false);
+    setInvoice({});
+    setEstimate({});
     setOpenPrintBillMsg(false);
+  };
+
+  const handleBillClose = () => {
+    setInvoiceCreateOpen(false);
+    setEstimateCreateOpen(false);
+    setInvoice({});
+    setEstimate({});
+    setOpenPrintBillMsg(true);
   };
 
   const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerPhoneNumber;
@@ -95,12 +117,10 @@ const JobCardFastCreate = () => {
     };
     try {
       const data = await postRequest(process.env.REACT_APP_API_URL + '/jobCard/fastjobCard', payload);
-      // setAlertMess('Jobcard created for ' + payload.vehicleRegNo + ' Print Bill ');
-      // setAlertColor('success');
-      // setShowAlert(true);
-      setFastJobCard(data);
-      setOpenPrintBillMsg(true);
-      //handleClose();
+      if (fastJobCard.billType === 'ESTIMATE') prepareInitialEstimateObject(data);
+      else if (fastJobCard.billType === 'INVOICE') prepareInitialInvoiceObject(data);
+
+      //setOpenPrintBillMsg(true);
     } catch (err) {
       console.log(err.message);
       handleClose();
@@ -126,6 +146,87 @@ const JobCardFastCreate = () => {
       console.log(err.message);
       setAlertMess(err.message);
       setShowAlert(true);
+    }
+  };
+
+  const prepareInitialInvoiceObject = async (payload) => {
+    if (payload.invoiceObjId != null) {
+      try {
+        const invoiceData = await getRequest(process.env.REACT_APP_API_URL + '/invoice/' + payload.invoiceObjId);
+
+        setInvoice(invoiceData);
+        setInvoiceCreateOpen(true);
+      } catch (err) {
+        console.log(err.message);
+        getSelectedRowJobSpares(payload);
+      }
+    } else {
+      getSelectedRowJobSpares(payload);
+    }
+    setFastJobCard(payload);
+  };
+
+  const prepareInitialEstimateObject = async (payload) => {
+    if (payload.estimateObjId != null) {
+      try {
+        const estimateData = await getRequest(process.env.REACT_APP_API_URL + '/estimate/' + payload.estimateObjId);
+        setEstimate(estimateData);
+        setEstimateCreateOpen(true);
+      } catch (err) {
+        console.log(err.message);
+        getSelectedRowJobSparesEstimate(payload);
+      }
+    } else {
+      getSelectedRowJobSparesEstimate(payload);
+    }
+    setFastJobCard(payload);
+  };
+
+  const getSelectedRowJobSpares = async (payload) => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
+
+      // Combine updates into one `setInvoice` call
+      setInvoice((prevState) => ({
+        ...prevState,
+        jobId: payload.jobId,
+        ownerName: payload.ownerName,
+        ownerPhoneNumber: payload.ownerPhoneNumber,
+        vehicleRegNo: payload.vehicleRegNo,
+        vehicleName: payload.vehicleName,
+        grandTotal: data.grandTotalWithGST,
+        jobObjId: data.id,
+        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: 'CASH', flag: 'ADD' }],
+        creditPaymentList: []
+      }));
+
+      //setJobSpares(data);
+      setInvoiceCreateOpen(true);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  const getSelectedRowJobSparesEstimate = async (payload) => {
+    try {
+      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
+
+      setEstimate((prevState) => ({
+        ...prevState,
+        jobId: payload.jobId,
+        ownerName: payload.ownerName,
+        ownerPhoneNumber: payload.ownerPhoneNumber,
+        vehicleRegNo: payload.vehicleRegNo,
+        vehicleName: payload.vehicleName,
+        grandTotal: data.grandTotal,
+        jobObjId: data.id,
+        paymentSplitList: [{ paymentAmount: data.grandTotal || 0, paymentMode: 'CASH', flag: 'ADD' }],
+        creditPaymentList: []
+      }));
+
+      setEstimateCreateOpen(true);
+    } catch (err) {
+      console.log(err.message);
     }
   };
 
@@ -287,6 +388,33 @@ const JobCardFastCreate = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {invoiceCreateOpen && (
+        <BillPayment
+          invoice={invoice}
+          setInvoice={setInvoice}
+          paymentModes={paymentModes}
+          invoiceCreateOpen={invoiceCreateOpen}
+          handleClose={handleBillClose}
+          setAlertMess={setAlertMess}
+          setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
+        />
+      )}
+
+      {/* Dialog: Create Estimate */}
+      {estimateCreateOpen && (
+        <BillPaymentEstimate
+          estimate={estimate}
+          setEstimate={setEstimate}
+          paymentModes={paymentModes}
+          estimateCreateOpen={estimateCreateOpen}
+          handleClose={handleBillClose}
+          setAlertMess={setAlertMess}
+          setShowAlert={setShowAlert}
+          setAlertColor={setAlertColor}
+        />
+      )}
     </>
   );
 };
