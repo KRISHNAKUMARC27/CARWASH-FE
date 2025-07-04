@@ -6,6 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import MainCard from 'ui-component/cards/MainCard';
+import { generateColors } from 'utils/UtilityMethods';
 import isoWeek from 'dayjs/plugin/isoWeek';
 dayjs.extend(isoWeek);
 
@@ -92,6 +93,7 @@ const PaymentsReports = () => {
     const byType = paymentsData.byType || {};
     const labels = Object.keys(byType);
     const values = Object.values(byType);
+    const colors = generateColors(labels.length);
 
     return {
       labels,
@@ -99,7 +101,7 @@ const PaymentsReports = () => {
         {
           label: 'Payments by Type',
           data: values,
-          backgroundColor: labels.map(() => '#8e5ea2')
+          backgroundColor: colors
         }
       ]
     };
@@ -109,6 +111,7 @@ const PaymentsReports = () => {
     const byPayment = paymentsData.byPaymentMode || {};
     const labels = Object.keys(byPayment);
     const values = Object.values(byPayment);
+    const colors = generateColors(labels.length);
 
     return {
       labels,
@@ -116,7 +119,7 @@ const PaymentsReports = () => {
         {
           label: 'By Payment Mode',
           data: values,
-          backgroundColor: labels.map(() => '#3cba9f')
+          backgroundColor: colors
         }
       ]
     };
@@ -126,6 +129,7 @@ const PaymentsReports = () => {
     const byPayment = paymentsData.isCredit || {};
     const labels = Object.keys(byPayment);
     const values = Object.values(byPayment);
+    const colors = generateColors(labels.length);
 
     return {
       labels,
@@ -133,7 +137,7 @@ const PaymentsReports = () => {
         {
           label: 'Credit vs Regular',
           data: values,
-          backgroundColor: labels.map(() => '#cdc741')
+          backgroundColor: colors
         }
       ]
     };

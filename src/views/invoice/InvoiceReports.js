@@ -6,6 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import MainCard from 'ui-component/cards/MainCard';
+import { generateColors } from 'utils/UtilityMethods';
 import isoWeek from 'dayjs/plugin/isoWeek';
 dayjs.extend(isoWeek);
 
@@ -105,6 +106,7 @@ const InvoiceReports = () => {
     const byCredit = invoiceData.byCredit || {};
     const labels = Object.keys(byCredit);
     const values = Object.values(byCredit);
+    const colors = generateColors(labels.length);
 
     return {
       labels,
@@ -112,7 +114,7 @@ const InvoiceReports = () => {
         {
           label: 'Credit/Not Jobs',
           data: values,
-          backgroundColor: labels.map(() => '#3cba9f')
+          backgroundColor: colors
         }
       ]
     };
