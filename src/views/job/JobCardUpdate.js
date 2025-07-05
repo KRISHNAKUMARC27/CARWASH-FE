@@ -428,10 +428,10 @@ const JobCardUpdate = () => {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <JobCarDetails data={selectedRow} updateData={setSelectedRow} photos={photos} updatePhotos={setPhotos} zipFile={zipFile} />
+              <JobUserDetails data={selectedRow} updateData={setSelectedRow} />
             </Grid>
             <Grid item xs={12}>
-              <JobUserDetails data={selectedRow} updateData={setSelectedRow} />
+              <JobCarDetails data={selectedRow} updateData={setSelectedRow} photos={photos} updatePhotos={setPhotos} zipFile={zipFile} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <Button variant="contained" color="error" fullWidth onClick={handleClose}>

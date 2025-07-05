@@ -14,16 +14,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormControl
+  FormControl,
+  Box
 } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { getRequest, postRequest } from 'utils/fetchRequest';
 
 const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const discountRole = ['ADMIN'];
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
   const isAuthorizedForDiscount = roles.some((role) => discountRole.includes(role));
@@ -93,55 +90,51 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
   const handleRowDelete = (rowIndex) => {
     const newRows = [...data];
     newRows.splice(rowIndex, 1);
-    if (newRows.length > 0) {
-      updateData(newRows);
-    } else {
-      // updateData([
-      //   {
-      //     sparesId: '',
-      //     category: '',
-      //     sparesAndLabour: '',
-      //     qty: '',
-      //     rate: '',
-      //     discount: '',
-      //     amount: ''
-      //   }
-      // ]);
-      updateData(null);
-    }
+    updateData(newRows.length > 0 ? newRows : null);
   };
 
   const handleCategoryTypeChange = (value) => {
-    const serviceFilter = {
-      categoryList: [value]
-    };
+    const serviceFilter = { categoryList: [value] };
     fetchOptions(serviceFilter);
   };
 
   return (
     <MainCard title="Job Service Information">
-      <div style={{ overflowX: 'auto' }}>
+      <Box sx={{ overflowX: 'auto', minWidth: '100%' }}>
         <TableContainer>
-          <Table style={{ minWidth: isMobile ? '600px' : '1000px' }}>
+          <Table sx={{ minWidth: 1000, tableLayout: 'fixed' }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ width: '20%' }}>Category</TableCell>
-                <TableCell sx={{ width: '30%' }}>Service</TableCell>
-                <TableCell sx={{ width: '10%' }}>Qty</TableCell>
-                <TableCell sx={{ width: '10%' }}>Rate</TableCell>
-                {isAuthorizedForDiscount && <TableCell sx={{ width: '10%' }}>Discount</TableCell>}
-                <TableCell sx={{ width: '10%' }}>Amount</TableCell>
-                <TableCell sx={{ width: '10%' }}>Action</TableCell>
+                {['Category', 'Service', 'Quantity', 'Rate', 'Discount', 'Amount', 'Action'].map((label) => {
+                  if (label === 'Discount' && !isAuthorizedForDiscount) return null;
+                  return (
+                    <TableCell
+                      key={label}
+                      sx={{
+                        width: {
+                          xs: label === 'Service' ? 180 : 120,
+                          sm: label === 'Service' ? 200 : 140,
+                          md: label === 'Service' ? '30%' : '10%'
+                        },
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {label}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             </TableHead>
             <TableBody>
               {data?.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ width: '20%' }}>
-                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                      <InputLabel></InputLabel>
+                  {/* Category */}
+                  <TableCell sx={{ width: { xs: 140, sm: 140, md: '20%' } }}>
+                    <FormControl variant="standard" fullWidth>
+                      <InputLabel />
                       <Select
-                        fullWidth
                         value={row?.category || ''}
                         onChange={(e) => {
                           handleCategoryTypeChange(e.target.value);
@@ -162,11 +155,12 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
                       </Select>
                     </FormControl>
                   </TableCell>
-                  <TableCell sx={{ width: '30%' }}>
+
+                  {/* Service */}
+                  <TableCell sx={{ width: { xs: 180, sm: 200, md: '30%' } }}>
                     <Autocomplete
                       options={options.filter((option) => !data.some((r) => r.sparesId === option.id))}
                       getOptionLabel={(option) => option.desc}
-                      style={{ width: 300 }}
                       value={allService.find((option) => option.desc === row.sparesAndLabour) || null}
                       isOptionEqualToValue={(option, value) => option.id === value.id}
                       onChange={(event, newValue) => {
@@ -176,6 +170,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
                         handleInputChange(index, 'amount', newValue.amount * row?.qty - row?.discount || 0);
                         handleInputChange(index, 'sparesId', newValue.id);
                       }}
+                      sx={{ width: '100%' }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -192,7 +187,9 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
                       )}
                     />
                   </TableCell>
-                  <TableCell sx={{ width: '10%' }}>
+
+                  {/* Quantity */}
+                  <TableCell>
                     <TextField
                       fullWidth
                       id={`qty-input-${index}`}
@@ -208,17 +205,22 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
                           if (isAuthorizedForDiscount) {
                             document.querySelector(`#discount-input-${index}`)?.focus();
                           } else {
-                            firstInputRef?.current?.focus(); // fallback
+                            firstInputRef?.current?.focus();
                           }
                         }
                       }}
+                      sx={{ maxWidth: '100%' }}
                     />
                   </TableCell>
-                  <TableCell sx={{ width: '10%' }}>
-                    <TextField fullWidth value={row?.rate || ''} disabled />
+
+                  {/* Rate */}
+                  <TableCell>
+                    <TextField fullWidth value={row?.rate || ''} disabled sx={{ maxWidth: '100%' }} />
                   </TableCell>
+
+                  {/* Discount */}
                   {isAuthorizedForDiscount && (
-                    <TableCell sx={{ width: '10%' }}>
+                    <TableCell>
                       <TextField
                         fullWidth
                         id={`discount-input-${index}`}
@@ -226,22 +228,27 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
                         onChange={(e) => {
                           const val = Number(e.target.value) || 0;
                           handleInputChange(index, 'discount', val);
-                          handleInputChange(index, 'amount', Number(row?.rate * row?.qty) - val || 0);
+                          handleInputChange(index, 'amount', row?.rate * row?.qty - val || 0);
                         }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
-                            firstInputRef?.current?.focus(); // Jump to "Add Row"
+                            firstInputRef?.current?.focus();
                           }
                         }}
+                        sx={{ maxWidth: '100%' }}
                       />
                     </TableCell>
                   )}
-                  <TableCell sx={{ width: '10%' }}>
-                    <TextField fullWidth value={row?.amount || ''} disabled />
+
+                  {/* Amount */}
+                  <TableCell>
+                    <TextField fullWidth value={row?.amount || ''} disabled sx={{ maxWidth: '100%' }} />
                   </TableCell>
-                  <TableCell sx={{ width: '10%' }}>
-                    <Button variant="contained" color="error" onClick={() => handleRowDelete(index)}>
+
+                  {/* Action */}
+                  <TableCell>
+                    <Button variant="contained" color="error" onClick={() => handleRowDelete(index)} fullWidth>
                       Delete
                     </Button>
                   </TableCell>
@@ -250,16 +257,10 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
+      </Box>
 
-      <Grid item xs={12}>
-        <br />
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={addAdditionalRows}
-          ref={firstInputRef} // 👈 ref to allow focus from kiloMeters field
-        >
+      <Grid item xs={12} sx={{ mt: 2 }}>
+        <Button variant="contained" color="secondary" onClick={addAdditionalRows} ref={firstInputRef}>
           Add Row
         </Button>
       </Grid>
@@ -270,7 +271,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
 JobServiceUpdate.propTypes = {
   data: PropTypes.array.isRequired,
   updateData: PropTypes.func.isRequired,
-  firstInputRef: PropTypes.any // 👈 added prop
+  firstInputRef: PropTypes.any
 };
 
 export default JobServiceUpdate;

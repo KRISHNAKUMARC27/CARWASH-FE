@@ -4,9 +4,8 @@ import PropTypes from 'prop-types';
 // material-ui
 import { Grid, TextField, Button, Typography, Box, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MainCard from 'ui-component/cards/MainCard';
 import JSZip from 'jszip';
-import { getRequest } from 'utils/fetchRequest';
+import { sendJobPhotosViaWhatsApp } from 'utils/WhatsAppUtils';
 
 const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
   const [isCapturing, setIsCapturing] = useState(false);
@@ -132,49 +131,49 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
     updatePhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index));
   };
 
-  const sendViaWhatsApp = async () => {
-    try {
-      // Fetch the photo URL from the API
-      const resp = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/getPhotoUrl/' + data.id);
+  // const sendViaWhatsApp = async (data) => {
+  //   try {
+  //     // Fetch the photo URL from the API
+  //     const resp = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/getPhotoUrl/' + data.id);
 
-      // Validate the response
-      if (!resp || !resp.url) {
-        alert('Failed to retrieve the photo URL. Please try again later.');
-        return;
-      }
+  //     // Validate the response
+  //     if (!resp || !resp.url) {
+  //       alert('Failed to retrieve the photo URL. Please try again later.');
+  //       return;
+  //     }
 
-      // Trim and validate inputs
-      const ownerPhoneNumber = data.ownerPhoneNumber?.trim();
-      const vehicleRegNo = data.vehicleRegNo?.trim();
+  //     // Trim and validate inputs
+  //     const ownerPhoneNumber = data.ownerPhoneNumber?.trim();
+  //     const vehicleRegNo = data.vehicleRegNo?.trim();
 
-      if (!ownerPhoneNumber) {
-        alert('Please fill in the Owner Phone number.');
-        return;
-      }
-      if (!vehicleRegNo) {
-        alert('Please fill in the Vehicle Registration Number.');
-        return;
-      }
+  //     if (!ownerPhoneNumber) {
+  //       alert('Please fill in the Owner Phone number.');
+  //       return;
+  //     }
+  //     if (!vehicleRegNo) {
+  //       alert('Please fill in the Vehicle Registration Number.');
+  //       return;
+  //     }
 
-      // Prepare the message
-      const fullMessage = `*Greetings from CarSquare!* 👋
+  //     // Prepare the message
+  //     const fullMessage = `*Greetings from CarSquare!* 👋
 
-      Your car *${vehicleRegNo}* images are ready.
-      
-      📸 Please tap the link below to download them:
-      ${resp.url}
-      
-      Thank you for choosing CarSquare! 🚗`;
+  //     Your car *${vehicleRegNo}* images are ready.
 
-      const url = `https://api.whatsapp.com/send?phone=91${ownerPhoneNumber}&text=${encodeURIComponent(fullMessage)}`;
+  //     📸 Please tap the link below to download them:
+  //     ${resp.url}
 
-      // Redirect to WhatsApp
-      window.open(url, '_blank');
-    } catch (err) {
-      console.error('Error sending WhatsApp message:', err.message);
-      alert('An error occurred while trying to send the message. Please try again later.');
-    }
-  };
+  //     Thank you for choosing CarSquare! 🚗`;
+
+  //     const url = `https://api.whatsapp.com/send?phone=91${ownerPhoneNumber}&text=${encodeURIComponent(fullMessage)}`;
+
+  //     // Redirect to WhatsApp
+  //     window.open(url, '_blank');
+  //   } catch (err) {
+  //     console.error('Error sending WhatsApp message:', err.message);
+  //     alert('An error occurred while trying to send the message. Please try again later.');
+  //   }
+  // };
 
   const handleVehicleRegNoChange = (event) => {
     const updatedData = { ...data, vehicleRegNo: event.target.value.toUpperCase() };
@@ -190,150 +189,154 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
   };
 
   return (
-    <MainCard title="Job Card Vehicle Details">
-      <Grid container spacing={2}>
-        {/* Vehicle Info */}
-        {!isCapturing && (
-          <>
-            <Grid item xs={12} md={4}>
-              <TextField
-                label="Vehicle Reg. No."
-                required
-                fullWidth
-                variant="outlined"
-                value={data.vehicleRegNo || ''}
-                onChange={handleVehicleRegNoChange}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField
-                label="Vehicle Name"
-                required
-                fullWidth
-                variant="outlined"
-                value={data.vehicleName || ''}
-                onChange={handleVehicleNameChange}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
-            </Grid>
-          </>
-        )}
-        {/* Photo Section */}
-        <Grid item xs={12}>
-          <Typography variant="h6">Take Photos</Typography>
-        </Grid>
+    <Grid container spacing={2}>
+      {/* Vehicle Info */}
+      {!isCapturing && (
+        <>
+          <Grid item xs={12} md={4}>
+            <TextField
+              label="Vehicle Reg. No."
+              required
+              fullWidth
+              variant="outlined"
+              value={data.vehicleRegNo || ''}
+              onChange={handleVehicleRegNoChange}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              label="Vehicle Name"
+              required
+              fullWidth
+              variant="outlined"
+              value={data.vehicleName || ''}
+              onChange={handleVehicleNameChange}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
+          </Grid>
+        </>
+      )}
+      {/* Photo Section */}
+      <Grid item xs={12}>
+        <Typography variant="h6">Take Photos</Typography>
+      </Grid>
 
-        <Grid item xs={12}>
-          {!isCapturing ? (
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Button fullWidth variant="contained" color="primary" onClick={startCamera}>
-                  Start Camera
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setLoadPhotos(true);
-                    console.log(loadPhotos);
-                  }}
-                >
-                  Load Photos
-                </Button>
-              </Grid>
+      <Grid item xs={12}>
+        {!isCapturing ? (
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Button fullWidth variant="contained" color="primary" onClick={startCamera}>
+                Start Camera
+              </Button>
             </Grid>
-          ) : (
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: '100%',
-                  // paddingTop: '56.25%', // 16:9 aspect ratio
-                  height: { xs: '60vh', sm: '70vh', md: '75vh' },
-                  border: '2px solid #ccc',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  backgroundColor: '#000'
+            <Grid item xs={12} sm={6}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setLoadPhotos(true);
+                  console.log(loadPhotos);
                 }}
               >
-                <video
-                  id="camera-preview"
-                  autoPlay
-                  playsInline
-                  ref={(video) => {
-                    if (video && stream) video.srcObject = stream;
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ mt: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
-                <Button variant="contained" color="secondary" onClick={capturePhoto}>
-                  Capture Photo
-                </Button>
-                <Button variant="outlined" onClick={stopCamera}>
-                  Stop Camera
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </Grid>
-
-        {/* Captured Photos */}
-        {photos.length > 0 && (
-          <Grid item xs={12}>
-            <Box>
-              <Typography variant="body1">{photos.length} photo(s) captured.</Typography>
-              <Grid container spacing={2}>
-                {photos.map((photo, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index} sx={{ textAlign: 'center' }}>
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`Captured ${index + 1}`}
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        maxHeight: '200px',
-                        objectFit: 'contain',
-                        border: '1px solid #ccc',
-                        marginBottom: '10px'
-                      }}
-                    />
-                    <IconButton color="error" onClick={() => deletePhoto(index)} aria-label="delete photo">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+                Load Photos
+              </Button>
+            </Grid>
           </Grid>
-        )}
+        ) : (
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box
+              sx={{
+                position: 'relative',
+                width: '100%',
+                // paddingTop: '56.25%', // 16:9 aspect ratio
+                height: { xs: '60vh', sm: '70vh', md: '75vh' },
+                border: '2px solid #ccc',
+                borderRadius: 2,
+                overflow: 'hidden',
+                backgroundColor: '#000'
+              }}
+            >
+              <video
+                id="camera-preview"
+                autoPlay
+                playsInline
+                ref={(video) => {
+                  if (video && stream) video.srcObject = stream;
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+              />
+            </Box>
 
-        {/* Photo Actions */}
-        <Grid item xs={12} sm={6}>
-          <Button fullWidth variant="contained" color="primary" onClick={savePhotos} disabled={photos.length === 0}>
-            Save Photos Locally
-          </Button>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Button fullWidth variant="contained" color="secondary" onClick={sendViaWhatsApp} disabled={photos.length === 0}>
-            Send via WhatsApp
-          </Button>
-        </Grid>
+            <Box sx={{ mt: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
+              <Button variant="contained" color="secondary" onClick={capturePhoto}>
+                Capture Photo
+              </Button>
+              <Button variant="outlined" onClick={stopCamera}>
+                Stop Camera
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Grid>
-    </MainCard>
+
+      {/* Captured Photos */}
+      {photos.length > 0 && (
+        <Grid item xs={12}>
+          <Box>
+            <Typography variant="body1">{photos.length} photo(s) captured.</Typography>
+            <Grid container spacing={2}>
+              {photos.map((photo, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index} sx={{ textAlign: 'center' }}>
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt={`Captured ${index + 1}`}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      maxHeight: '200px',
+                      objectFit: 'contain',
+                      border: '1px solid #ccc',
+                      marginBottom: '10px'
+                    }}
+                  />
+                  <IconButton color="error" onClick={() => deletePhoto(index)} aria-label="delete photo">
+                    <DeleteIcon />
+                  </IconButton>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Grid>
+      )}
+
+      {/* Photo Actions */}
+      <Grid item xs={12} sm={6}>
+        <Button fullWidth variant="contained" color="primary" onClick={savePhotos} disabled={photos.length === 0}>
+          Save Photos Locally
+        </Button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="secondary"
+          onClick={() => sendJobPhotosViaWhatsApp(data)}
+          disabled={photos.length === 0 || !data.id}
+        >
+          Send via WhatsApp
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 

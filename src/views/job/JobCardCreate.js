@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Breadcrumbs, Link, Box, useTheme } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { lazy } from 'react';
 import PropTypes from 'prop-types';
 
 // project imports
 import Loadable from 'ui-component/Loadable';
-import CarIcon from '@mui/icons-material/DirectionsCarFilled';
-import Person4Icon from '@mui/icons-material/Person4';
-//import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
-import { Button } from '@mui/material';
 import JSZip from 'jszip';
 
 import { postRequest, postRequestMultiPart } from 'utils/fetchRequest';
+import { sendJobPhotosViaWhatsApp } from 'utils/WhatsAppUtils';
 import AlertDialog from 'views/utilities/AlertDialog';
+import MainCard from 'ui-component/cards/MainCard';
 
 const JobUserDetails = Loadable(lazy(() => import('views/job/JobUserDetails')));
 const JobCarDetails = Loadable(lazy(() => import('views/job/JobCarDetails')));
+const JobSparesUpdate = Loadable(lazy(() => import('views/job/JobSparesUpdate')));
+const JobServiceUpdate = Loadable(lazy(() => import('views/job/JobServiceUpdate')));
 //const JobInfo = Loadable(lazy(() => import('views/job/JobInfo')));
 
 function JobCardCreate({ data }) {
@@ -38,8 +38,6 @@ function JobCardCreate({ data }) {
     nextServiceKms: null
   };
 
-  const theme = useTheme();
-  const [activeComponent, setActiveComponent] = useState('UserDetails');
   const [userDetails, setUserDetails] = useState(job || {});
   //const [carDetails, setCarDetails] = useState(job || {});
   const [showAlert, setShowAlert] = React.useState(false);
@@ -47,6 +45,8 @@ function JobCardCreate({ data }) {
   const [alertColor, setAlertColor] = React.useState('');
   const [photos, setPhotos] = React.useState([]);
   // const [zipFile, setZipFile] = useState();
+  const [jobServiceInfo, setJobServiceInfo] = useState([]);
+  const [jobSparesInfo, setJobSparesInfo] = useState([]);
 
   useEffect(() => {
     return () => {
@@ -67,22 +67,17 @@ function JobCardCreate({ data }) {
     return isUserDetailsComplete() && isCarDetailsComplete();
   }
 
-  const submitJobCard = () => {
+  const submitJobCard = (WhatsAppFlag) => {
     const jobCard = {
-      jobStatus: 'OPEN',
-      ownerName: userDetails.ownerName,
-      ownerAddress: userDetails.ownerAddress,
-      ownerPhoneNumber: userDetails.ownerPhoneNumber,
-      ownerEmailId: userDetails.ownerEmailId,
-      vehicleRegNo: userDetails.vehicleRegNo,
-      vehicleName: userDetails.vehicleName,
-      kiloMeters: userDetails.kiloMeters
+      jobCard: userDetails,
+      jobSparesInfo: jobSparesInfo,
+      jobServiceInfo: jobServiceInfo
     };
 
-    saveJobCard(jobCard);
+    saveJobCard(jobCard, WhatsAppFlag);
   };
 
-  const saveJobCard = async (payload) => {
+  const saveJobCard = async (payload, WhatsAppFlag) => {
     try {
       const data = await postRequest(process.env.REACT_APP_API_URL + '/jobCard', payload);
       setAlertMess('JobCard ' + data.jobId + ' for ' + data.vehicleRegNo + ' created successfully');
@@ -106,10 +101,15 @@ function JobCardCreate({ data }) {
 
       try {
         await postRequestMultiPart(process.env.REACT_APP_API_URL + '/jobCard/uploadPhotos/' + data.id, formData);
-        setAlertMess('Photos uploaded for ' + data.vehicleRegNo + ' successfully');
-        setAlertColor('success');
-        setShowAlert(true);
-        setPhotos([]);
+        if (WhatsAppFlag === true) {
+          sendJobPhotosViaWhatsApp(data);
+          setPhotos([]);
+        } else {
+          setAlertMess('Photos uploaded for ' + data.vehicleRegNo + ' successfully');
+          setAlertColor('success');
+          setShowAlert(true);
+          setPhotos([]);
+        }
       } catch (err) {
         console.log(err.message);
         setAlertMess(err.message);
@@ -126,63 +126,29 @@ function JobCardCreate({ data }) {
 
   return (
     <Box>
-      <Breadcrumbs aria-label="breadcrumb" sx={{ flexWrap: 'wrap', display: 'flex' }}>
-        <Link
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            px: 2,
-            py: 1,
-            cursor: 'pointer',
-            textDecoration: 'none',
-            color: theme.palette.text.primary,
-            borderBottom: isUserDetailsComplete() ? '3px solid green' : '3px solid orange',
-            '&:hover': {
-              color: theme.palette.secondary.main
-            }
-          }}
-          onClick={() => setActiveComponent('UserDetails')}
-        >
-          <Person4Icon sx={{ mr: 1 }} />
-          User Details
-        </Link>
-
-        <Link
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            px: 2,
-            py: 1,
-            cursor: 'pointer',
-            textDecoration: 'none',
-            color: theme.palette.text.primary,
-            borderBottom: isCarDetailsComplete() ? '3px solid green' : '3px solid orange',
-            '&:hover': {
-              color: theme.palette.secondary.main
-            }
-          }}
-          onClick={() => setActiveComponent('CarDetails')}
-        >
-          <CarIcon sx={{ mr: 1 }} />
-          Car Details
-        </Link>
-      </Breadcrumbs>
-
-      <Box className="content" sx={{ mt: 2 }}>
-        {activeComponent === 'CarDetails' && (
+      <MainCard title="Enter JobCard Details">
+        <Box className="content" sx={{ mt: 2 }}>
+          <JobUserDetails data={userDetails} updateData={setUserDetails} />
           <JobCarDetails data={userDetails} updateData={setUserDetails} photos={photos} updatePhotos={setPhotos} />
-        )}
-        {activeComponent === 'UserDetails' && <JobUserDetails data={userDetails} updateData={setUserDetails} />}
-      </Box>
+          <JobServiceUpdate data={jobServiceInfo} updateData={setJobServiceInfo} />
+          <JobSparesUpdate data={jobSparesInfo} updateData={setJobSparesInfo} />
+        </Box>
 
-      <Box className="content" sx={{ mt: 3 }}>
-        {isJobComplete() && (
-          <Button variant="contained" color="success" onClick={submitJobCard}>
-            Submit JobCard
-          </Button>
-        )}
-      </Box>
-
+        <Box className="content" sx={{ mt: 3 }}>
+          {isJobComplete() && (
+            <Button variant="contained" color="success" onClick={() => submitJobCard(false)}>
+              Submit JobCard
+            </Button>
+          )}
+        </Box>
+        <Box className="content" sx={{ mt: 3 }}>
+          {isJobComplete() && (
+            <Button variant="contained" color="success" onClick={() => submitJobCard(true)} disabled={photos.length === 0}>
+              Submit JobCard & Send Photos via WhatsApp
+            </Button>
+          )}
+        </Box>
+      </MainCard>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
     </Box>
   );

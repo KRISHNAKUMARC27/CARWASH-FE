@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 
 // material-ui
 import { Grid, TextField } from '@mui/material';
-import MainCard from 'ui-component/cards/MainCard';
 
 const JobUserDetails = ({ data, updateData }) => {
   const handleOwnerNameChange = (event) => {
@@ -23,46 +22,41 @@ const JobUserDetails = ({ data, updateData }) => {
 
   return (
     <>
-      <MainCard title="Job Card User Details">
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Owner Name"
-              required
-              fullWidth
-              variant="outlined"
-              value={data.ownerName || ''}
-              onChange={handleOwnerNameChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Owner PhoneNumber"
-              required
-              fullWidth
-              variant="outlined"
-              value={data.ownerPhoneNumber || ''}
-              onChange={handleOwnerPhoneNumberChange}
-              error={data.ownerPhoneNumber && data.ownerPhoneNumber.length !== 10}
-              helperText={data.ownerPhoneNumber && data.ownerPhoneNumber.length !== 10 ? 'Phone number must be 10 digits' : ' '}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              label="Owner Address"
-              fullWidth
-              margin="dense"
-              multiline
-              minRows={2}
-              variant="outlined"
-              value={data.ownerAddress || ''}
-              onChange={handleOwnerAddressChange}
-            />
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label="Owner Name"
+            required
+            fullWidth
+            variant="outlined"
+            value={data.ownerName || ''}
+            onChange={handleOwnerNameChange}
+          />
         </Grid>
-      </MainCard>
+
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label="Owner PhoneNumber"
+            required
+            fullWidth
+            variant="outlined"
+            value={data.ownerPhoneNumber || ''}
+            onChange={handleOwnerPhoneNumberChange}
+            error={data.ownerPhoneNumber && data.ownerPhoneNumber.length !== 10}
+            helperText={data.ownerPhoneNumber && data.ownerPhoneNumber.length !== 10 ? 'Phone number must be 10 digits' : ' '}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Owner Address"
+            fullWidth
+            variant="outlined"
+            value={data.ownerAddress || ''}
+            onChange={handleOwnerAddressChange}
+          />
+        </Grid>
+      </Grid>
     </>
   );
 };

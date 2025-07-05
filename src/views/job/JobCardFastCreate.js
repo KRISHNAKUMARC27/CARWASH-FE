@@ -13,8 +13,7 @@ const BillPaymentEstimate = Loadable(lazy(() => import('views/estimate/BillPayme
 const JobCardFastCreate = () => {
   const roles = JSON.parse(localStorage.getItem('roles')) || [];
   const [fastJobCard, setFastJobCard] = useState({
-    billType: roles.includes('INVOICE') ? 'INVOICE' : 'ESTIMATE',
-    paymentMode: 'CASH'
+    billType: roles.includes('INVOICE') ? 'INVOICE' : 'ESTIMATE'
   });
   const [jobServiceInfo, setJobServiceInfo] = useState([]);
   const [jobSparesInfo, setJobSparesInfo] = useState([]);
@@ -74,8 +73,7 @@ const JobCardFastCreate = () => {
 
   const handleClose = () => {
     setFastJobCard({
-      billType: roles.includes('INVOICE') ? 'INVOICE' : 'ESTIMATE',
-      paymentMode: 'CASH'
+      billType: roles.includes('INVOICE') ? 'INVOICE' : 'ESTIMATE'
     });
     setJobSparesInfo([]);
     setJobServiceInfo([]);
@@ -96,7 +94,7 @@ const JobCardFastCreate = () => {
 
   const isUserDetailsComplete = () => fastJobCard.ownerName && fastJobCard.ownerPhoneNumber;
 
-  const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName && fastJobCard.paymentMode && fastJobCard.billType;
+  const isCarDetailsComplete = () => fastJobCard.vehicleRegNo && fastJobCard.vehicleName && fastJobCard.billType;
 
   const isJobComplete = () => isUserDetailsComplete() && isCarDetailsComplete() && (jobServiceInfo.length > 0 || jobSparesInfo.length > 0);
 
@@ -264,7 +262,7 @@ const JobCardFastCreate = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={6}>
             <TextField
               inputRef={ownerAddressRef}
               label="Owner Address"
@@ -312,26 +310,6 @@ const JobCardFastCreate = () => {
               onChange={(e) => handleInputChange('kiloMeters', e.target.value)}
               onKeyDown={(e) => handleEnter(e, jobServiceFirstInputRef)}
             />
-          </Grid>
-
-          <Grid item xs={12} md={3}>
-            <TextField
-              select
-              label="Payment Mode"
-              variant="outlined"
-              fullWidth
-              required
-              value={fastJobCard.paymentMode}
-              onChange={(e) => handleInputChange('paymentMode', e.target.value)}
-            >
-              {paymentModes
-                .filter((mode) => mode !== 'CREDIT')
-                .map((mode) => (
-                  <MenuItem key={mode} value={mode}>
-                    {mode}
-                  </MenuItem>
-                ))}
-            </TextField>
           </Grid>
 
           <Grid item xs={12} md={3}>

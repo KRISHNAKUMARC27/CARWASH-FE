@@ -47,7 +47,7 @@ const Customization = () => {
   };
 
   const handleOpenFastJobCardToggle = () => {
-    navigate('/card/createFastCard', { replace: true });
+    navigate('/card/createCard', { replace: true });
   };
 
   // state - border radius
@@ -123,7 +123,7 @@ const Customization = () => {
         </Fab>
       </Tooltip>
 
-      <Tooltip title="Fast JobCard">
+      <Tooltip title="New JobCard">
         <Fab
           component="div"
           onClick={handleOpenFastJobCardToggle}
