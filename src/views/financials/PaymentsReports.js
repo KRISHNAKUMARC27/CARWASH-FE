@@ -135,7 +135,7 @@ const PaymentsReports = () => {
       labels,
       datasets: [
         {
-          label: 'Credit vs Regular',
+          label: 'Received Credit vs Regular',
           data: values,
           backgroundColor: colors
         }
@@ -192,7 +192,7 @@ const PaymentsReports = () => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h6">Credit vs Regular payments</Typography>
+          <Typography variant="h6">Received Credit vs Regular payments</Typography>
           <Box sx={{ overflowX: 'auto' }}>
             <Bar data={generateByCreditOrNotChart()} />
           </Box>

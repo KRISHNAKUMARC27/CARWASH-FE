@@ -90,7 +90,7 @@ const JobServiceUpdate = ({ data, updateData, firstInputRef }) => {
   const handleRowDelete = (rowIndex) => {
     const newRows = [...data];
     newRows.splice(rowIndex, 1);
-    updateData(newRows.length > 0 ? newRows : null);
+    updateData(newRows.length > 0 ? newRows : []);
   };
 
   const handleCategoryTypeChange = (value) => {

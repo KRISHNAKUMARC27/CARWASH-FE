@@ -214,6 +214,8 @@ const JobCardUpdate = () => {
   };
 
   const sumAmounts = (data) => {
+    if (!Array.isArray(data)) return 0;
+
     return data
       .filter((row) => row.action !== 'DELETE')
       .reduce((total, currentRow) => {
@@ -224,6 +226,7 @@ const JobCardUpdate = () => {
   };
 
   const hasEmptyRow = (rows) =>
+    Array.isArray(rows) &&
     rows.some(
       ({ sparesId, category, sparesAndLabour, qty, rate, amount }) => !sparesId || !category || !sparesAndLabour || !qty || !rate || !amount
     );
