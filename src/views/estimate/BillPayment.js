@@ -228,10 +228,13 @@ const BillPayment = ({
 
     const grandTotal = estimate.grandTotal || 0;
 
-    // Filter out DELETE for validation and calculation
+    // Filter out DELETE for validation and calculation.
+    //HERE WHY are are not filtering CREDIT because then we will be stuck in the remaining cal again and again.
     const activePaymentSplits = estimate.paymentSplitList.filter((split) => split.flag !== 'DELETE');
-    const totalPaid = activePaymentSplits.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
-    const remaining = grandTotal - totalPaid;
+
+    const totalPaidPayments = activePaymentSplits.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const totalPaidCreditPayments = invoice.creditPaymentList.reduce((sum, split) => sum + (split.amount || 0), 0);
+    const remaining = grandTotal - totalPaidPayments - totalPaidCreditPayments;
 
     if (activePaymentSplits.some((split) => !split.paymentMode)) {
       alert('Please select a payment mode for all entries.');

@@ -219,10 +219,13 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
     const grandTotal = invoice.grandTotal || 0;
 
-    // Filter out DELETE for validation and calculation
+    // Filter out DELETE for validation and calculation.
+    //HERE WHY are are not filtering CREDIT because then we will be stuck in the remaining cal again and again.
     const activePaymentSplits = invoice.paymentSplitList.filter((split) => split.flag !== 'DELETE');
-    const totalPaid = activePaymentSplits.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
-    const remaining = grandTotal - totalPaid;
+
+    const totalPaidPayments = activePaymentSplits.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
+    const totalPaidCreditPayments = invoice.creditPaymentList.reduce((sum, split) => sum + (split.amount || 0), 0);
+    const remaining = grandTotal - totalPaidPayments - totalPaidCreditPayments;
 
     if (activePaymentSplits.some((split) => !split.paymentMode)) {
       alert('Please select a payment mode for all entries.');
@@ -231,9 +234,6 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
 
     if (remaining > 0) {
       handleOpenConfirmDialog(remaining);
-      return;
-    } else if (remaining < 0) {
-      alert('Payment exceeds the grand total. Please adjust the amounts.');
       return;
     }
 
@@ -249,6 +249,11 @@ const BillPayment = ({ invoice, setInvoice, paymentModes, invoiceCreateOpen, han
       .reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
 
     const newPendingAmount = grandTotal - totalPaidExcludingCredit - totalCreditPayments;
+
+    if (newPendingAmount < 0) {
+      alert('Payment exceeds the grand total. Please adjust the amounts.');
+      return;
+    }
 
     const updatedInvoice = {
       ...invoice,
