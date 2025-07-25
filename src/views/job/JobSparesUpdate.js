@@ -181,6 +181,14 @@ const JobSparesUpdate = ({ data, updateData }) => {
                       <TextField
                         fullWidth
                         value={row?.qty || ''}
+                        error={(() => {
+                          const selectedSpare = options.find((opt) => opt.id === row.sparesId);
+                          return selectedSpare && Number(row.qty) > selectedSpare.qty;
+                        })()}
+                        helperText={(() => {
+                          const selectedSpare = options.find((opt) => opt.id === row.sparesId);
+                          return selectedSpare && Number(row.qty) > selectedSpare.qty ? `Only ${selectedSpare.qty} available in stock` : '';
+                        })()}
                         onChange={(e) => {
                           const val = e.target.value;
                           handleInputChange(row.sparesId, 'qty', val);

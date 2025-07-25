@@ -233,7 +233,7 @@ const BillPayment = ({
     const activePaymentSplits = estimate.paymentSplitList.filter((split) => split.flag !== 'DELETE');
 
     const totalPaidPayments = activePaymentSplits.reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
-    const totalPaidCreditPayments = invoice.creditPaymentList.reduce((sum, split) => sum + (split.amount || 0), 0);
+    const totalPaidCreditPayments = estimate.creditPaymentList.reduce((sum, split) => sum + (split.amount || 0), 0);
     const remaining = grandTotal - totalPaidPayments - totalPaidCreditPayments;
 
     if (activePaymentSplits.some((split) => !split.paymentMode)) {
