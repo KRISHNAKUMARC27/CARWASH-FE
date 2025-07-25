@@ -263,8 +263,9 @@ const JobCardUpdate = () => {
       handleClose();
     } catch (err) {
       console.log(err.message);
-      handleClose();
+      //handleClose();
       setAlertMess(err.message);
+      setAlertColor('error');
       setShowAlert(true);
     }
   };

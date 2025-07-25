@@ -123,7 +123,7 @@ const JobCardFastCreate = () => {
       console.log(err.message);
       handleClose();
       setAlertMess(err.message);
-      setAlertColor('info');
+      setAlertColor('error');
       setShowAlert(true);
     }
   };
