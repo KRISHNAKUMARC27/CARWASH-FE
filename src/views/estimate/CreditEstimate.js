@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import { createTheme, ThemeProvider, useTheme, Tooltip, IconButton, Box } from '@mui/material';
+import { Tooltip, IconButton, Box } from '@mui/material';
 import { Edit, FactCheck } from '@mui/icons-material';
 import { lazy } from 'react';
 
@@ -128,111 +128,54 @@ const CreditEstimate = () => {
     []
   );
 
-  const globalTheme = useTheme();
-
-  const tableTheme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: globalTheme.palette.mode, //let's use the same dark/light mode as the global theme
-          primary: globalTheme.palette.secondary, //swap in the secondary color as the primary for the table
-          info: {
-            main: 'rgb(255,122,0)' //add in a custom color for the toolbar alert background stuff
-          },
-          background: {
-            default: 'rgba(0, 0, 0, 0)' // set background color to fully transparent
-            // set background color to transparent
-            // globalTheme.palette.mode === "light"
-            //   ? "rgb(254,255,244)" //random light yellow color for the background in light mode
-            //   : "#000", //pure black table in dark mode for fun
-          }
-        },
-        typography: {
-          button: {
-            textTransform: 'none', //customize typography styles for all buttons in table by default
-            fontSize: '1.2rem'
-          }
-        },
-        components: {
-          MuiTooltip: {
-            styleOverrides: {
-              tooltip: {
-                fontSize: '1.1rem' //override to make tooltip font size larger
-              }
-            }
-          },
-          MuiSwitch: {
-            styleOverrides: {
-              thumb: {
-                color: 'pink' //change the color of the switch thumb in the columns show/hide menu to pink
-              }
-            }
-          }
-        }
-      }),
-    [globalTheme]
-  );
-  const gradientAngle = 195;
-  const color1 = '#e2d7d5';
-  const color2 = '#cf8989';
-
   return (
     <>
       {showAlert && <AlertDialog showAlert={showAlert} setShowAlert={setShowAlert} alertColor={alertColor} alertMess={alertMess} />}
-      <ThemeProvider theme={tableTheme}>
-        <MaterialReactTable
-          columns={columns}
-          data={data}
-          enableFacetedValues
-          //editingMode="modal"
-          enableEditing
-          enableRowSelection
-          onRowSelectionChange={setRowSelection}
-          state={{ rowSelection }}
-          muiTablePaperProps={{
-            elevation: 0,
-            sx: {
-              borderRadius: '0',
-              background: `linear-gradient(${gradientAngle}deg, ${color1}, ${color2})`
-            }
-          }}
-          renderRowActions={({ row }) => (
-            <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="right" title="Estimate">
+      <MaterialReactTable
+        columns={columns}
+        data={data}
+        enableFacetedValues
+        //editingMode="modal"
+        enableEditing
+        enableRowSelection
+        onRowSelectionChange={setRowSelection}
+        state={{ rowSelection }}
+        renderRowActions={({ row }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip arrow placement="right" title="Estimate">
+              <IconButton
+                onClick={() => {
+                  setEstimate(row.original);
+                  setEstimateCreateOpen(true);
+                }}
+              >
+                <Edit />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
+        renderTopToolbarCustomActions={() =>
+          Object.keys(rowSelection).length > 0 && (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Tooltip title="Settle Bill">
                 <IconButton
                   onClick={() => {
-                    setEstimate(row.original);
-                    setEstimateCreateOpen(true);
+                    const hasZeroPendingAmount = selectedRows.some((row) => row.pendingAmount === 0);
+
+                    if (hasZeroPendingAmount) {
+                      alert('One or more rows have a pending amount of 0.');
+                      return;
+                    }
+                    setSettleBillDialogOpen(true);
                   }}
                 >
-                  <Edit />
+                  <FactCheck />
                 </IconButton>
               </Tooltip>
             </Box>
-          )}
-          renderTopToolbarCustomActions={() =>
-            Object.keys(rowSelection).length > 0 && (
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Tooltip title="Settle Bill">
-                  <IconButton
-                    onClick={() => {
-                      const hasZeroPendingAmount = selectedRows.some((row) => row.pendingAmount === 0);
-
-                      if (hasZeroPendingAmount) {
-                        alert('One or more rows have a pending amount of 0.');
-                        return;
-                      }
-                      setSettleBillDialogOpen(true);
-                    }}
-                  >
-                    <FactCheck />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            )
-          }
-        />
-      </ThemeProvider>
+          )
+        }
+      />
       {estimateCreateOpen && (
         <BillPayment
           estimate={estimate}
