@@ -45,6 +45,9 @@ const AttendanceReports = Loadable(lazy(() => import('views/attendance/Attendanc
 const AppointmentCreate = Loadable(lazy(() => import('views/appointment/AppointmentCreate')));
 const AllAppointment = Loadable(lazy(() => import('views/appointment/AllAppointment')));
 
+const ServicePackageCreate = Loadable(lazy(() => import('views/servicepackage/ServicePackageCreate')));
+const AllServicePackage = Loadable(lazy(() => import('views/servicepackage/AllServicePackage')));
+
 const AllExpense = Loadable(lazy(() => import('views/expense/AllExpense')));
 const ExpenseCreate = Loadable(lazy(() => import('views/expense/ExpenseCreate')));
 const ExpenseCategory = Loadable(lazy(() => import('views/expense/ExpenseCategory')));
@@ -302,6 +305,22 @@ const MainRoutes = {
       element: (
         <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
           <AllAppointment />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'package/createPackage',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <ServicePackageCreate />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: 'package/table',
+      element: (
+        <PrivateRoute allowedRoles={['ADMIN', 'MANAGER']}>
+          <AllServicePackage />
         </PrivateRoute>
       )
     },

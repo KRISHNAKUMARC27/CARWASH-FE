@@ -89,6 +89,11 @@ const AllPayments = () => {
             </ul>
           );
         }
+      },
+      {
+        accessorKey: 'info',
+        header: 'Info',
+        size: 100
       }
     ],
     []

@@ -6,6 +6,7 @@ import JobSparesUpdate from './JobSparesUpdate';
 import AlertDialog from 'views/utilities/AlertDialog';
 import { postRequest, getBlobRequest, getRequest } from 'utils/fetchRequest';
 import Loadable from 'ui-component/Loadable';
+import { prepareInitialInvoiceObject, prepareInitialEstimateObject } from 'utils/JobPaymentUtils';
 
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
 const BillPaymentEstimate = Loadable(lazy(() => import('views/estimate/BillPayment')));
@@ -115,8 +116,9 @@ const JobCardFastCreate = () => {
     };
     try {
       const data = await postRequest(process.env.REACT_APP_API_URL + '/jobCard/fastjobCard', payload);
-      if (fastJobCard.billType === 'ESTIMATE') prepareInitialEstimateObject(data);
-      else if (fastJobCard.billType === 'INVOICE') prepareInitialInvoiceObject(data);
+      setFastJobCard(data);
+      if (fastJobCard.billType === 'ESTIMATE') prepareInitialEstimateObject(data, setEstimate, setEstimateCreateOpen, getRequest);
+      else if (fastJobCard.billType === 'INVOICE') prepareInitialInvoiceObject(data, setInvoice, setInvoiceCreateOpen, getRequest);
 
       //setOpenPrintBillMsg(true);
     } catch (err) {
@@ -144,87 +146,6 @@ const JobCardFastCreate = () => {
       console.log(err.message);
       setAlertMess(err.message);
       setShowAlert(true);
-    }
-  };
-
-  const prepareInitialInvoiceObject = async (payload) => {
-    if (payload.invoiceObjId != null) {
-      try {
-        const invoiceData = await getRequest(process.env.REACT_APP_API_URL + '/invoice/' + payload.invoiceObjId);
-
-        setInvoice(invoiceData);
-        setInvoiceCreateOpen(true);
-      } catch (err) {
-        console.log(err.message);
-        getSelectedRowJobSpares(payload);
-      }
-    } else {
-      getSelectedRowJobSpares(payload);
-    }
-    setFastJobCard(payload);
-  };
-
-  const prepareInitialEstimateObject = async (payload) => {
-    if (payload.estimateObjId != null) {
-      try {
-        const estimateData = await getRequest(process.env.REACT_APP_API_URL + '/estimate/' + payload.estimateObjId);
-        setEstimate(estimateData);
-        setEstimateCreateOpen(true);
-      } catch (err) {
-        console.log(err.message);
-        getSelectedRowJobSparesEstimate(payload);
-      }
-    } else {
-      getSelectedRowJobSparesEstimate(payload);
-    }
-    setFastJobCard(payload);
-  };
-
-  const getSelectedRowJobSpares = async (payload) => {
-    try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
-
-      // Combine updates into one `setInvoice` call
-      setInvoice((prevState) => ({
-        ...prevState,
-        jobId: payload.jobId,
-        ownerName: payload.ownerName,
-        ownerPhoneNumber: payload.ownerPhoneNumber,
-        vehicleRegNo: payload.vehicleRegNo,
-        vehicleName: payload.vehicleName,
-        grandTotal: data.grandTotalWithGST,
-        jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: 'CASH', flag: 'ADD' }],
-        creditPaymentList: []
-      }));
-
-      //setJobSpares(data);
-      setInvoiceCreateOpen(true);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const getSelectedRowJobSparesEstimate = async (payload) => {
-    try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
-
-      setEstimate((prevState) => ({
-        ...prevState,
-        jobId: payload.jobId,
-        ownerName: payload.ownerName,
-        ownerPhoneNumber: payload.ownerPhoneNumber,
-        vehicleRegNo: payload.vehicleRegNo,
-        vehicleName: payload.vehicleName,
-        grandTotal: data.grandTotal,
-        jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotal || 0, paymentMode: 'CASH', flag: 'ADD' }],
-        creditPaymentList: []
-      }));
-
-      setEstimateCreateOpen(true);
-    } catch (err) {
-      console.log(err.message);
     }
   };
 
@@ -305,6 +226,7 @@ const JobCardFastCreate = () => {
               inputRef={kiloMetersRef}
               label="Vehicle K.Ms"
               variant="outlined"
+              type="number"
               fullWidth
               value={fastJobCard.kiloMeters || ''}
               onChange={(e) => handleInputChange('kiloMeters', e.target.value)}

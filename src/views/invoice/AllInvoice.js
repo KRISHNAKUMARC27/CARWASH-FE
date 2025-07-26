@@ -8,6 +8,7 @@ import AlertDialog from 'views/utilities/AlertDialog';
 // project imports
 import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
+import { loadInvoiceAndTryPackageApply } from 'utils/JobPaymentUtils';
 const BillPayment = Loadable(lazy(() => import('views/invoice/BillPayment')));
 const MultiSettle = Loadable(lazy(() => import('views/invoice/MultiSettle')));
 const Receipt = Loadable(lazy(() => import('views/invoice/Receipt')));
@@ -211,8 +212,13 @@ const AllInvoice = () => {
             <Tooltip arrow placement="right" title="Invoice">
               <IconButton
                 onClick={() => {
-                  setInvoice(row.original);
-                  setInvoiceCreateOpen(true);
+                  loadInvoiceAndTryPackageApply(
+                    row.original.id,
+                    row.original.ownerPhoneNumber,
+                    setInvoice,
+                    setInvoiceCreateOpen,
+                    getRequest
+                  );
                 }}
               >
                 <Edit />

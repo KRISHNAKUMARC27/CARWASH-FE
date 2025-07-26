@@ -12,6 +12,8 @@ import { lazy } from 'react';
 
 // project imports
 import { getRequest, putRequest } from 'utils/fetchRequest';
+import { prepareInitialInvoiceObject, prepareInitialEstimateObject } from 'utils/JobPaymentUtils';
+
 import Loadable from 'ui-component/Loadable';
 import AlertDialog from 'views/utilities/AlertDialog';
 import StatusCell from './StatusCell';
@@ -119,86 +121,6 @@ const AllJobs = () => {
       setAlertColor('info');
       setShowAlert(true);
       handleClose();
-    }
-  };
-
-  const prepareInitialInvoiceObject = async (payload) => {
-    if (payload.invoiceObjId != null) {
-      try {
-        const invoiceData = await getRequest(process.env.REACT_APP_API_URL + '/invoice/' + payload.invoiceObjId);
-
-        setInvoice(invoiceData);
-        setInvoiceCreateOpen(true);
-      } catch (err) {
-        console.log(err.message);
-        getSelectedRowJobSpares(payload);
-      }
-    } else {
-      getSelectedRowJobSpares(payload);
-    }
-  };
-
-  const prepareInitialEstimateObject = async (payload) => {
-    if (payload.estimateObjId != null) {
-      try {
-        const estimateData = await getRequest(process.env.REACT_APP_API_URL + '/estimate/' + payload.estimateObjId);
-
-        setEstimate(estimateData);
-        setEstimateCreateOpen(true);
-      } catch (err) {
-        console.log(err.message);
-        getSelectedRowJobSparesEstimate(payload);
-      }
-    } else {
-      getSelectedRowJobSparesEstimate(payload);
-    }
-  };
-
-  const getSelectedRowJobSpares = async (payload) => {
-    try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
-
-      // Combine updates into one `setInvoice` call
-      setInvoice((prevState) => ({
-        ...prevState,
-        jobId: payload.jobId,
-        ownerName: payload.ownerName,
-        ownerPhoneNumber: payload.ownerPhoneNumber,
-        vehicleRegNo: payload.vehicleRegNo,
-        vehicleName: payload.vehicleName,
-        grandTotal: data.grandTotalWithGST,
-        jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotalWithGST || 0, paymentMode: 'CASH', flag: 'ADD' }],
-        creditPaymentList: []
-      }));
-
-      //setJobSpares(data);
-      setInvoiceCreateOpen(true);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
-  const getSelectedRowJobSparesEstimate = async (payload) => {
-    try {
-      const data = await getRequest(process.env.REACT_APP_API_URL + '/jobCard/jobSpares/' + payload.id);
-
-      setEstimate((prevState) => ({
-        ...prevState,
-        jobId: payload.jobId,
-        ownerName: payload.ownerName,
-        ownerPhoneNumber: payload.ownerPhoneNumber,
-        vehicleRegNo: payload.vehicleRegNo,
-        vehicleName: payload.vehicleName,
-        grandTotal: data.grandTotal,
-        jobObjId: data.id,
-        paymentSplitList: [{ paymentAmount: data.grandTotal || 0, paymentMode: 'CASH', flag: 'ADD' }],
-        creditPaymentList: []
-      }));
-
-      setEstimateCreateOpen(true);
-    } catch (err) {
-      console.log(err.message);
     }
   };
 
@@ -382,7 +304,7 @@ const AllJobs = () => {
                   <IconButton
                     onClick={() => {
                       setSelectedRow(row.original);
-                      prepareInitialInvoiceObject(row.original);
+                      prepareInitialInvoiceObject(row.original, setInvoice, setInvoiceCreateOpen, getRequest);
                     }}
                   >
                     <CurrencyRupee />
@@ -394,7 +316,7 @@ const AllJobs = () => {
                   <IconButton
                     onClick={() => {
                       setSelectedRow(row.original);
-                      prepareInitialEstimateObject(row.original);
+                      prepareInitialEstimateObject(row.original, setEstimate, setEstimateCreateOpen, getRequest);
                     }}
                   >
                     <RequestQuote />

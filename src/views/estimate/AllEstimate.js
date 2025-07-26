@@ -8,6 +8,7 @@ import AlertDialog from 'views/utilities/AlertDialog';
 // project imports
 import Loadable from 'ui-component/Loadable';
 import { getRequest } from 'utils/fetchRequest';
+import { loadEstimateAndTryPackageApply } from 'utils/JobPaymentUtils';
 const BillPayment = Loadable(lazy(() => import('views/estimate/BillPayment')));
 const MultiSettle = Loadable(lazy(() => import('views/estimate/MultiSettle')));
 const Receipt = Loadable(lazy(() => import('views/estimate/Receipt')));
@@ -207,8 +208,13 @@ const AllEstimate = () => {
             <Tooltip arrow placement="right" title="Estimate">
               <IconButton
                 onClick={() => {
-                  setEstimate(row.original);
-                  setEstimateCreateOpen(true);
+                  loadEstimateAndTryPackageApply(
+                    row.original.id,
+                    row.original.ownerPhoneNumber,
+                    setEstimate,
+                    setEstimateCreateOpen,
+                    getRequest
+                  );
                 }}
               >
                 <Edit />

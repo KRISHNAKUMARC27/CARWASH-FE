@@ -214,7 +214,14 @@ const JobCarDetails = ({ data, updateData, photos, updatePhotos, zipFile }) => {
             />
           </Grid>
           <Grid item xs={12} md={4}>
-            <TextField label="Vehicle K.Ms" fullWidth variant="outlined" value={data.kiloMeters || ''} onChange={handleKMsChange} />
+            <TextField
+              label="Vehicle K.Ms"
+              fullWidth
+              type="number"
+              variant="outlined"
+              value={data.kiloMeters || ''}
+              onChange={handleKMsChange}
+            />
           </Grid>
         </>
       )}

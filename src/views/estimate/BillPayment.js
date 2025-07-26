@@ -244,9 +244,6 @@ const BillPayment = ({
     if (remaining > 0) {
       handleOpenConfirmDialog(remaining);
       return;
-    } else if (remaining < 0) {
-      alert('Payment exceeds the grand total. Please adjust the amounts.');
-      return;
     }
 
     const activeCreditPayments = estimate.creditPaymentList.filter((credit) => credit.flag !== 'DELETE');
@@ -261,6 +258,11 @@ const BillPayment = ({
       .reduce((sum, split) => sum + (split.paymentAmount || 0), 0);
 
     const newPendingAmount = grandTotal - totalPaidExcludingCredit - totalCreditPayments;
+
+    if (newPendingAmount < 0) {
+      alert('Payment exceeds the grand total. Please adjust the amounts.');
+      return;
+    }
 
     const updatedEstimate = {
       ...estimate,

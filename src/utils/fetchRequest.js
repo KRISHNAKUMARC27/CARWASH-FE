@@ -27,7 +27,14 @@ const fetchRequest = async (url, method, payload = null) => {
     const errorText = await response.text();
     throw new Error(errorText || response.statusText);
   }
-  return response.json();
+
+  const contentLength = response.headers.get('content-length');
+  if (response.status === 204 || contentLength === '0') {
+    return null;
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 };
 
 const fetchRequestNotStringify = async (url, method, payload = null) => {
@@ -49,7 +56,13 @@ const fetchRequestNotStringify = async (url, method, payload = null) => {
     const errorText = await response.text();
     throw new Error(errorText || response.statusText);
   }
-  return response.json();
+  const contentLength = response.headers.get('content-length');
+  if (response.status === 204 || contentLength === '0') {
+    return null;
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 };
 
 const fetchBlobRequest = async (url, method, payload = null) => {
@@ -107,8 +120,13 @@ const fetchMultiPartFileRequest = async (url, method, payload = null) => {
     throw new Error(errorText || response.statusText);
   }
 
-  // Return response data
-  return response.json(); // Use response.json() or response.blob() as needed
+  const contentLength = response.headers.get('content-length');
+  if (response.status === 204 || contentLength === '0') {
+    return null;
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 };
 
 const fetchZipFileRequest = async (url, method = 'GET') => {

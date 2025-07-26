@@ -23,7 +23,7 @@ import AppointmentCalendar from './AppointmentCalendar';
 
 const AppointmentCreate = Loadable(lazy(() => import('views/appointment/AppointmentCreate')));
 
-const AllEmployee = () => {
+const AllAppointment = () => {
   const [data, setData] = useState([]);
   const [appointment, setAppointment] = useState({});
   const [appointmentUpdateOpen, setAppointmentUpdateOpen] = useState(false);
@@ -209,4 +209,4 @@ const AllEmployee = () => {
   );
 };
 
-export default AllEmployee;
+export default AllAppointment;

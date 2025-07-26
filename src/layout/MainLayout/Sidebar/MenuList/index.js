@@ -15,7 +15,7 @@ import getAppointment from 'menu-items/appointment';
 import getExpense from 'menu-items/expense';
 import getEstimate from 'menu-items/estimate';
 import getFinancials from 'menu-items/financials';
-
+import getServicePackage from 'menu-items/servicePackage';
 import { useEffect } from 'react';
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
@@ -38,6 +38,7 @@ const MenuList = () => {
     if (roles.some((role) => ['ADMIN', 'MANAGER'].includes(role))) {
       dynamicMenus.push(getExpense());
       dynamicMenus.push(getAppointment());
+      dynamicMenus.push(getServicePackage());
       dynamicMenus.push(getAttendance());
     }
 
